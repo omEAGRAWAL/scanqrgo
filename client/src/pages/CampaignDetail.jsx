@@ -267,6 +267,38 @@ export default function CampaignDetail() {
           </div>
 
           {/* Sidebar */}
+          {/* Public Form Link - Add this in the sidebar section */}
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Public Form
+            </h3>
+            <div className="space-y-3">
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-2">Public Form URL:</p>
+                <code className="text-xs bg-gray-100 p-2 rounded block break-all">
+                  {window.location.origin}/campaign/{campaign._id}
+                </code>
+              </div>
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/campaign/${campaign._id}`;
+                  navigator.clipboard.writeText(url);
+                  alert("Public form link copied to clipboard!");
+                }}
+                className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+              >
+                Copy Public Form Link
+              </button>
+              <a
+                href={`/campaign/${campaign._id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center block"
+              >
+                Preview Form
+              </a>
+            </div>
+          </div>
           <div className="space-y-8">
             {/* QR Code */}
             <div className="bg-white rounded-2xl shadow-lg p-8 text-center">

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Home() {
-  const navigate = useNavigate();
   const [stats, setStats] = useState({
     products: 0,
     promotions: 0,
     campaigns: 0,
-    totalScans: 0,
+    totalScans: 0
   });
 
   useEffect(() => {
@@ -17,21 +16,18 @@ export default function Home() {
   async function fetchStats() {
     try {
       const token = localStorage.getItem("token");
-
+      
       // Fetch campaign stats
-      const campaignRes = await fetch(
-        "http://localhost:5000/api/campaigns/stats/dashboard",
-        {
-          headers: { Authorization: token },
-        }
-      );
-
+      const campaignRes = await fetch("http://localhost:5000/api/campaigns/stats/dashboard", {
+        headers: { Authorization: token },
+      });
+      
       if (campaignRes.ok) {
         const campaignData = await campaignRes.json();
-        setStats((prev) => ({
+        setStats(prev => ({
           ...prev,
           campaigns: campaignData.summary.total,
-          totalScans: campaignData.analytics.totalScans,
+          totalScans: campaignData.analytics.totalScans
         }));
       }
     } catch (err) {
@@ -39,66 +35,27 @@ export default function Home() {
     }
   }
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    navigate("/login");
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">ScanQRGo</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/products"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition-colors"
-              >
-                Products
-              </Link>
-              <Link
-                to="/promotions"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition-colors"
-              >
-                Promotions
-              </Link>
-              <Link
-                to="/campaigns"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition-colors"
-              >
-                Campaigns
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+    // Remove the min-h-screen and bg-gradient classes since they're now in App.jsx
+    <div className="py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Welcome Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welcome to ScanQRGo!
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Create campaigns, manage products, design promotions, and engage customers with QR code marketing
+          </p>
         </div>
-      </nav>
-
-      <div className="flex flex-col items-center justify-center py-20 px-4">
-        <h1 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Welcome to ScanQRGo!
-        </h1>
-        <p className="text-xl text-gray-600 mb-12 text-center max-w-3xl">
-          Create campaigns, manage products, design promotions, and engage
-          customers with QR code marketing
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl w-full mb-12">
+        
+        {/* Feature Cards */}
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
           {/* Products Section */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
             <div className="text-4xl mb-4">📦</div>
             <h3 className="text-2xl font-bold mb-3">Products</h3>
-            <p className="text-gray-600 mb-6">
-              Manage your product catalog and link them to marketing campaigns.
-            </p>
+            <p className="text-gray-600 mb-6">Manage your product catalog and link them to marketing campaigns.</p>
             <div className="flex space-x-3">
               <Link
                 to="/products"
@@ -119,10 +76,7 @@ export default function Home() {
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
             <div className="text-4xl mb-4">🎁</div>
             <h3 className="text-2xl font-bold mb-3">Promotions</h3>
-            <p className="text-gray-600 mb-6">
-              Create attractive offers and rewards to incentivize customer
-              engagement.
-            </p>
+            <p className="text-gray-600 mb-6">Create attractive offers and rewards to incentivize customer engagement.</p>
             <div className="flex space-x-3">
               <Link
                 to="/promotions"
@@ -143,9 +97,7 @@ export default function Home() {
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
             <div className="text-4xl mb-4">🚀</div>
             <h3 className="text-2xl font-bold mb-3">Campaigns</h3>
-            <p className="text-gray-600 mb-6">
-              Launch marketing campaigns that connect products with promotions.
-            </p>
+            <p className="text-gray-600 mb-6">Launch marketing campaigns that connect products with promotions.</p>
             <div className="flex space-x-3">
               <Link
                 to="/campaigns"
@@ -164,29 +116,21 @@ export default function Home() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl w-full">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-            <div className="text-3xl font-bold text-blue-600">
-              {stats.products}
-            </div>
+            <div className="text-3xl font-bold text-blue-600">{stats.products}</div>
             <div className="text-sm text-gray-500">Products</div>
           </div>
           <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-            <div className="text-3xl font-bold text-purple-600">
-              {stats.promotions}
-            </div>
+            <div className="text-3xl font-bold text-purple-600">{stats.promotions}</div>
             <div className="text-sm text-gray-500">Promotions</div>
           </div>
           <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-            <div className="text-3xl font-bold text-indigo-600">
-              {stats.campaigns}
-            </div>
+            <div className="text-3xl font-bold text-indigo-600">{stats.campaigns}</div>
             <div className="text-sm text-gray-500">Campaigns</div>
           </div>
           <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-            <div className="text-3xl font-bold text-orange-600">
-              {stats.totalScans}
-            </div>
+            <div className="text-3xl font-bold text-orange-600">{stats.totalScans}</div>
             <div className="text-sm text-gray-500">Total Scans</div>
           </div>
         </div>

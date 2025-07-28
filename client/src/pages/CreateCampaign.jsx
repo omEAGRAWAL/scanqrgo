@@ -19,13 +19,13 @@ export default function CreateCampaign() {
       codeType: "same",
       codeValue: "",
       deliveryType: "auto",
-      maxRedemptions: ""
+      maxRedemptions: "",
     },
     customization: {
       primaryColor: "#3B82F6",
       customMessage: "",
-      backgroundStyle: "solid"
-    }
+      backgroundStyle: "solid",
+    },
   });
 
   const token = localStorage.getItem("token");
@@ -49,9 +49,12 @@ export default function CreateCampaign() {
 
   async function fetchPromotions() {
     try {
-      const res = await fetch("http://localhost:5000/api/promotions?status=active", {
-        headers: { Authorization: token },
-      });
+      const res = await fetch(
+        "http://localhost:5000/api/promotions?status=active",
+        {
+          headers: { Authorization: token },
+        }
+      );
       const data = await res.json();
       if (res.ok) setPromotions(data.promotions || []);
     } catch (err) {
@@ -61,32 +64,32 @@ export default function CreateCampaign() {
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
-    
-    if (name.startsWith('promotionSettings.')) {
-      const settingKey = name.split('.')[1];
+
+    if (name.startsWith("promotionSettings.")) {
+      const settingKey = name.split(".")[1];
       setForm({
         ...form,
-        promotionSettings: { ...form.promotionSettings, [settingKey]: value }
+        promotionSettings: { ...form.promotionSettings, [settingKey]: value },
       });
-    } else if (name.startsWith('customization.')) {
-      const customKey = name.split('.')[1];
+    } else if (name.startsWith("customization.")) {
+      const customKey = name.split(".")[1];
       setForm({
         ...form,
-        customization: { ...form.customization, [customKey]: value }
+        customization: { ...form.customization, [customKey]: value },
       });
-    } else if (name === 'products') {
+    } else if (name === "products") {
       const productId = value;
       const isChecked = checked;
       setForm({
         ...form,
-        products: isChecked 
+        products: isChecked
           ? [...form.products, productId]
-          : form.products.filter(id => id !== productId)
+          : form.products.filter((id) => id !== productId),
       });
     } else {
-      setForm({ 
-        ...form, 
-        [name]: type === 'checkbox' ? checked : value 
+      setForm({
+        ...form,
+        [name]: type === "checkbox" ? checked : value,
       });
     }
   }
@@ -101,15 +104,15 @@ export default function CreateCampaign() {
         name: form.name,
         category: form.category,
         products: form.products,
-        ...(form.category === 'promotion' && { 
+        ...(form.category === "promotion" && {
           promotion: form.promotion,
-          promotionSettings: form.promotionSettings 
+          promotionSettings: form.promotionSettings,
         }),
-        ...(form.category === 'review' && { 
+        ...(form.category === "review" && {
           reviewMinimumLength: form.reviewMinimumLength,
-          enableSmartFunnel: form.enableSmartFunnel 
+          enableSmartFunnel: form.enableSmartFunnel,
         }),
-        customization: form.customization
+        customization: form.customization,
       };
 
       const res = await fetch("http://localhost:5000/api/campaigns", {
@@ -143,11 +146,15 @@ export default function CreateCampaign() {
             <span className="mr-2">←</span>
             Back to Campaigns
           </Link>
-          
+
           <div className="bg-white rounded-2xl shadow-xl">
             <div className="px-8 py-6 border-b border-gray-100">
-              <h1 className="text-3xl font-bold text-gray-900">Create New Campaign</h1>
-              <p className="text-gray-600 mt-2">Set up a campaign to engage customers and track results</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Create New Campaign
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Set up a campaign to engage customers and track results
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-8">
@@ -173,46 +180,58 @@ export default function CreateCampaign() {
                   Campaign Type *
                 </label>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <label className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md ${
-                    form.category === 'promotion'
-                      ? 'border-purple-500 bg-purple-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}>
+                  <label
+                    className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md ${
+                      form.category === "promotion"
+                        ? "border-purple-500 bg-purple-50 shadow-md"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="category"
                       value="promotion"
-                      checked={form.category === 'promotion'}
+                      checked={form.category === "promotion"}
                       onChange={handleChange}
                       className="sr-only"
                     />
                     <div className="flex items-center space-x-3">
                       <span className="text-3xl">🎁</span>
                       <div>
-                        <p className="font-semibold text-gray-900">Promotion Campaign</p>
-                        <p className="text-sm text-gray-600">Offer rewards and incentives</p>
+                        <p className="font-semibold text-gray-900">
+                          Promotion Campaign
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Offer rewards and incentives
+                        </p>
                       </div>
                     </div>
                   </label>
 
-                  <label className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md ${
-                    form.category === 'review'
-                      ? 'border-blue-500 bg-blue-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}>
+                  <label
+                    className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md ${
+                      form.category === "review"
+                        ? "border-blue-500 bg-blue-50 shadow-md"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="category"
                       value="review"
-                      checked={form.category === 'review'}
+                      checked={form.category === "review"}
                       onChange={handleChange}
                       className="sr-only"
                     />
                     <div className="flex items-center space-x-3">
                       <span className="text-3xl">⭐</span>
                       <div>
-                        <p className="font-semibold text-gray-900">Review Campaign</p>
-                        <p className="text-sm text-gray-600">Collect customer reviews</p>
+                        <p className="font-semibold text-gray-900">
+                          Review Campaign
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Collect customer reviews
+                        </p>
                       </div>
                     </div>
                   </label>
@@ -228,7 +247,7 @@ export default function CreateCampaign() {
                   {products.length === 0 ? (
                     <div className="text-center py-8">
                       <p className="text-gray-500 mb-4">No products found</p>
-                      <Link 
+                      <Link
                         to="/products/create"
                         className="text-blue-600 hover:underline"
                       >
@@ -238,7 +257,10 @@ export default function CreateCampaign() {
                   ) : (
                     <div className="grid md:grid-cols-2 gap-3">
                       {products.map((product) => (
-                        <label key={product._id} className="flex items-center space-x-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-blue-50">
+                        <label
+                          key={product._id}
+                          className="flex items-center space-x-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-blue-50"
+                        >
                           <input
                             type="checkbox"
                             name="products"
@@ -248,8 +270,12 @@ export default function CreateCampaign() {
                             className="w-4 h-4 text-blue-600"
                           />
                           <div>
-                            <p className="font-medium text-gray-900">{product.name}</p>
-                            <p className="text-sm text-gray-600">{product.marketplace}</p>
+                            <p className="font-medium text-gray-900">
+                              {product.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {product.marketplace}
+                            </p>
                           </div>
                         </label>
                       ))}
@@ -259,7 +285,7 @@ export default function CreateCampaign() {
               </div>
 
               {/* Promotion-specific fields */}
-              {form.category === 'promotion' && (
+              {form.category === "promotion" && (
                 <>
                   <div className="space-y-4">
                     <label className="text-lg font-semibold text-gray-800 block">
@@ -281,7 +307,13 @@ export default function CreateCampaign() {
                     </select>
                     {promotions.length === 0 && (
                       <p className="text-sm text-gray-500">
-                        No active promotions found. <Link to="/promotions/create" className="text-blue-600 hover:underline">Create one first</Link>
+                        No active promotions found.{" "}
+                        <Link
+                          to="/promotions/create"
+                          className="text-blue-600 hover:underline"
+                        >
+                          Create one first
+                        </Link>
                       </p>
                     )}
                   </div>
@@ -320,8 +352,8 @@ export default function CreateCampaign() {
                           />
                         </div>
                       </div>
-                      
-                      {form.promotionSettings.codeType === 'same' && (
+
+                      {form.promotionSettings.codeType === "same" && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Promotion Code
@@ -342,7 +374,7 @@ export default function CreateCampaign() {
               )}
 
               {/* Review-specific fields */}
-              {form.category === 'review' && (
+              {form.category === "review" && (
                 <div className="space-y-4">
                   <label className="text-lg font-semibold text-gray-800 block">
                     Review Settings
@@ -370,7 +402,9 @@ export default function CreateCampaign() {
                           onChange={handleChange}
                           className="w-4 h-4 text-blue-600"
                         />
-                        <span className="font-medium text-gray-700">Enable Smart Funnel</span>
+                        <span className="font-medium text-gray-700">
+                          Enable Smart Funnel
+                        </span>
                       </label>
                       <p className="text-sm text-gray-500 ml-7">
                         Only request reviews from satisfied customers
@@ -455,9 +489,25 @@ export default function CreateCampaign() {
                 >
                   {loading ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Creating...
                     </span>
