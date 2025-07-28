@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function CreatePromotion() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export default function CreatePromotion() {
         value: form.value.amount ? form.value : undefined,
       };
 
-      const res = await fetch("http://localhost:5000/api/promotions", {
+      const res = await fetch(`${API_URL}/promotions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

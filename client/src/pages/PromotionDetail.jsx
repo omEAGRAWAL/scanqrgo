@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function PromotionDetail() {
   const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function PromotionDetail() {
   async function fetchPromotion() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/promotions/${id}`, {
+      const res = await fetch(`${API_URL}/promotions/${id}`, {
         headers: {
           Authorization: `${token}`,
         },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function CreateCampaign() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ export default function CreateCampaign() {
 
   async function fetchProducts() {
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         headers: { Authorization: token },
       });
       const data = await res.json();
@@ -50,7 +50,7 @@ export default function CreateCampaign() {
   async function fetchPromotions() {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/promotions?status=active",
+        `${API_URL}/promotions?status=active`,
         {
           headers: { Authorization: token },
         }
@@ -115,7 +115,7 @@ export default function CreateCampaign() {
         customization: form.customization,
       };
 
-      const res = await fetch("http://localhost:5000/api/campaigns", {
+      const res = await fetch("${API_URL}/campaigns", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

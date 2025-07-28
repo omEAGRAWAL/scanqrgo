@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function EditProduct() {
   const [form, setForm] = useState({
     name: "",
@@ -20,7 +20,7 @@ export default function EditProduct() {
   async function fetchProduct() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -48,7 +48,7 @@ export default function EditProduct() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

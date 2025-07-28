@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function CreateProduct() {
   const [form, setForm] = useState({
     name: "",
@@ -18,7 +18,7 @@ export default function CreateProduct() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

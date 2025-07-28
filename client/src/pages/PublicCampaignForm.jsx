@@ -36,7 +36,7 @@
 //   async function fetchCampaign() {
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/public/campaign/${id}`
+//         `${API_URL}/public/campaign/${id}`
 //       );
 //       const data = await res.json();
 
@@ -70,7 +70,7 @@
 
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/public/campaign/${id}/submit`,
+//         `${API_URL}/public/campaign/${id}/submit`,
 //         {
 //           method: "POST",
 //           headers: {
@@ -441,7 +441,7 @@
 // }
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function PublicCampaignForm() {
   const { id } = useParams();
   const [campaign, setCampaign] = useState(null);
@@ -477,7 +477,7 @@ export default function PublicCampaignForm() {
   async function fetchCampaign() {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/public/campaign/${id}`
+        `${API_URL}/public/campaign/${id}`
       );
       const data = await res.json();
 
@@ -511,7 +511,7 @@ export default function PublicCampaignForm() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/public/campaign/${id}/submit`,
+        `${API_URL}/public/campaign/${id}/submit`,
         {
           method: "POST",
           headers: {

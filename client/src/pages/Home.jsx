@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function Home() {
   const [stats, setStats] = useState({
     products: 0,
@@ -18,7 +18,7 @@ export default function Home() {
       const token = localStorage.getItem("token");
       
       // Fetch campaign stats
-      const campaignRes = await fetch("http://localhost:5000/api/campaigns/stats/dashboard", {
+      const campaignRes = await fetch(`${API_URL}/campaigns/stats/dashboard`, {
         headers: { Authorization: token },
       });
       

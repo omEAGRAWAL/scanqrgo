@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+// /env
+import { API_URL } from "../config/api";
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,8 +17,8 @@ export default function Campaigns() {
   async function fetchCampaigns() {
     try {
       const token = localStorage.getItem("token");
-      let url = "http://localhost:5000/api/campaigns";
-      
+      let url = `${API_URL}/campaigns`;
+
       const params = new URLSearchParams();
       if (filter.status !== "all") params.append("status", filter.status);
       if (filter.category !== "all") params.append("category", filter.category);

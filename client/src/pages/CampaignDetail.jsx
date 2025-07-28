@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
+//env from .env
+import { API_URL } from "../config/api";
+
 export default function CampaignDetail() {
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +17,7 @@ export default function CampaignDetail() {
   async function fetchCampaign() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/campaigns/${id}`, {
+      const res = await fetch(`${API_URL}/campaigns/${id}`, {
         headers: { Authorization: token },
       });
 

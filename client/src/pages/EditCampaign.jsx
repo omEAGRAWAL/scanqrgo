@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function EditCampaign() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -41,7 +41,7 @@ export default function EditCampaign() {
 
   async function fetchCampaign() {
     try {
-      const res = await fetch(`http://localhost:5000/api/campaigns/${id}`, {
+      const res = await fetch(`${API_URL}/campaigns/${id}`, {
         headers: { Authorization: token },
       });
 
@@ -77,7 +77,7 @@ export default function EditCampaign() {
 
   async function fetchProducts() {
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         headers: { Authorization: token },
       });
       const data = await res.json();
@@ -90,7 +90,7 @@ export default function EditCampaign() {
   async function fetchPromotions() {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/promotions?status=active",
+        `${API_URL}/promotions?status=active`,
         {
           headers: { Authorization: token },
         }
@@ -156,7 +156,7 @@ export default function EditCampaign() {
         customization: form.customization,
       };
 
-      const res = await fetch(`http://localhost:5000/api/campaigns/${id}`, {
+      const res = await fetch(`${API_URL}/campaigns/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

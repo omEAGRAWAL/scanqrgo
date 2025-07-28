@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function Promotions() {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function Promotions() {
   async function fetchPromotions() {
     try {
       const token = localStorage.getItem("token");
-      let url = "http://localhost:5000/api/promotions";
+      let url = `${API_URL}/promotions`;
 
       // Add filters to URL if not 'all'
       const params = new URLSearchParams();
@@ -50,7 +50,7 @@ export default function Promotions() {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/promotions/${promotionId}`,
+        `${API_URL}/promotions/${promotionId}`,
         {
           method: "DELETE",
           headers: {

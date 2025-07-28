@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function EditPromotion() {
   const [form, setForm] = useState({
     name: "",
@@ -24,7 +24,7 @@ export default function EditPromotion() {
   async function fetchPromotion() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/promotions/${id}`, {
+      const res = await fetch(`${API_URL}/promotions/${id}`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -67,7 +67,7 @@ export default function EditPromotion() {
         value: form.value.amount ? form.value : undefined
       };
 
-      const res = await fetch(`http://localhost:5000/api/promotions/${id}`, {
+      const res = await fetch(`${API_URL}/promotions/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { API_URL } from "../config/api";
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ export default function Products() {
   async function fetchProducts() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -36,15 +36,12 @@ export default function Products() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(
-        `http://localhost:5000/api/products/${productId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${API_URL}/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (!res.ok) {
         const data = await res.json();
