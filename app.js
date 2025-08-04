@@ -26,6 +26,7 @@ const productRoutes = require("./routes/product");
 const promotionRoutes = require("./routes/promotion");
 const campaignRoutes = require("./routes/campaign");
 const publicReviewRoutes = require("./routes/publicReview");
+const upload = require("./routes/upload");
 
 // Connect to MongoDB Atlas
 mongoose
@@ -46,6 +47,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/promotions", promotionRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/public", publicReviewRoutes);
+app.use("/api/upload", upload);
 
 // Serve static files from the client/dist directory
 app.use(express.static(path.join(__dirname, "client/dist")));
@@ -60,4 +62,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
-

@@ -101,5 +101,26 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+//route to get user info name and email
+router.get("/profile", async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.id).select("name email role");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("Get user error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;

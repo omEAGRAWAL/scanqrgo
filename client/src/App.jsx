@@ -24,7 +24,7 @@ import CreateCampaign from "./pages/CreateCampaign";
 import EditCampaign from "./pages/EditCampaign";
 import CampaignDetail from "./pages/CampaignDetail";
 import PublicCampaignForm from "./pages/PublicCampaignForm";
-
+import LandingPage from "./pages/LandingPage"; // Import your landing page
 function App() {
   return (
     <Router>
@@ -33,7 +33,7 @@ function App() {
         <Routes>
           {/* Protected Routes */}
           <Route
-            path="/"
+            path="/home"
             element={
               <RequireAuth>
                 <Home />
@@ -141,6 +141,7 @@ function App() {
           <Route path="/campaign/:id" element={<PublicCampaignForm />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<LandingPage />} />
         </Routes>
       </div>
     </Router>

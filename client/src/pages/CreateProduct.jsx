@@ -1,16 +1,61 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+
 export default function CreateProduct() {
   const [form, setForm] = useState({
     name: "",
     marketplace: "",
     marketplaceProductId: "",
+    imageurl: "",
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Handle text/select inputs change
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  // Handle image file selection and upload
+  async function handleImageChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_URL}/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: token,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Image upload failed");
+
+      setForm((prev) => ({
+        ...prev,
+        imageurl: data.url,
+      }));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // Handle Create Product form submit
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +67,7 @@ export default function CreateProduct() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `${token}`,
+          Authorization: token,
         },
         body: JSON.stringify(form),
       });
@@ -38,10 +83,6 @@ export default function CreateProduct() {
     }
   }
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
@@ -52,7 +93,9 @@ export default function CreateProduct() {
           >
             ← Back to Products
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Product</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create New Product
+          </h1>
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow">
@@ -111,10 +154,32 @@ export default function CreateProduct() {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full"
+              />
+              {uploading && (
+                <p className="text-gray-500 mt-2">Uploading image...</p>
+              )}
+              {form.imageurl && (
+                <img
+                  src={form.imageurl}
+                  alt="Product Preview"
+                  className="mt-4 h-32 object-contain rounded border"
+                />
+              )}
+            </div>
+
             <div className="flex space-x-4">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create Product"}
