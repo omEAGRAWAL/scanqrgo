@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import Heromage from "../assets/scanmobile.png"; // Adjust the path as necessary
@@ -36,7 +35,7 @@ export default function LandingPage() {
   return (
     <div className="bg-white text-gray-800 font-sans">
       {/* Navbar */}
-      <Navbar />
+      {/* <Navbar /> */}
       {/* <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2">

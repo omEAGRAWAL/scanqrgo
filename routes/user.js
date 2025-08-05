@@ -104,7 +104,8 @@ router.post("/login", async (req, res) => {
 //route to get user info name and email
 router.get("/profile", async (req, res) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.header("Authorization");
+    // const token = req.headers.authorization;
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }

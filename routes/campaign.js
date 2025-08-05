@@ -3,12 +3,12 @@ const Campaign = require("../models/Campaign");
 const Product = require("../models/Product");
 const Promotion = require("../models/Promotion");
 const auth = require("../middleware/auth");
-
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // Helper function to generate QR code URL (placeholder implementation)
 function generateQRCode(campaignId) {
-  return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://yourapp.com/campaign/${campaignId}`;
+  return `/${campaignId}`;
 }
 
 // POST /api/campaigns - Create a new campaign

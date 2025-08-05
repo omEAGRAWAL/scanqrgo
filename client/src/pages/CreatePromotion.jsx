@@ -1,34 +1,40 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../config/api";
+
 export default function CreatePromotion() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const [csvFile, setCsvFile] = useState(null);
+  console.log("Token:", error);
   const [form, setForm] = useState({
     name: "",
-    type: "giftcard",
+    type: "extended warranty", // default to extended warranty
     description: "",
     provider: "",
-    deliveryType: "auto",
     codeType: "same",
     codeValue: "",
     value: { amount: "", currency: "INR" },
   });
 
-  const token = localStorage.getItem("token");
-
   function handleChange(e) {
-    const { name, value } = e.target;
+    const { name, value, type: inputType, files } = e.target;
     if (name.startsWith("value.")) {
-      const valueKey = name.split(".")[1];
-      setForm({
-        ...form,
-        value: { ...form.value, [valueKey]: value },
-      });
+      const key = name.split(".")[1];
+      setForm((prev) => ({
+        ...prev,
+        value: { ...prev.value, [key]: value },
+      }));
+    } else if (name === "csvFile") {
+      setCsvFile(files[0]);
     } else {
-      setForm({ ...form, [name]: value });
+      setForm((prev) => ({
+        ...prev,
+        [name]: inputType === "checkbox" ? e.target.checked : value,
+      }));
     }
   }
 
@@ -38,27 +44,43 @@ export default function CreatePromotion() {
     setError("");
 
     try {
-      const promotionData = {
+      let promotionData = {
         name: form.name,
         type: form.type,
         description: form.description,
         provider: form.provider || undefined,
-        deliveryType: form.deliveryType,
         value: form.value.amount ? form.value : undefined,
+        codeType: form.codeType,
+        codeValue: form.codeValue,
       };
+
+      let body, headers;
+      if (form.codeType === "unique" && csvFile) {
+        const formData = new FormData();
+        formData.append(
+          "promotionData",
+          new Blob([JSON.stringify(promotionData)], {
+            type: "application/json",
+          })
+        );
+        formData.append("csvFile", csvFile);
+        body = formData;
+        headers = { Authorization: token };
+      } else {
+        body = JSON.stringify(promotionData);
+        headers = { "Content-Type": "application/json", Authorization: token };
+      }
 
       const res = await fetch(`${API_URL}/promotions`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify(promotionData),
+        headers,
+        body,
       });
 
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.message || "Failed to create promotion");
+
       navigate("/promotions");
     } catch (err) {
       setError(err.message);
@@ -69,24 +91,14 @@ export default function CreatePromotion() {
 
   const promotionTypes = [
     {
-      value: "giftcard",
-      label: "🎁 Gift Card",
-      desc: "Digital gift cards and e-vouchers",
+      value: "extended warranty",
+      label: "📱 Extended Warranty",
+      desc: "Give honest feedback to get a 3-month warranty extension (period customizable)",
     },
     {
       value: "discount code",
-      label: "🏷️ Discount Code",
-      desc: "Percentage or fixed amount discounts",
-    },
-    {
-      value: "custom",
-      label: "🎯 Free Product",
-      desc: "Complimentary products or samples",
-    },
-    {
-      value: "extended warranty",
-      label: "📱 Digital Download",
-      desc: "Downloadable content and services",
+      label: "🏷️ Discount Coupon",
+      desc: "Offer percentage or fixed amount discounts for future purchases",
     },
   ];
 
@@ -102,7 +114,7 @@ export default function CreatePromotion() {
             <span className="mr-2">←</span>
             Back to Promotions
           </Link>
-          <div className="bg-white rounded-2xl shadow-xl border-0">
+          <div className="bg-white rounded-2xl shadow-xl">
             <div className="px-8 py-6 border-b border-gray-100">
               <h1 className="text-3xl font-bold text-gray-900">
                 Create New Promotion
@@ -114,8 +126,8 @@ export default function CreatePromotion() {
 
             <form onSubmit={handleSubmit} className="p-8 space-y-8">
               {/* Promotion Name */}
-              <div className="space-y-3">
-                <label className="text-lg font-semibold text-gray-800 block">
+              <div>
+                <label className="block text-lg font-semibold text-gray-800 mb-1">
                   Promotion Name *
                 </label>
                 <input
@@ -124,14 +136,14 @@ export default function CreatePromotion() {
                   required
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
                   placeholder="e.g., ₹100 Paytm Cashback Offer"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
                 />
               </div>
 
               {/* Promotion Type */}
               <div className="space-y-4">
-                <label className="text-lg font-semibold text-gray-800 block">
+                <label className="block text-lg font-semibold text-gray-800 mb-1">
                   Promotion Type *
                 </label>
                 <div className="grid md:grid-cols-2 gap-4">
@@ -152,17 +164,15 @@ export default function CreatePromotion() {
                         onChange={handleChange}
                         className="sr-only"
                       />
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">
-                            {type.label.split(" ")[0]}
-                          </span>
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {type.label.split(" ").slice(1).join(" ")}
-                            </p>
-                            <p className="text-sm text-gray-600">{type.desc}</p>
-                          </div>
+                      <div className="flex-1 flex items-center space-x-3">
+                        <span className="text-2xl">
+                          {type.label.split(" ")[0]}
+                        </span>
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {type.label.split(" ").slice(1).join(" ")}
+                          </p>
+                          <p className="text-sm text-gray-600">{type.desc}</p>
                         </div>
                       </div>
                       {form.type === type.value && (
@@ -178,36 +188,36 @@ export default function CreatePromotion() {
               </div>
 
               {/* Description */}
-              <div className="space-y-3">
-                <label className="text-lg font-semibold text-gray-800 block">
+              <div>
+                <label className="block text-lg font-semibold text-gray-800 mb-1">
                   Description *
                 </label>
                 <textarea
                   name="description"
-                  required
                   rows={4}
+                  required
                   value={form.description}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   placeholder="Describe what customers will receive and any terms & conditions..."
                 />
                 <p className="text-sm text-gray-500">
-                  This description will be shown to customers when they scan the
-                  QR code
+                  This description will be shown to customers when they view
+                  this promotion
                 </p>
               </div>
 
-              {/* Provider & Value */}
+              {/* Provider & Value Amount */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <label className="text-lg font-semibold text-gray-800 block">
+                <div>
+                  <label className="block text-lg font-semibold text-gray-800 mb-1">
                     Provider
                   </label>
                   <select
                     name="provider"
                     value={form.provider}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Provider</option>
                     <option value="Paytm">Paytm</option>
@@ -218,9 +228,8 @@ export default function CreatePromotion() {
                     <option value="Other">Other</option>
                   </select>
                 </div>
-
-                <div className="space-y-3">
-                  <label className="text-lg font-semibold text-gray-800 block">
+                <div>
+                  <label className="block text-lg font-semibold text-gray-800 mb-1">
                     Value Amount
                   </label>
                   <div className="flex">
@@ -233,19 +242,19 @@ export default function CreatePromotion() {
                       placeholder="100"
                       value={form.value.amount}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-r-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-r-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Code Configuration */}
-              <div className="space-y-4">
-                <label className="text-lg font-semibold text-gray-800 block">
+              <div>
+                <label className="block text-lg font-semibold text-gray-800 mb-1">
                   Code Configuration
                 </label>
                 <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-6">
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="radio"
@@ -255,11 +264,8 @@ export default function CreatePromotion() {
                         onChange={handleChange}
                         className="w-4 h-4 text-blue-600"
                       />
-                      <span className="font-medium">
-                        Same code for everyone
-                      </span>
+                      <span>Same code for everyone</span>
                     </label>
-
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="radio"
@@ -269,141 +275,56 @@ export default function CreatePromotion() {
                         onChange={handleChange}
                         className="w-4 h-4 text-blue-600"
                       />
-                      <span className="font-medium">
-                        Unique codes (CSV upload)
-                      </span>
+                      <span>Unique codes (upload CSV)</span>
                     </label>
                   </div>
 
                   {form.codeType === "same" && (
-                    <div className="mt-4">
-                      <input
-                        type="text"
-                        name="codeValue"
-                        value={form.codeValue}
-                        onChange={handleChange}
-                        className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter promo code (e.g., SAVE100)"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      name="codeValue"
+                      value={form.codeValue}
+                      onChange={handleChange}
+                      placeholder="Enter promo code (e.g., SAVE100)"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  )}
+
+                  {form.codeType === "unique" && (
+                    <input
+                      type="file"
+                      name="csvFile"
+                      accept=".csv"
+                      onChange={(e) => setCsvFile(e.target.files[0])}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                  )}
+                  {csvFile && (
+                    <p className="text-gray-600 mt-1">
+                      Selected file: {csvFile.name}
+                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Delivery Method */}
-              <div className="space-y-4">
-                <label className="text-lg font-semibold text-gray-800 block">
-                  Delivery Method
-                </label>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <label
-                    className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      form.deliveryType === "auto"
-                        ? "border-green-500 bg-green-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="auto"
-                      checked={form.deliveryType === "auto"}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">🤖</span>
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          Automatic Delivery
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Instant delivery upon completion
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-
-                  <label
-                    className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      form.deliveryType === "manual"
-                        ? "border-yellow-500 bg-yellow-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="manual"
-                      checked={form.deliveryType === "manual"}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">👤</span>
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          Manual Approval
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Requires manual verification
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              {/* Error Display */}
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl">
-                  <div className="flex">
-                    <span className="text-red-600 mr-3">⚠️</span>
-                    <p className="text-red-700">{error}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Submit Button */}
+              {/* Submit & Cancel Buttons */}
               <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
                 <Link
                   to="/promotions"
-                  className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                  className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition"
                 >
                   Cancel
                 </Link>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl"
+                  className={`px-8 py-3 rounded-xl font-semibold shadow text-white ${
+                    loading
+                      ? "bg-blue-300 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
                 >
-                  {loading ? (
-                    <span className="flex items-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Creating...
-                    </span>
-                  ) : (
-                    "Create Promotion"
-                  )}
+                  {loading ? "Creating..." : "Create Promotion"}
                 </button>
               </div>
             </form>

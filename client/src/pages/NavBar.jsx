@@ -26,17 +26,29 @@ export default function Navbar() {
         </Link>
       </li>
       <li>
-        <Link to="/products" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/products"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           Products
         </Link>
       </li>
       <li>
-        <Link to="/promotions" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/promotions"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           Promotions
         </Link>
       </li>
       <li>
-        <Link to="/campaigns" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/campaigns"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           Campaigns
         </Link>
       </li>
@@ -50,7 +62,10 @@ export default function Navbar() {
       </li>
       <li className="border-t border-gray-100 mt-3 pt-3 md:border-none md:mt-0 md:pt-0">
         <span className="block text-sm font-semibold text-blue-800 truncate">
-          {user?.name} <span className="block text-xs text-gray-500 truncate">{user?.email}</span>
+          {user?.name}{" "}
+          <span className="block text-xs text-gray-500 truncate">
+            {user?.email}
+          </span>
         </span>
       </li>
     </ul>
@@ -60,17 +75,29 @@ export default function Navbar() {
   const guestLinks = (
     <ul className="flex flex-col md:flex-row md:items-center md:space-x-8">
       <li>
-        <a href="#how-it-works" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <a
+          href="#how-it-works"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           How It Works
         </a>
       </li>
       <li>
-        <a href="#features" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <a
+          href="#features"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           Why It Works
         </a>
       </li>
       <li>
-        <a href="#testimonials" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <a
+          href="#testimonials"
+          className="nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
           Testimonials
         </a>
       </li>
@@ -113,11 +140,26 @@ export default function Navbar() {
           aria-label="Toggle menu"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-7 h-7 text-gray-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>
@@ -125,9 +167,7 @@ export default function Navbar() {
       {/* Mobile menu dropdown */}
       {menuOpen && (
         <div className="block md:hidden bg-white border-t border-blue-100 shadow">
-          <nav className="px-6 py-4">
-            {token ? authLinks : guestLinks}
-          </nav>
+          <nav className="px-6 py-4">{token ? authLinks : guestLinks}</nav>
         </div>
       )}
 

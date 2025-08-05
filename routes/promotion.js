@@ -7,13 +7,11 @@ const router = express.Router();
 // POST /api/promotions - Create a new promotion
 router.post("/", auth, async (req, res) => {
   try {
-    const { name, type, description, provider, value, deliveryType } = req.body;
+    let { name, type, description, provider, value, deliveryType } = req.body;
 
     // Basic validation
-    if (!name || !type || !description) {
-      return res.status(400).json({
-        message: "Name, type, and description are required",
-      });
+    if (!name || !type) {
+      return res.status(400).json({ message: "Name and type are required" });
     }
 
     // Validate type
@@ -24,9 +22,18 @@ router.post("/", auth, async (req, res) => {
       "custom",
     ];
     if (!validTypes.includes(type)) {
-      return res.status(400).json({
-        message: "Invalid promotion type",
-      });
+      return res.status(400).json({ message: "Invalid promotion type" });
+    }
+
+    // Provide default description if absent
+    if (!description) {
+      if (type === "extended warranty") {
+        description =
+          "Give us honest feedback and get 3 months extended warranty (period customizable)";
+      } else if (type === "discount code") {
+        description =
+          "Get 20% off on your future purchase with Promo Code";
+      }
     }
 
     // Create promotion with current user as owner
