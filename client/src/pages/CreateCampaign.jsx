@@ -115,7 +115,7 @@ export default function CreateCampaign() {
         customization: form.customization,
       };
 
-      const res = await fetch("${API_URL}/campaigns", {
+      const res = await fetch(`${API_URL}/campaigns`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
