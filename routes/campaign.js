@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Helper function to generate QR code URL (placeholder implementation)
 function generateQRCode(campaignId) {
-  return `/${campaignId}`;
+  return `http://16.171.10.235:5000/campaign/${campaignId}`;
 }
 
 // POST /api/campaigns - Create a new campaign
