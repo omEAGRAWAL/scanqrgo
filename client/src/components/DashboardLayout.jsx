@@ -1,7 +1,15 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import {
-  AppBar, Box, CssBaseline, Divider, Drawer, IconButton, Toolbar, Typography, useMediaQuery,
+  AppBar,
+  Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
+  Toolbar,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import LeftNav from "./LeftNav";
@@ -16,7 +24,8 @@ export default function DashboardLayout({ user }) {
   // Keep public-only routes outside this layout.
   const publicOnly = ["/", "/login", "/register"];
   const isPublicCampaignRoute = location.pathname.startsWith("/campaign/");
-  const hideLayout = publicOnly.includes(location.pathname) || isPublicCampaignRoute;
+  const hideLayout =
+    publicOnly.includes(location.pathname) || isPublicCampaignRoute;
   if (hideLayout) {
     return (
       <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
@@ -31,7 +40,11 @@ export default function DashboardLayout({ user }) {
   const drawer = (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Box sx={{ p: 2 }}>
-        <Typography variant="h6" fontWeight={800}>ScanQRGo</Typography>
+        <a href="/">
+          <Typography variant="h6" fontWeight={800}>
+            ScanQRGo
+          </Typography>
+        </a>
       </Box>
       <Divider />
       <LeftNav user={user} />
@@ -56,7 +69,12 @@ export default function DashboardLayout({ user }) {
       >
         <Toolbar>
           {!upMd && (
-            <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 1 }}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 1 }}
+            >
               <MenuRoundedIcon />
             </IconButton>
           )}
@@ -90,7 +108,10 @@ export default function DashboardLayout({ user }) {
           variant="permanent"
           sx={{
             display: { xs: "none", md: "block" },
-            "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box" },
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
           }}
           open
         >

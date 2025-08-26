@@ -161,7 +161,7 @@
 //                 <th className="py-3 px-6 font-semibold text-gray-700">
 //                   Status
 //                 </th>
-                
+
 //                 <th className="py-3 px-6 font-semibold text-gray-700">
 //                   Created On
 //                 </th>
@@ -207,9 +207,7 @@
 //                         {promotion.status}
 //                       </span>
 //                     </td>
-                    
-             
-                  
+
 //                     <td className="py-4 px-6">
 //                       {promotion.createdAt
 //                         ? new Date(promotion.createdAt).toLocaleDateString()
@@ -306,7 +304,8 @@ export default function Promotions() {
 
       const res = await fetch(url, { headers: { Authorization: token } });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to fetch promotions");
+      if (!res.ok)
+        throw new Error(data.message || "Failed to fetch promotions");
 
       setPromotions(data.promotions || []);
       setError("");
@@ -318,7 +317,8 @@ export default function Promotions() {
   }
 
   async function deletePromotion(promotionId) {
-    if (!window.confirm("Are you sure you want to delete this promotion?")) return;
+    if (!window.confirm("Are you sure you want to delete this promotion?"))
+      return;
 
     try {
       const token = localStorage.getItem("token");
@@ -341,12 +341,29 @@ export default function Promotions() {
   function getTypeChip(type) {
     // Map your types to Chip props (color + icon)
     const map = {
-      giftcard: { color: "success", icon: <CardGiftcardRoundedIcon fontSize="small" /> },
-      "discount code": { color: "info", icon: <LocalOfferRoundedIcon fontSize="small" /> },
-      "extended warranty": { color: "secondary", icon: <SecurityUpdateGoodRoundedIcon fontSize="small" /> },
-      custom: { color: "default", icon: <CategoryRoundedIcon fontSize="small" /> },
+      giftcard: {
+        color: "success",
+        icon: <CardGiftcardRoundedIcon fontSize="small" />,
+      },
+      "discount code": {
+        color: "info",
+        icon: <LocalOfferRoundedIcon fontSize="small" />,
+      },
+      "extended warranty": {
+        color: "secondary",
+        icon: <SecurityUpdateGoodRoundedIcon fontSize="small" />,
+      },
+      custom: {
+        color: "default",
+        icon: <CategoryRoundedIcon fontSize="small" />,
+      },
     };
-    return map[type] || { color: "default", icon: <CategoryRoundedIcon fontSize="small" /> };
+    return (
+      map[type] || {
+        color: "default",
+        icon: <CategoryRoundedIcon fontSize="small" />,
+      }
+    );
   }
 
   function getStatusChip(status) {
@@ -358,12 +375,25 @@ export default function Promotions() {
   const activeCount = promotions.filter((p) => p.status === "active").length;
 
   return (
-    <Box sx={{ minHeight: "100vh", pt: { xs: 10, md: 14 }, pb: 6, background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        pb: 6,
+        background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)",
+      }}
+    >
       <Container maxWidth="lg">
         {/* Header */}
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={4}
+        >
           <Box>
-            <Typography variant="h3" fontWeight={800}>My Promotions</Typography>
+            <Typography variant="h3" fontWeight={800}>
+              My Promotions
+            </Typography>
             <Typography variant="body1" color="text.secondary">
               Create and manage promotional rewards and offers
             </Typography>
@@ -380,7 +410,10 @@ export default function Promotions() {
               fontWeight: 700,
               background: "linear-gradient(90deg, #2563eb, #7c3aed)",
               boxShadow: 3,
-              "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)", boxShadow: 6 },
+              "&:hover": {
+                background: "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                boxShadow: 6,
+              },
             }}
           >
             Create New Promotion
@@ -389,24 +422,45 @@ export default function Promotions() {
 
         {/* Filters and quick stat */}
         <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-          <Stack direction="row" spacing={3} alignItems="center" flexWrap="wrap" useFlexGap>
+          <Stack
+            direction="row"
+            spacing={3}
+            alignItems="center"
+            flexWrap="wrap"
+            useFlexGap
+          >
             <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography variant="body2" color="text.secondary">Active:</Typography>
-              <Typography variant="subtitle2" fontWeight={800} color="primary.main">
+              <Typography variant="body2" color="text.secondary">
+                Active:
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                fontWeight={800}
+                color="primary.main"
+              >
                 {activeCount} / {promotions.length}
               </Typography>
               {promotions.length > 0 && activeCount === promotions.length && (
-                <CheckCircleRoundedIcon sx={{ ml: 0.5 }} color="success" fontSize="small" />
+                <CheckCircleRoundedIcon
+                  sx={{ ml: 0.5 }}
+                  color="success"
+                  fontSize="small"
+                />
               )}
             </Stack>
 
-            <FormControl size="small" sx={{ minWidth: 180, ml: { xs: 0, sm: "auto" } }}>
+            <FormControl
+              size="small"
+              sx={{ minWidth: 180, ml: { xs: 0, sm: "auto" } }}
+            >
               <InputLabel id="status-label">Status</InputLabel>
               <Select
                 labelId="status-label"
                 label="Status"
                 value={filter.status}
-                onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((f) => ({ ...f, status: e.target.value }))
+                }
               >
                 <MenuItem value="all">All Status</MenuItem>
                 <MenuItem value="active">Active</MenuItem>
@@ -420,7 +474,9 @@ export default function Promotions() {
                 labelId="type-label"
                 label="Type"
                 value={filter.type}
-                onChange={(e) => setFilter((f) => ({ ...f, type: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((f) => ({ ...f, type: e.target.value }))
+                }
               >
                 <MenuItem value="all">All Types</MenuItem>
                 <MenuItem value="giftcard">Gift Card</MenuItem>
@@ -467,7 +523,11 @@ export default function Promotions() {
                       <Typography variant="h6" fontWeight={800} gutterBottom>
                         No promotions found
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
                         Try changing filters or create your first promotion.
                       </Typography>
                       <Button
@@ -475,9 +535,16 @@ export default function Promotions() {
                         component={RouterLink}
                         to="/promotions/create"
                         sx={{
-                          px: 3, py: 1.25, borderRadius: 2, fontWeight: 700,
-                          background: "linear-gradient(90deg, #2563eb, #7c3aed)",
-                          "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)" },
+                          px: 3,
+                          py: 1.25,
+                          borderRadius: 2,
+                          fontWeight: 700,
+                          background:
+                            "linear-gradient(90deg, #2563eb, #7c3aed)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                          },
                         }}
                       >
                         Create Promotion
@@ -490,7 +557,11 @@ export default function Promotions() {
                     const statusMeta = getStatusChip(promotion.status);
 
                     return (
-                      <TableRow hover key={promotion._id} sx={{ bgcolor: i % 2 ? "grey.50" : "background.paper" }}>
+                      <TableRow
+                        hover
+                        key={promotion._id}
+                        sx={{ bgcolor: i % 2 ? "grey.50" : "background.paper" }}
+                      >
                         <TableCell sx={{ maxWidth: 320 }}>
                           <Typography noWrap title={promotion.name}>
                             {promotion.name}
@@ -498,7 +569,10 @@ export default function Promotions() {
                         </TableCell>
 
                         <TableCell sx={{ maxWidth: 480 }}>
-                          <Typography noWrap title={promotion.description || "-"}>
+                          <Typography
+                            noWrap
+                            title={promotion.description || "-"}
+                          >
                             {promotion.description || "-"}
                           </Typography>
                         </TableCell>
@@ -529,7 +603,11 @@ export default function Promotions() {
                         </TableCell>
 
                         <TableCell align="center">
-                          <Stack direction="row" spacing={1} justifyContent="center">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="center"
+                          >
                             <Tooltip title="View">
                               <IconButton
                                 color="primary"
@@ -574,7 +652,8 @@ export default function Promotions() {
               <Divider />
               <Box sx={{ p: 2, textAlign: "right", color: "text.secondary" }}>
                 <Typography variant="caption">
-                  Showing {promotions.length} promotion{promotions.length > 1 ? "s" : ""}
+                  Showing {promotions.length} promotion
+                  {promotions.length > 1 ? "s" : ""}
                 </Typography>
               </Box>
             </>

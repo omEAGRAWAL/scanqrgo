@@ -340,9 +340,29 @@
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
-  Box, Container, Stack, Typography, Button, Grid, Paper, FormControl,
-  InputLabel, Select, MenuItem, Alert, Chip, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, LinearProgress, IconButton, Tooltip, Divider
+  Box,
+  Container,
+  Stack,
+  Typography,
+  Button,
+  Grid,
+  Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  LinearProgress,
+  IconButton,
+  Tooltip,
+  Divider,
 } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
@@ -354,6 +374,8 @@ import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import { API_URL } from "../config/api"; // adjust path as needed
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+
 
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
@@ -402,20 +424,47 @@ export default function Campaigns() {
     }
   }
 
-  async function deleteCampaign(campaignId) {
-    if (!window.confirm("Are you sure you want to delete this campaign?")) return;
+  // async function deleteCampaign(campaignId) {
+  //   if (!window.confirm("Are you sure you want to delete this campaign?"))
+  //     return;
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const res = await fetch(`${API_URL}/campaigns/${campaignId}`, {
+  //       method: "DELETE",
+  //       headers: { Authorization: token },
+  //     });
+  //     if (!res.ok) {
+  //       const data = await res.json();
+  //       throw new Error(data.message || "Failed to delete campaign");
+  //     }
+  //     setCampaigns((prev) => prev.filter((c) => c._id !== campaignId));
+  //     fetchStats();
+  //   } catch (err) {
+  //     alert(err.message);
+  //   }
+  // }
+  // ⬇️ Replace deleteCampaign with toggleStatus
+  async function toggleStatus(campaignId, currentStatus) {
     try {
       const token = localStorage.getItem("token");
+      // Toggle between active ↔︎ ended
+      const newStatus = currentStatus === "active" ? "ended" : "active";
+
       const res = await fetch(`${API_URL}/campaigns/${campaignId}`, {
-        method: "DELETE",
-        headers: { Authorization: token },
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({ status: newStatus }),
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to delete campaign");
-      }
-      setCampaigns((prev) => prev.filter((c) => c._id !== campaignId));
-      fetchStats();
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to update status");
+
+      // Fetch fresh campaigns and stats after update
+      await fetchCampaigns();
+      await fetchStats();
     } catch (err) {
       alert(err.message);
     }
@@ -430,18 +479,37 @@ export default function Campaigns() {
       paused: { color: "warning", label: "PAUSED" },
       ended: { color: "error", label: "ENDED" },
     };
-    return map[status] || { color: "default", label: (status || "").toUpperCase() };
+    return (
+      map[status] || { color: "default", label: (status || "").toUpperCase() }
+    );
   }
   function getCategoryIcon(category) {
-    return category === "promotion" ? <RedeemRoundedIcon fontSize="small" /> : <StarRoundedIcon fontSize="small" />;
+    return category === "promotion" ? (
+      <RedeemRoundedIcon fontSize="small" />
+    ) : (
+      <StarRoundedIcon fontSize="small" />
+    );
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", pt: { xs: 10, md: 14 }, pb: 6, background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        pb: 6,
+        background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)",
+      }}
+    >
       <Container maxWidth="lg">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={4}
+        >
           <Box>
-            <Typography variant="h3" fontWeight={800}>Campaigns</Typography>
+            <Typography variant="h3" fontWeight={800}>
+              Campaigns
+            </Typography>
             <Typography variant="body1" color="text.secondary">
               Manage your marketing campaigns and track performance
             </Typography>
@@ -452,10 +520,16 @@ export default function Campaigns() {
             component={RouterLink}
             to="/campaigns/create"
             sx={{
-              px: 3, py: 1.25, borderRadius: 2, fontWeight: 700,
+              px: 3,
+              py: 1.25,
+              borderRadius: 2,
+              fontWeight: 700,
               background: "linear-gradient(90deg, #2563eb, #7c3aed)",
               boxShadow: 3,
-              "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)", boxShadow: 6 }
+              "&:hover": {
+                background: "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                boxShadow: 6,
+              },
             }}
           >
             Create Campaign
@@ -468,7 +542,9 @@ export default function Campaigns() {
               <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <CampaignRoundedIcon color="primary" />
-                  <Typography variant="overline" color="text.secondary">Total Campaigns</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Total Campaigns
+                  </Typography>
                 </Stack>
                 <Typography variant="h4" fontWeight={800} color="primary.main">
                   {stats.summary.total}
@@ -479,7 +555,9 @@ export default function Campaigns() {
               <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <CampaignRoundedIcon color="success" />
-                  <Typography variant="overline" color="text.secondary">Active</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Active
+                  </Typography>
                 </Stack>
                 <Typography variant="h4" fontWeight={800} color="success.main">
                   {stats.summary.active}
@@ -490,7 +568,9 @@ export default function Campaigns() {
               <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <InsightsRoundedIcon color="warning" />
-                  <Typography variant="overline" color="text.secondary">Total Scans</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Total Scans
+                  </Typography>
                 </Stack>
                 <Typography variant="h4" fontWeight={800} color="warning.main">
                   {stats.analytics.totalScans}
@@ -501,9 +581,15 @@ export default function Campaigns() {
               <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
                 <Stack direction="row" alignItems="center" spacing={2} mb={1}>
                   <DoneAllRoundedIcon color="secondary" />
-                  <Typography variant="overline" color="text.secondary">Completions</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Completions
+                  </Typography>
                 </Stack>
-                <Typography variant="h4" fontWeight={800} color="secondary.main">
+                <Typography
+                  variant="h4"
+                  fontWeight={800}
+                  color="secondary.main"
+                >
                   {stats.analytics.totalCompletions}
                 </Typography>
               </Paper>
@@ -519,7 +605,9 @@ export default function Campaigns() {
                 labelId="status-label"
                 label="Status"
                 value={filter.status}
-                onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((f) => ({ ...f, status: e.target.value }))
+                }
               >
                 <MenuItem value="all">All Status</MenuItem>
                 <MenuItem value="active">Active</MenuItem>
@@ -534,7 +622,9 @@ export default function Campaigns() {
                 labelId="category-label"
                 label="Category"
                 value={filter.category}
-                onChange={(e) => setFilter((f) => ({ ...f, category: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((f) => ({ ...f, category: e.target.value }))
+                }
               >
                 <MenuItem value="all">All Categories</MenuItem>
                 <MenuItem value="promotion">Promotion</MenuItem>
@@ -545,24 +635,43 @@ export default function Campaigns() {
         </Paper>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>
+          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+            {error}
+          </Alert>
         )}
 
         {!loading && campaigns.length === 0 ? (
-          <Paper elevation={3} sx={{ p: { xs: 6, md: 10 }, textAlign: "center", borderRadius: 3 }}>
-            <Typography variant="h1" sx={{ fontSize: { xs: 56, md: 96 } }} gutterBottom>🚀</Typography>
-            <Typography variant="h5" fontWeight={800} gutterBottom>No campaigns found</Typography>
+          <Paper
+            elevation={3}
+            sx={{ p: { xs: 6, md: 10 }, textAlign: "center", borderRadius: 3 }}
+          >
+            <Typography
+              variant="h1"
+              sx={{ fontSize: { xs: 56, md: 96 } }}
+              gutterBottom
+            >
+              🚀
+            </Typography>
+            <Typography variant="h5" fontWeight={800} gutterBottom>
+              No campaigns found
+            </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Start creating campaigns to engage customers and grow the business.
+              Start creating campaigns to engage customers and grow the
+              business.
             </Typography>
             <Button
               variant="contained"
               component={RouterLink}
               to="/campaigns/create"
               sx={{
-                px: 4, py: 1.5, borderRadius: 2, fontWeight: 700,
+                px: 4,
+                py: 1.5,
+                borderRadius: 2,
+                fontWeight: 700,
                 background: "linear-gradient(90deg, #2563eb, #7c3aed)",
-                "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)" },
+                "&:hover": {
+                  background: "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                },
               }}
             >
               Create Your First Campaign
@@ -600,9 +709,16 @@ export default function Campaigns() {
                         <TableRow hover key={campaign._id}>
                           <TableCell>{i + 1}</TableCell>
                           <TableCell>
-                            <Stack direction="row" alignItems="center" spacing={1} sx={{ maxWidth: 360 }}>
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              spacing={1}
+                              sx={{ maxWidth: 360 }}
+                            >
                               {getCategoryIcon(campaign.category)}
-                              <Typography noWrap title={campaign.name}>{campaign.name}</Typography>
+                              <Typography noWrap title={campaign.name}>
+                                {campaign.name}
+                              </Typography>
                             </Stack>
                           </TableCell>
                           <TableCell>
@@ -615,23 +731,51 @@ export default function Campaigns() {
                             />
                           </TableCell>
                           <TableCell>
-                            <Chip size="small" label={status.label} color={status.color} sx={{ fontWeight: 700 }} />
+                            <Chip
+                              size="small"
+                              label={status.label}
+                              color={status.color}
+                              sx={{ fontWeight: 700 }}
+                            />
                           </TableCell>
                           <TableCell>
-                            <Typography noWrap title={(campaign.products || []).map((p) => p.name).join(", ")}>
-                              {campaign.products?.map((p) => p.name).join(", ") || "-"}
+                            <Typography
+                              noWrap
+                              title={(campaign.products || [])
+                                .map((p) => p.name)
+                                .join(", ")}
+                            >
+                              {campaign.products
+                                ?.map((p) => p.name)
+                                .join(", ") || "-"}
                             </Typography>
                           </TableCell>
-                          <TableCell align="center">{campaign.analytics?.totalScans || 0}</TableCell>
-                          <TableCell align="center">{campaign.analytics?.totalCompletions || 0}</TableCell>
                           <TableCell align="center">
-                            {campaign.analytics?.conversionRate ? `${campaign.analytics.conversionRate.toFixed(1)}%` : "0%"}
+                            {campaign.analytics?.totalScans || 0}
+                          </TableCell>
+                          <TableCell align="center">
+                            {campaign.analytics?.totalCompletions || 0}
+                          </TableCell>
+                          <TableCell align="center">
+                            {campaign.analytics?.conversionRate
+                              ? `${campaign.analytics.conversionRate.toFixed(
+                                  1
+                                )}%`
+                              : "0%"}
                           </TableCell>
                           <TableCell>
-                            {campaign.createdAt ? new Date(campaign.createdAt).toLocaleDateString() : "-"}
+                            {campaign.createdAt
+                              ? new Date(
+                                  campaign.createdAt
+                                ).toLocaleDateString()
+                              : "-"}
                           </TableCell>
                           <TableCell align="center">
-                            <Stack direction="row" spacing={1} justifyContent="center">
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              justifyContent="center"
+                            >
                               <Tooltip title="View">
                                 <IconButton
                                   color="primary"
@@ -652,13 +796,34 @@ export default function Campaigns() {
                                   <EditRoundedIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
-                              <Tooltip title="Delete">
+                              {/* <Tooltip title="Delete">
                                 <IconButton
                                   color="error"
                                   onClick={() => deleteCampaign(campaign._id)}
                                   size="small"
                                 >
                                   <DeleteRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip> */}
+                              <Tooltip
+                                title={
+                                  campaign.status === "active"
+                                    ? "End Campaign"
+                                    : "Activate Campaign"
+                                }
+                              >
+                                <IconButton
+                                  color={
+                                    campaign.status === "active"
+                                      ? "error"
+                                      : "success"
+                                  }
+                                  onClick={() =>
+                                    toggleStatus(campaign._id, campaign.status)
+                                  }
+                                  size="small"
+                                >
+                                  <PowerSettingsNewIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                             </Stack>
@@ -675,7 +840,8 @@ export default function Campaigns() {
                 <Divider />
                 <Box sx={{ p: 2, textAlign: "right", color: "text.secondary" }}>
                   <Typography variant="caption">
-                    Showing {campaigns.length} campaign{campaigns.length > 1 ? "s" : ""}
+                    Showing {campaigns.length} campaign
+                    {campaigns.length > 1 ? "s" : ""}
                   </Typography>
                 </Box>
               </>

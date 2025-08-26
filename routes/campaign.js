@@ -249,7 +249,10 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
-// DELETE /api/campaigns/:id - Delete a campaign
+// DELETE /api/campaigns/:id - change status
+
+//update status if active make it ended  and if ended than active
+
 router.delete("/:id", auth, async (req, res) => {
   try {
     const campaign = await Campaign.findOne({
@@ -261,7 +264,11 @@ router.delete("/:id", auth, async (req, res) => {
       return res.status(404).json({ message: "Campaign not found" });
     }
 
-    await Campaign.findByIdAndDelete(req.params.id);
+    //update status if active make it ended  and if ended than active
+    campaign.status = campaign.status === "active" ? "ended" : "active";
+    await campaign.save();
+
+    // await Campaign.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Campaign deleted successfully" });
   } catch (error) {

@@ -522,12 +522,14 @@ export default function Dashboard() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        pb: 6,
+        // minHeight: "100vh",
+        // pb: 6,
+        pt: 0,
+        mb: 0,
         background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)",
       }}
     >
-      <Container maxWidth="lg" sx={{ pt: { xs: 10, md: 12 } }}>
+      <Container maxWidth="lg">
         {/* Header */}
         <Stack
           direction="row"

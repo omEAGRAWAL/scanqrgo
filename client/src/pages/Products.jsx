@@ -207,7 +207,6 @@ import {
   Button,
   Paper,
   Alert,
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -218,17 +217,11 @@ import {
   IconButton,
   Tooltip,
   Avatar,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Divider,
 } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { API_URL } from "../config/api";
 
 export default function Products() {
@@ -236,11 +229,9 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [filter, setFilter] = useState("all"); // all | active | inactive
 
   useEffect(() => {
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -268,7 +259,8 @@ export default function Products() {
   }
 
   async function handleDelete(productId) {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
     setError("");
     setSuccess("");
     try {
@@ -286,21 +278,26 @@ export default function Products() {
     }
   }
 
-  const activeCount = products.filter((p) => p.active).length;
-
-  const filtered = products.filter((p) => {
-    if (filter === "active") return p.active;
-    if (filter === "inactive") return !p.active;
-    return true;
-  });
-
   return (
-    <Box sx={{ minHeight: "100vh", pt: { xs: 10, md: 14 }, pb: 6, background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        pb: 6,
+        background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)",
+      }}
+    >
       <Container maxWidth="lg">
         {/* Header */}
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={4}
+        >
           <Stack>
-            <Typography variant="h3" fontWeight={800}>Products</Typography>
+            <Typography variant="h3" fontWeight={800}>
+              Products
+            </Typography>
             <Typography variant="body1" color="text.secondary">
               Manage your catalog and keep product details up to date
             </Typography>
@@ -317,44 +314,15 @@ export default function Products() {
               fontWeight: 700,
               background: "linear-gradient(90deg, #2563eb, #7c3aed)",
               boxShadow: 3,
-              "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)", boxShadow: 6 },
+              "&:hover": {
+                background: "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                boxShadow: 6,
+              },
             }}
           >
             New Product
           </Button>
         </Stack>
-
-        {/* Top bar: quick stats + filter */}
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-          <Stack direction="row" alignItems="center" spacing={3} flexWrap="wrap" useFlexGap>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Inventory2RoundedIcon color="primary" />
-              <Typography variant="body2" color="text.secondary">
-                Active Products:
-              </Typography>
-              <Typography variant="subtitle2" fontWeight={800} color="primary.main">
-                {activeCount} / {products.length}
-              </Typography>
-              {activeCount === products.length && products.length > 0 && (
-                <CheckCircleRoundedIcon sx={{ ml: 0.5 }} color="success" fontSize="small" />
-              )}
-            </Stack>
-
-            <FormControl size="small" sx={{ minWidth: 180, ml: "auto" }}>
-              <InputLabel id="prod-filter-label">Filter</InputLabel>
-              <Select
-                labelId="prod-filter-label"
-                label="Filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <MenuItem value="all">Show All</MenuItem>
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="inactive">Inactive</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-        </Paper>
 
         {/* Alerts */}
         {error && (
@@ -378,7 +346,6 @@ export default function Products() {
                   <TableCell>Product Name</TableCell>
                   <TableCell>ASIN</TableCell>
                   <TableCell>Added On</TableCell>
-                  <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -389,23 +356,34 @@ export default function Products() {
                       <LinearProgress />
                     </TableCell>
                   </TableRow>
-                ) : filtered.length === 0 ? (
+                ) : products.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                       <Typography variant="h6" fontWeight={800} gutterBottom>
                         No products found
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Try changing the filter or add a new product.
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
+                        Add a new product to get started.
                       </Typography>
                       <Button
                         variant="contained"
                         component={RouterLink}
                         to="/products/create"
                         sx={{
-                          px: 3, py: 1.25, borderRadius: 2, fontWeight: 700,
-                          background: "linear-gradient(90deg, #2563eb, #7c3aed)",
-                          "&:hover": { background: "linear-gradient(90deg, #1d4ed8, #6d28d9)" },
+                          px: 3,
+                          py: 1.25,
+                          borderRadius: 2,
+                          fontWeight: 700,
+                          background:
+                            "linear-gradient(90deg, #2563eb, #7c3aed)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(90deg, #1d4ed8, #6d28d9)",
+                          },
                         }}
                       >
                         Create Product
@@ -413,41 +391,39 @@ export default function Products() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((product) => (
+                  products.map((product) => (
                     <TableRow hover key={product._id}>
                       <TableCell>
                         <Avatar
                           variant="rounded"
                           alt={product.name}
                           src={product.imageurl || undefined}
-                          sx={{ width: 48, height: 48, bgcolor: "grey.100", fontWeight: 700 }}
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            bgcolor: "grey.100",
+                            fontWeight: 700,
+                          }}
                         >
-                          {(!product.imageurl && product.name) ? product.name.charAt(0).toUpperCase() : "P"}
+                          {!product.imageurl && product.name
+                            ? product.name.charAt(0).toUpperCase()
+                            : "P"}
                         </Avatar>
                       </TableCell>
 
                       <TableCell>
-                        <Typography noWrap title={product.name}>{product.name || "-"}</Typography>
+                        <Typography noWrap title={product.name}>
+                          {product.name || "-"}
+                        </Typography>
                       </TableCell>
 
                       <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={1} sx={{ maxWidth: 280 }}>
-                          {/* Simple Amazon-like badge */}
-                          <Box
-                            aria-hidden
-                            sx={{
-                              width: 20, height: 20, borderRadius: "50%",
-                              bgcolor: "#ff9900", color: "#fff",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 12, fontWeight: 800, textTransform: "lowercase",
-                            }}
-                          >
-                            a
-                          </Box>
-                          <Typography noWrap title={product.marketplaceProductId || "--"}>
-                            {product.marketplaceProductId || "--"}
-                          </Typography>
-                        </Stack>
+                        <Typography
+                          noWrap
+                          title={product.marketplaceProductId || "--"}
+                        >
+                          {product.marketplaceProductId || "--"}
+                        </Typography>
                       </TableCell>
 
                       <TableCell>
@@ -457,16 +433,11 @@ export default function Products() {
                       </TableCell>
 
                       <TableCell align="center">
-                        <Chip
-                          size="small"
-                          label={product.active ? "ACTIVE" : "INACTIVE"}
-                          color={product.active ? "success" : "default"}
-                          sx={{ fontWeight: 700 }}
-                        />
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <Stack direction="row" spacing={1} justifyContent="center">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          justifyContent="center"
+                        >
                           <Tooltip title="Edit">
                             <IconButton
                               color="warning"
@@ -495,12 +466,13 @@ export default function Products() {
             </Table>
           </TableContainer>
 
-          {!loading && filtered.length > 0 && (
+          {!loading && products.length > 0 && (
             <>
               <Divider />
               <Box sx={{ p: 2, textAlign: "right", color: "text.secondary" }}>
                 <Typography variant="caption">
-                  Showing {filtered.length} product{filtered.length > 1 ? "s" : ""}
+                  Showing {products.length} product
+                  {products.length > 1 ? "s" : ""}
                 </Typography>
               </Box>
             </>
