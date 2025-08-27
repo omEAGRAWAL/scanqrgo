@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import {
+  Box,
+  Paper,
+  TextField,
+  Typography,
+  Button,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -23,7 +33,6 @@ export default function Login() {
 
       if (!res.ok) throw new Error(data.message || "Failed to login");
 
-      // Save token and redirect to home
       localStorage.setItem("token", data.token);
       navigate("/");
     } catch (err) {
@@ -38,44 +47,76 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded shadow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {error && <p className="mb-4 text-red-600">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        bgcolor: "grey.100",
+        px: 2,
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          textAlign="center"
+          gutterBottom
+        >
+          Welcome Back
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Email"
             name="email"
             type="email"
-            placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            fullWidth
             required
-            className="w-full px-3 py-2 border rounded"
+            margin="normal"
           />
-          <input
+          <TextField
+            label="Password"
             name="password"
             type="password"
-            placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            fullWidth
             required
-            className="w-full px-3 py-2 border rounded"
+            margin="normal"
           />
-          <button
+
+          <Button
             type="submit"
+            variant="contained"
+            color="success"
+            fullWidth
+            sx={{ mt: 2 }}
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+          </Button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-green-600 hover:underline">
+
+        <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            style={{ color: "#2e7d32", textDecoration: "none" }}
+          >
             Register
           </Link>
-        </p>
-      </div>
-    </div>
+        </Typography>
+      </Paper>
+    </Box>
   );
 }

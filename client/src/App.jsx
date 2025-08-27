@@ -181,6 +181,7 @@ import CampaignDetail from "./pages/CampaignDetail";
 import PublicCampaignForm from "./pages/PublicCampaignForm";
 import LandingPage from "./pages/LandingPage";
 import { API_URL } from "./config/api";
+import TermsAndConditions from "./pages/T&C";
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem("token");
@@ -332,6 +333,14 @@ export default function App() {
             <RequireAuth>
               <EditCampaign />
             </RequireAuth>
+          }
+        />
+        <Route
+          path="/tc"
+          element={
+            // <RequireAuth>
+            <TermsAndConditions />
+            // </RequireAuth>
           }
         />
       </Route>

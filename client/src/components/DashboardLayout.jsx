@@ -22,7 +22,7 @@ export default function DashboardLayout({ user }) {
   const location = useLocation();
 
   // Keep public-only routes outside this layout.
-  const publicOnly = ["/", "/login", "/register"];
+  const publicOnly = ["/", "/login", "/register", "/tc"];
   const isPublicCampaignRoute = location.pathname.startsWith("/campaign/");
   const hideLayout =
     publicOnly.includes(location.pathname) || isPublicCampaignRoute;

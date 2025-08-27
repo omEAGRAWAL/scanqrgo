@@ -1,460 +1,151 @@
-// import React, { useState, useEffect } from "react";
-// import { useParams } from "react-router-dom";
-
-// export default function PublicCampaignForm() {
-//   const { id } = useParams();
-//   const [campaign, setCampaign] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [submitting, setSubmitting] = useState(false);
-//   const [error, setError] = useState("");
-//   const [submitted, setSubmitted] = useState(false);
-//   const [response, setResponse] = useState(null);
-
-//   const [form, setForm] = useState({
-//     selectedProduct: "",
-//     orderNumber: "",
-//     satisfaction: "",
-//     usedMoreThan7Days: "",
-//     customerName: "",
-//     email: "",
-//     phoneNumber: "",
-//     review: "",
-//   });
-
-//   const satisfactionOptions = [
-//     "Very Satisfied",
-//     "Somewhat Satisfied",
-//     "Neither Satisfied Nor Dissatisfied",
-//     "Somewhat Dissatisfied",
-//     "Very Dissatisfied",
-//   ];
-
-//   useEffect(() => {
-//     fetchCampaign();
-//   }, [id]);
-
-//   async function fetchCampaign() {
-//     try {
-//       const res = await fetch(
-//         `${API_URL}/public/campaign/${id}`
-//       );
-//       const data = await res.json();
-
-//       if (!res.ok) throw new Error(data.message || "Campaign not found");
-
-//       setCampaign(data.campaign);
-
-//       // Auto-select product if only one
-//       if (data.campaign.products?.length === 1) {
-//         setForm((prev) => ({
-//           ...prev,
-//           selectedProduct: data.campaign.products[0]._id,
-//         }));
-//       }
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   function handleChange(e) {
-//     const { name, value } = e.target;
-//     setForm({ ...form, [name]: value });
-//   }
-
-//   async function handleSubmit(e) {
-//     e.preventDefault();
-//     setSubmitting(true);
-//     setError("");
-
-//     try {
-//       const res = await fetch(
-//         `${API_URL}/public/campaign/${id}/submit`,
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify(form),
-//         }
-//       );
-
-//       const data = await res.json();
-
-//       if (!res.ok) throw new Error(data.message || "Failed to submit form");
-
-//       setResponse(data);
-//       setSubmitted(true);
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   }
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-//         <div className="text-lg text-gray-600">Loading campaign...</div>
-//       </div>
-//     );
-//   }
-
-//   if (error && !campaign) {
-//     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-//         <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full mx-4 text-center">
-//           <div className="text-4xl mb-4">❌</div>
-//           <h2 className="text-xl font-bold text-gray-900 mb-2">
-//             Campaign Not Found
-//           </h2>
-//           <p className="text-gray-600">{error}</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   if (submitted && response) {
-//     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-//         <div className="bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full text-center">
-//           <div className="text-6xl mb-6">🎉</div>
-//           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-//             {response.message}
-//           </h2>
-
-//           {response.shouldShowReward && response.promotion && (
-//             <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-xl mb-6">
-//               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-//                 Your Reward:
-//               </h3>
-//               <div className="text-lg font-bold text-purple-800 mb-2">
-//                 {response.promotion.name}
-//               </div>
-//               <p className="text-gray-700">{response.promotion.description}</p>
-//               {response.promotion.provider && (
-//                 <p className="text-sm text-gray-600 mt-2">
-//                   Provider: {response.promotion.provider}
-//                 </p>
-//               )}
-//             </div>
-//           )}
-
-//           {response.shouldShowReviewForm && form.review && (
-//             <div className="bg-blue-100 p-4 rounded-xl mb-6">
-//               <p className="text-blue-800">
-//                 Thank you for your detailed review! It helps us improve our
-//                 products.
-//               </p>
-//             </div>
-//           )}
-
-//           <p className="text-gray-600">
-//             Thank you for taking the time to share your feedback with us!
-//           </p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-//       <div className="max-w-2xl mx-auto">
-//         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-//           {/* Header */}
-//           <div
-//             className="px-8 py-6 text-white"
-//             style={{
-//               backgroundColor:
-//                 campaign?.customization?.primaryColor || "#3B82F6",
-//               background:
-//                 campaign?.customization?.backgroundStyle === "gradient"
-//                   ? `linear-gradient(135deg, ${
-//                       campaign?.customization?.primaryColor || "#3B82F6"
-//                     }, ${campaign?.customization?.primaryColor || "#3B82F6"}dd)`
-//                   : campaign?.customization?.primaryColor || "#3B82F6",
-//             }}
-//           >
-//             <h1 className="text-2xl font-bold mb-2">{campaign?.name}</h1>
-//             <p className="opacity-90">
-//               {campaign?.customization?.customMessage ||
-//                 "We'd love to hear about your experience!"}
-//             </p>
-//             <p className="text-sm opacity-75 mt-2">
-//               By {campaign?.seller?.name}
-//             </p>
-//           </div>
-
-//           <form onSubmit={handleSubmit} className="p-8 space-y-6">
-//             {/* Product Selection */}
-//             <div>
-//               <label className="block text-sm font-semibold text-gray-700 mb-2">
-//                 Select Product *
-//               </label>
-//               <select
-//                 name="selectedProduct"
-//                 value={form.selectedProduct}
-//                 onChange={handleChange}
-//                 required
-//                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//               >
-//                 <option value="">Choose a product</option>
-//                 {campaign?.products?.map((product) => (
-//                   <option key={product._id} value={product._id}>
-//                     {product.name}{" "}
-//                     {product.marketplace && `(${product.marketplace})`}
-//                   </option>
-//                 ))}
-//               </select>
-//             </div>
-
-//             {/* Order Number */}
-//             <div>
-//               <label className="block text-sm font-semibold text-gray-700 mb-2">
-//                 Order Number *
-//               </label>
-//               <input
-//                 type="text"
-//                 name="orderNumber"
-//                 value={form.orderNumber}
-//                 onChange={handleChange}
-//                 required
-//                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                 placeholder="Enter your order number"
-//               />
-//             </div>
-
-//             {/* Satisfaction Level */}
-//             <div>
-//               <label className="block text-sm font-semibold text-gray-700 mb-3">
-//                 How happy are you with our product? *
-//               </label>
-//               <div className="space-y-2">
-//                 {satisfactionOptions.map((option) => (
-//                   <label
-//                     key={option}
-//                     className="flex items-center p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer"
-//                   >
-//                     <input
-//                       type="radio"
-//                       name="satisfaction"
-//                       value={option}
-//                       checked={form.satisfaction === option}
-//                       onChange={handleChange}
-//                       required
-//                       className="w-4 h-4 text-blue-600 mr-3"
-//                     />
-//                     <span className="text-gray-700">{option}</span>
-//                   </label>
-//                 ))}
-//               </div>
-//             </div>
-
-//             {/* Usage Duration */}
-//             <div>
-//               <label className="block text-sm font-semibold text-gray-700 mb-3">
-//                 Have you been using this product for more than 7 days? *
-//               </label>
-//               <div className="flex space-x-4">
-//                 <label className="flex items-center p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer">
-//                   <input
-//                     type="radio"
-//                     name="usedMoreThan7Days"
-//                     value="Yes"
-//                     checked={form.usedMoreThan7Days === "Yes"}
-//                     onChange={handleChange}
-//                     required
-//                     className="w-4 h-4 text-blue-600 mr-3"
-//                   />
-//                   <span className="text-gray-700">Yes</span>
-//                 </label>
-//                 <label className="flex items-center p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer">
-//                   <input
-//                     type="radio"
-//                     name="usedMoreThan7Days"
-//                     value="No"
-//                     checked={form.usedMoreThan7Days === "No"}
-//                     onChange={handleChange}
-//                     required
-//                     className="w-4 h-4 text-blue-600 mr-3"
-//                   />
-//                   <span className="text-gray-700">No</span>
-//                 </label>
-//               </div>
-//             </div>
-
-//             {/* Customer Information */}
-//             <div className="space-y-4">
-//               <h3 className="text-lg font-semibold text-gray-800">
-//                 Customer Information
-//               </h3>
-
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-2">
-//                   Your Name *
-//                 </label>
-//                 <input
-//                   type="text"
-//                   name="customerName"
-//                   value={form.customerName}
-//                   onChange={handleChange}
-//                   required
-//                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                   placeholder="Enter your full name"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-2">
-//                   Email Address *
-//                 </label>
-//                 <input
-//                   type="email"
-//                   name="email"
-//                   value={form.email}
-//                   onChange={handleChange}
-//                   required
-//                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                   placeholder="Enter your email address"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-2">
-//                   Phone Number
-//                 </label>
-//                 <input
-//                   type="tel"
-//                   name="phoneNumber"
-//                   value={form.phoneNumber}
-//                   onChange={handleChange}
-//                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                   placeholder="Enter your phone number"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Review Section - Show based on campaign type and smart funnel logic */}
-//             {campaign?.category === "review" &&
-//               (!campaign?.enableSmartFunnel ||
-//                 form.satisfaction === "Very Satisfied") && (
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-2">
-//                     Review{" "}
-//                     {campaign?.reviewMinimumLength &&
-//                       `(minimum ${campaign.reviewMinimumLength} characters)`}
-//                   </label>
-//                   <textarea
-//                     name="review"
-//                     value={form.review}
-//                     onChange={handleChange}
-//                     rows={4}
-//                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-//                     placeholder="Share your experience with this product..."
-//                     minLength={campaign?.reviewMinimumLength || 0}
-//                   />
-//                   {campaign?.reviewMinimumLength && form.review && (
-//                     <p
-//                       className={`text-xs mt-1 ${
-//                         form.review.length >= campaign.reviewMinimumLength
-//                           ? "text-green-600"
-//                           : "text-red-600"
-//                       }`}
-//                     >
-//                       {form.review.length}/{campaign.reviewMinimumLength}{" "}
-//                       characters
-//                     </p>
-//                   )}
-//                 </div>
-//               )}
-
-//             {/* Error Display */}
-//             {error && (
-//               <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl">
-//                 <div className="flex">
-//                   <span className="text-red-600 mr-3">⚠️</span>
-//                   <p className="text-red-700">{error}</p>
-//                 </div>
-//               </div>
-//             )}
-
-//             {/* Submit Button */}
-//             <button
-//               type="submit"
-//               disabled={submitting}
-//               className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl"
-//             >
-//               {submitting ? (
-//                 <span className="flex items-center justify-center">
-//                   <svg
-//                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-//                     xmlns="http://www.w3.org/2000/svg"
-//                     fill="none"
-//                     viewBox="0 0 24 24"
-//                   >
-//                     <circle
-//                       className="opacity-25"
-//                       cx="12"
-//                       cy="12"
-//                       r="10"
-//                       stroke="currentColor"
-//                       strokeWidth="4"
-//                     ></circle>
-//                     <path
-//                       className="opacity-75"
-//                       fill="currentColor"
-//                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-//                     ></path>
-//                   </svg>
-//                   Submitting...
-//                 </span>
-//               ) : (
-//                 "Submit Feedback"
-//               )}
-//             </button>
-//             <button
-//               onClick={() => {
-//                 // Get the selected product's marketplace ID
-//                 const selectedProduct = campaign?.products?.find(
-//                   (p) => p._id === form.selectedProduct
-//                 );
-//                 const productId =
-//                   selectedProduct?.marketplaceProductId ||
-//                   "PRODUCT_ID_NOT_FOUND";
-
-//                 // Construct Amazon review URL
-//                 const amazonReviewUrl = `https://www.amazon.in/review/create-review/?asin=${productId}`;
-
-//                 // Open in new tab
-//                 window.open(amazonReviewUrl, "_blank", "noopener,noreferrer");
-//               }}
-//               className="flex-1 bg-orange-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors"
-//             >
-//               📝 Review on Amazon
-//             </button>
-//           </form>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Card,
+  CardContent,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Rating,
+  Alert,
+  CircularProgress,
+  Avatar,
+  Chip,
+  IconButton,
+  Divider,
+  Stack,
+  useTheme,
+  useMediaQuery,
+  Skeleton,
+  Snackbar,
+  Fade,
+  Paper,
+  Container,
+} from "@mui/material";
+import {
+  ArrowBack,
+  ArrowForward,
+  CheckCircle,
+  Error,
+  Star,
+  StarBorder,
+  ShoppingCart,
+  Person,
+  RateReview,
+  Celebration,
+  Email,
+  Phone,
+  Store,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 import { API_URL } from "../config/api";
+
+// Styled components
+const StyledCard = styled(Card)(({ theme }) => ({
+  maxWidth: 480,
+  margin: "0 auto",
+  borderRadius: theme.spacing(2),
+  boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+  overflow: "hidden",
+}));
+
+const GradientHeader = styled(Box)(({ theme, primaryColor }) => ({
+  background: primaryColor
+    ? `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)`
+    : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+  color: "white",
+  padding: theme.spacing(3),
+  textAlign: "center",
+  position: "relative",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: -50,
+    right: -50,
+    width: 100,
+    height: 100,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.1)",
+  },
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    bottom: -30,
+    left: -30,
+    width: 60,
+    height: 60,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.1)",
+  },
+}));
+
+const StyledStepper = styled(Stepper)(({ theme }) => ({
+  padding: theme.spacing(2, 0),
+  "& .MuiStepIcon-root": {
+    fontSize: "1.5rem",
+  },
+  "& .MuiStepIcon-text": {
+    fontSize: "0.875rem",
+    fontWeight: "bold",
+  },
+}));
+
+const MarketplaceChip = styled(Chip)(({ marketplace }) => ({
+  fontWeight: "bold",
+  "& .MuiChip-label": {
+    paddingLeft: 8,
+    paddingRight: 8,
+  },
+  ...(marketplace === "Amazon" && {
+    backgroundColor: "#FF9500",
+    color: "white",
+  }),
+  ...(marketplace === "Flipkart" && {
+    backgroundColor: "#2874F0",
+    color: "white",
+  }),
+}));
+
+const steps = [
+  { label: "Product Details", icon: <ShoppingCart /> },
+  { label: "Personal Info", icon: <Person /> },
+  { label: "Review", icon: <RateReview /> },
+  { label: "Complete", icon: <Celebration /> },
+];
+
 export default function PublicCampaignForm() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // State management
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [success, setSuccess] = useState("");
   const [response, setResponse] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formErrors, setFormErrors] = useState({});
 
   const [form, setForm] = useState({
     selectedProduct: "",
     orderNumber: "",
-    satisfaction: "",
+    satisfaction: 0,
     usedMoreThan7Days: "",
     customerName: "",
     email: "",
@@ -462,455 +153,624 @@ export default function PublicCampaignForm() {
     review: "",
   });
 
-  const satisfactionOptions = [
-    "Very Satisfied",
-    "Somewhat Satisfied",
-    "Neither Satisfied Nor Dissatisfied",
-    "Somewhat Dissatisfied",
-    "Very Dissatisfied",
-  ];
+  // Memoized values
+  const selectedProduct = useMemo(
+    () => campaign?.products?.find((p) => p._id === form.selectedProduct),
+    [campaign?.products, form.selectedProduct]
+  );
 
+  const marketplaceConfig = useMemo(() => {
+    if (!selectedProduct) return null;
+
+    const marketplace = selectedProduct.marketplace?.toLowerCase();
+    if (marketplace === "amazon") {
+      return {
+        name: "Amazon",
+        color: "#FF9500",
+        icon: <Store />,
+        url: `https://www.amazon.in/review/create-review/?asin=${
+          selectedProduct.marketplaceProductId || "PRODUCT_ID_NOT_FOUND"
+        }`,
+      };
+    } else if (marketplace === "flipkart") {
+      return {
+        name: "Flipkart",
+        color: "#2874F0",
+        icon: <Store />,
+        url: "https://www.flipkart.com/",
+      };
+    }
+    return null;
+  }, [selectedProduct]);
+
+  // Effects
   useEffect(() => {
-    fetchCampaign();
+    if (id) fetchCampaign();
   }, [id]);
 
-  async function fetchCampaign() {
+  // Auto-select single product
+  useEffect(() => {
+    if (campaign?.products?.length === 1 && !form.selectedProduct) {
+      setForm((prev) => ({
+        ...prev,
+        selectedProduct: campaign.products[0]._id,
+      }));
+    }
+  }, [campaign?.products, form.selectedProduct]);
+
+  // API functions
+  const fetchCampaign = useCallback(async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/public/campaign/${id}`
-      );
+      setLoading(true);
+      const res = await fetch(`${API_URL}/public/campaign/${id}`);
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Campaign not found");
+      if (!res.ok) {
+        throw new Error(data.message || "Campaign not found");
+      }
 
       setCampaign(data.campaign);
-
-      // Auto-select product if only one
-      if (data.campaign.products?.length === 1) {
-        setForm((prev) => ({
-          ...prev,
-          selectedProduct: data.campaign.products[0]._id,
-        }));
-      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  }
+  // Form handlers
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setForm((prev) => ({ ...prev, [name]: value }));
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
+      // Clear field error when user starts typing
+      if (formErrors[name]) {
+        setFormErrors((prev) => ({ ...prev, [name]: "" }));
+      }
+    },
+    [formErrors]
+  );
 
+  const handleRatingChange = useCallback((event, newValue) => {
+    setForm((prev) => ({ ...prev, satisfaction: newValue || 0 }));
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/public/campaign/${id}/submit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
-      );
+      setSubmitting(true);
+      setError("");
+
+      const res = await fetch(`${API_URL}/public/campaign/${id}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to submit form");
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to submit form");
+      }
 
       setResponse(data);
-      setSubmitted(true);
+      setSuccess("Form submitted successfully!");
+      setCurrentStep(3);
     } catch (err) {
       setError(err.message);
     } finally {
       setSubmitting(false);
     }
-  }
+  }, [id, form]);
 
-  // Check if Amazon review button should be shown
-  const shouldShowAmazonButton = () => {
-    return (
-      (form.satisfaction === "Very Satisfied" ||
-        form.satisfaction === "Somewhat Satisfied") &&
-      form.selectedProduct
-    );
-  };
+  // Validation functions
+  const validateStep = useCallback(
+    (step) => {
+      const errors = {};
 
+      switch (step) {
+        case 0:
+          if (!form.selectedProduct)
+            errors.selectedProduct = "Please select a product";
+          if (!form.orderNumber.trim())
+            errors.orderNumber = "Order number is required";
+          if (!form.satisfaction)
+            errors.satisfaction = "Please rate your satisfaction";
+          if (!form.usedMoreThan7Days)
+            errors.usedMoreThan7Days = "Please select an option";
+          break;
+        case 1:
+          if (!form.customerName.trim())
+            errors.customerName = "Name is required";
+          if (!form.email.trim()) {
+            errors.email = "Email is required";
+          } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+            errors.email = "Please enter a valid email";
+          }
+          if (form.phoneNumber && !/^\+?[\d\s-()]+$/.test(form.phoneNumber)) {
+            errors.phoneNumber = "Please enter a valid phone number";
+          }
+          break;
+        case 2:
+          if (campaign?.category === "review" && !form.review.trim()) {
+            errors.review = "Review is required";
+          }
+          if (
+            campaign?.reviewMinimumLength &&
+            form.review.length < campaign.reviewMinimumLength
+          ) {
+            errors.review = `Review must be at least ${campaign.reviewMinimumLength} characters`;
+          }
+          break;
+      }
+
+      setFormErrors(errors);
+      return Object.keys(errors).length === 0;
+    },
+    [form, campaign]
+  );
+
+  // Navigation functions
+  const handleNext = useCallback(() => {
+    if (!validateStep(currentStep)) {
+      setError("Please fix the errors before continuing");
+      return;
+    }
+
+    setError("");
+    if (currentStep === 2) {
+      handleSubmit();
+    } else {
+      setCurrentStep((prev) => prev + 1);
+    }
+  }, [currentStep, validateStep, handleSubmit]);
+
+  const handleBack = useCallback(() => {
+    setCurrentStep((prev) => Math.max(0, prev - 1));
+    setError("");
+  }, []);
+
+  const openMarketplaceReview = useCallback(() => {
+    if (marketplaceConfig?.url) {
+      window.open(marketplaceConfig.url, "_blank", "noopener,noreferrer");
+    }
+  }, [marketplaceConfig]);
+
+  // Step components
+  const renderStep0 = () => (
+    <Stack spacing={3}>
+      <FormControl fullWidth error={!!formErrors.selectedProduct}>
+        <InputLabel>Select Product *</InputLabel>
+        <Select
+          name="selectedProduct"
+          value={form.selectedProduct}
+          onChange={handleChange}
+          label="Select Product *"
+        >
+          {campaign?.products?.map((product) => (
+            <MenuItem key={product._id} value={product._id}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography>{product.name}</Typography>
+                {product.marketplace && (
+                  <MarketplaceChip
+                    marketplace={product.marketplace}
+                    label={product.marketplace}
+                    size="small"
+                  />
+                )}
+              </Stack>
+            </MenuItem>
+          ))}
+        </Select>
+        {formErrors.selectedProduct && (
+          <Typography variant="caption" color="error" sx={{ mt: 1 }}>
+            {formErrors.selectedProduct}
+          </Typography>
+        )}
+      </FormControl>
+
+      {selectedProduct && (
+        <Paper elevation={1} sx={{ p: 2, bgcolor: "grey.50" }}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Store color="primary" />
+            <Typography variant="body2" color="text.secondary">
+              Marketplace:
+            </Typography>
+            <MarketplaceChip
+              marketplace={selectedProduct.marketplace}
+              label={selectedProduct.marketplace}
+              size="small"
+            />
+          </Stack>
+        </Paper>
+      )}
+
+      <TextField
+        fullWidth
+        name="orderNumber"
+        label="Order Number *"
+        value={form.orderNumber}
+        onChange={handleChange}
+        error={!!formErrors.orderNumber}
+        helperText={formErrors.orderNumber}
+        placeholder="Enter your order number"
+      />
+
+      <Box>
+        <FormLabel component="legend" error={!!formErrors.satisfaction}>
+          How satisfied are you with the product? *
+        </FormLabel>
+        <Box sx={{ mt: 1 }}>
+          <Rating
+            name="satisfaction"
+            value={form.satisfaction}
+            onChange={handleRatingChange}
+            size="large"
+            icon={<Star fontSize="large" />}
+            emptyIcon={<StarBorder fontSize="large" />}
+          />
+        </Box>
+        {formErrors.satisfaction && (
+          <Typography variant="caption" color="error">
+            {formErrors.satisfaction}
+          </Typography>
+        )}
+      </Box>
+
+      <FormControl error={!!formErrors.usedMoreThan7Days}>
+        <FormLabel>
+          Have you used this product for more than 7 days? *
+        </FormLabel>
+        <RadioGroup
+          name="usedMoreThan7Days"
+          value={form.usedMoreThan7Days}
+          onChange={handleChange}
+          row
+        >
+          <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+          <FormControlLabel value="No" control={<Radio />} label="No" />
+        </RadioGroup>
+        {formErrors.usedMoreThan7Days && (
+          <Typography variant="caption" color="error">
+            {formErrors.usedMoreThan7Days}
+          </Typography>
+        )}
+      </FormControl>
+    </Stack>
+  );
+
+  const renderStep1 = () => (
+    <Stack spacing={3}>
+      <TextField
+        fullWidth
+        name="customerName"
+        label="Your Name *"
+        value={form.customerName}
+        onChange={handleChange}
+        error={!!formErrors.customerName}
+        helperText={formErrors.customerName}
+        placeholder="Enter your full name"
+        InputProps={{
+          startAdornment: <Person color="action" sx={{ mr: 1 }} />,
+        }}
+      />
+
+      <TextField
+        fullWidth
+        name="email"
+        label="Email Address *"
+        type="email"
+        value={form.email}
+        onChange={handleChange}
+        error={!!formErrors.email}
+        helperText={formErrors.email || "Your offer will be sent to this email"}
+        placeholder="Enter your email address"
+        InputProps={{
+          startAdornment: <Email color="action" sx={{ mr: 1 }} />,
+        }}
+      />
+
+      <TextField
+        fullWidth
+        name="phoneNumber"
+        label="Phone Number"
+        type="tel"
+        value={form.phoneNumber}
+        onChange={handleChange}
+        error={!!formErrors.phoneNumber}
+        helperText={formErrors.phoneNumber}
+        placeholder="+91 - XXXXXXXXXX"
+        InputProps={{
+          startAdornment: <Phone color="action" sx={{ mr: 1 }} />,
+        }}
+      />
+    </Stack>
+  );
+
+  const renderStep2 = () => (
+    <Stack spacing={3}>
+      {selectedProduct && (
+        <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
+          <Typography variant="h6" gutterBottom>
+            {selectedProduct.name}
+          </Typography>
+          {selectedProduct.image && (
+            <Avatar
+              src={selectedProduct.image}
+              alt={selectedProduct.name}
+              sx={{ width: 80, height: 80, mx: "auto", mb: 2 }}
+            />
+          )}
+          <Stack direction="row" spacing={1} justifyContent="center">
+            <Rating value={form.satisfaction} readOnly size="small" />
+            <Typography variant="body2" color="text.secondary">
+              ({form.satisfaction}/5)
+            </Typography>
+          </Stack>
+        </Paper>
+      )}
+
+      <TextField
+        fullWidth
+        name="review"
+        label={`How do you like our ${selectedProduct?.name}?`}
+        multiline
+        rows={4}
+        value={form.review}
+        onChange={handleChange}
+        error={!!formErrors.review}
+        helperText={
+          formErrors.review ||
+          `${form.review.length}${
+            campaign?.reviewMinimumLength
+              ? `/${campaign.reviewMinimumLength}`
+              : ""
+          } characters`
+        }
+        placeholder="Share your experience with this product..."
+      />
+
+      {marketplaceConfig && form.satisfaction >= 4 && (
+        <Paper elevation={1} sx={{ p: 2, bgcolor: "primary.50" }}>
+          <Typography
+            variant="body2"
+            color="primary.main"
+            gutterBottom
+            textAlign="center"
+          >
+            ⭐ We'd love your review on {marketplaceConfig.name} too!
+          </Typography>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={openMarketplaceReview}
+            sx={{
+              bgcolor: marketplaceConfig.color,
+              "&:hover": { bgcolor: marketplaceConfig.color, opacity: 0.9 },
+            }}
+            startIcon={marketplaceConfig.icon}
+          >
+            Review on {marketplaceConfig.name}
+          </Button>
+          <Typography
+            variant="caption"
+            display="block"
+            textAlign="center"
+            sx={{ mt: 1 }}
+          >
+            Click to copy your feedback and share on {marketplaceConfig.name}
+          </Typography>
+        </Paper>
+      )}
+    </Stack>
+  );
+
+  const renderStep3 = () => (
+    <Stack spacing={3} alignItems="center" textAlign="center">
+      <Box sx={{ fontSize: "4rem" }}>🎉</Box>
+
+      <Typography variant="h4" color="primary">
+        {response?.shouldShowReward && response?.promotion
+          ? "Congratulations!"
+          : "Thank You!"}
+      </Typography>
+
+      {response?.shouldShowReward && response?.promotion ? (
+        <Paper
+          elevation={3}
+          sx={{ p: 3, bgcolor: "success.50", maxWidth: 400 }}
+        >
+          <Stack spacing={2} alignItems="center">
+            <Box sx={{ fontSize: "2rem" }}>🎁</Box>
+            <Typography variant="h6" color="success.main">
+              Here is your gift!
+            </Typography>
+            <Typography variant="h5" fontWeight="bold" color="primary">
+              {response.promotion.name}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {response.promotion.description}
+            </Typography>
+            {response.promotion.provider && (
+              <Chip
+                label={`Provider: ${response.promotion.provider}`}
+                color="primary"
+                variant="outlined"
+              />
+            )}
+          </Stack>
+        </Paper>
+      ) : (
+        <Paper elevation={2} sx={{ p: 3, bgcolor: "info.50", maxWidth: 400 }}>
+          <Typography variant="body1" color="info.main">
+            Thanks for your feedback! It helps us improve our products.
+          </Typography>
+        </Paper>
+      )}
+
+      <Typography variant="body2" color="text.secondary">
+        We appreciate you taking the time to share your experience with us!
+      </Typography>
+    </Stack>
+  );
+
+  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <div className="text-lg text-gray-600 font-medium">
-            Loading campaign...
-          </div>
-        </div>
-      </div>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <StyledCard>
+          <Skeleton variant="rectangular" height={120} />
+          <CardContent>
+            <Stack spacing={2}>
+              <Skeleton variant="text" height={40} />
+              <Skeleton variant="rectangular" height={56} />
+              <Skeleton variant="rectangular" height={56} />
+              <Skeleton variant="rectangular" height={100} />
+            </Stack>
+          </CardContent>
+        </StyledCard>
+      </Container>
     );
   }
 
+  // Error state
   if (error && !campaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 text-center border border-red-100">
-          <div className="text-5xl mb-4">🚫</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Campaign Not Found
-          </h2>
-          <p className="text-gray-600 leading-relaxed">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (submitted && response) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-lg w-full text-center border border-green-100">
-          <div className="text-6xl mb-6 animate-bounce">🎉</div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {response.message}
-          </h2>
-
-          {response.shouldShowReward && response.promotion && (
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-2xl mb-6 border border-purple-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Your Reward:
-              </h3>
-              <div className="text-lg font-bold text-purple-800 mb-2">
-                {response.promotion.name}
-              </div>
-              <p className="text-gray-700">{response.promotion.description}</p>
-              {response.promotion.provider && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Provider: {response.promotion.provider}
-                </p>
-              )}
-            </div>
-          )}
-
-          {response.shouldShowReviewForm && form.review && (
-            <div className="bg-blue-50 p-6 rounded-2xl mb-6 border border-blue-200">
-              <p className="text-blue-800 font-medium">
-                Thank you for your detailed review! It helps us improve our
-                products.
-              </p>
-            </div>
-          )}
-
-          <p className="text-gray-600 text-lg">
-            Thank you for taking the time to share your feedback with us!
-          </p>
-        </div>
-      </div>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <StyledCard>
+          <CardContent sx={{ textAlign: "center", py: 4 }}>
+            <Error color="error" sx={{ fontSize: 60, mb: 2 }} />
+            <Typography variant="h5" gutterBottom>
+              Campaign Not Found
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              {error}
+            </Typography>
+            <Button variant="outlined" onClick={() => navigate("/")}>
+              Go Home
+            </Button>
+          </CardContent>
+        </StyledCard>
+      </Container>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-          {/* Header */}
-          <div
-            className="px-8 py-8 text-white relative overflow-hidden"
-            style={{
-              backgroundColor:
-                campaign?.customization?.primaryColor || "#3B82F6",
-              background:
-                campaign?.customization?.backgroundStyle === "gradient"
-                  ? `linear-gradient(135deg, ${
-                      campaign?.customization?.primaryColor || "#3B82F6"
-                    }, ${campaign?.customization?.primaryColor || "#3B82F6"}dd)`
-                  : campaign?.customization?.primaryColor || "#3B82F6",
-            }}
-          >
-            <div className="relative z-10">
-              <h1 className="text-3xl font-bold mb-3">{campaign?.name}</h1>
-              <p className="opacity-90 text-lg">
-                {campaign?.customization?.customMessage ||
-                  "We'd love to hear about your experience!"}
-              </p>
-              <p className="text-sm opacity-75 mt-3 font-medium">
-                By {campaign?.seller?.name}
-              </p>
-            </div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            {/* Product Selection */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-gray-800 mb-2">
-                Select Product *
-              </label>
-              <select
-                name="selectedProduct"
-                value={form.selectedProduct}
-                onChange={handleChange}
-                required
-                className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white"
-              >
-                <option value="">Choose a product</option>
-                {campaign?.products?.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.name}{" "}
-                    {product.marketplace && `(${product.marketplace})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Order Number */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-gray-800 mb-2">
-                Order Number *
-              </label>
-              <input
-                type="text"
-                name="orderNumber"
-                value={form.orderNumber}
-                onChange={handleChange}
-                required
-                className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white"
-                placeholder="Enter your order number"
-              />
-            </div>
-
-            {/* Satisfaction Level */}
-            <div className="space-y-4">
-              <label className="block text-sm font-bold text-gray-800 mb-3">
-                How happy are you with our product? *
-              </label>
-              <div className="space-y-3">
-                {satisfactionOptions.map((option) => (
-                  <label
-                    key={option}
-                    className="flex items-center p-4 border-2 border-gray-200 rounded-2xl hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200"
-                  >
-                    <input
-                      type="radio"
-                      name="satisfaction"
-                      value={option}
-                      checked={form.satisfaction === option}
-                      onChange={handleChange}
-                      required
-                      className="w-5 h-5 text-blue-600 mr-4 focus:ring-blue-500"
-                    />
-                    <span className="text-gray-800 font-medium">{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Usage Duration */}
-            <div className="space-y-4">
-              <label className="block text-sm font-bold text-gray-800 mb-3">
-                Have you been using this product for more than 7 days? *
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <label className="flex items-center p-4 border-2 border-gray-200 rounded-2xl hover:border-green-300 hover:bg-green-50 cursor-pointer transition-all duration-200">
-                  <input
-                    type="radio"
-                    name="usedMoreThan7Days"
-                    value="Yes"
-                    checked={form.usedMoreThan7Days === "Yes"}
-                    onChange={handleChange}
-                    required
-                    className="w-5 h-5 text-green-600 mr-3 focus:ring-green-500"
-                  />
-                  <span className="text-gray-800 font-medium">Yes</span>
-                </label>
-                <label className="flex items-center p-4 border-2 border-gray-200 rounded-2xl hover:border-red-300 hover:bg-red-50 cursor-pointer transition-all duration-200">
-                  <input
-                    type="radio"
-                    name="usedMoreThan7Days"
-                    value="No"
-                    checked={form.usedMoreThan7Days === "No"}
-                    onChange={handleChange}
-                    required
-                    className="w-5 h-5 text-red-600 mr-3 focus:ring-red-500"
-                  />
-                  <span className="text-gray-800 font-medium">No</span>
-                </label>
-              </div>
-            </div>
-
-            {/* Customer Information */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-gray-800 border-b border-gray-200 pb-2">
-                Customer Information
-              </h3>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-bold text-gray-800 mb-2">
-                  Your Name *
-                </label>
-                <input
-                  type="text"
-                  name="customerName"
-                  value={form.customerName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white"
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-bold text-gray-800 mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white"
-                  placeholder="Enter your email address"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-bold text-gray-800 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={form.phoneNumber}
-                  onChange={handleChange}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-            </div>
-
-            {/* Review Section - Show based on campaign type and smart funnel logic */}
-            {campaign?.category === "review" &&
-              (!campaign?.enableSmartFunnel ||
-                form.satisfaction === "Very Satisfied") && (
-                <div className="space-y-3">
-                  <label className="block text-sm font-bold text-gray-800 mb-2">
-                    Review{" "}
-                    {campaign?.reviewMinimumLength &&
-                      `(minimum ${campaign.reviewMinimumLength} characters)`}
-                  </label>
-                  <textarea
-                    name="review"
-                    value={form.review}
-                    onChange={handleChange}
-                    rows={5}
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-white resize-none"
-                    placeholder="Share your experience with this product..."
-                    minLength={campaign?.reviewMinimumLength || 0}
-                  />
-                  {campaign?.reviewMinimumLength && form.review && (
-                    <p
-                      className={`text-sm mt-2 font-medium ${
-                        form.review.length >= campaign.reviewMinimumLength
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {form.review.length}/{campaign.reviewMinimumLength}{" "}
-                      characters
-                    </p>
-                  )}
-                </div>
-              )}
-
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-2xl">
-                <div className="flex">
-                  <span className="text-red-600 mr-3 text-xl">⚠️</span>
-                  <p className="text-red-800 font-medium">{error}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-5 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+    <Container maxWidth="sm" sx={{ py: 2 }}>
+      <StyledCard>
+        {/* Header */}
+        <GradientHeader primaryColor={campaign?.customization?.primaryColor}>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            {campaign?.name || "$50 Amazon Gift Voucher 🎁"}
+          </Typography>
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+            {campaign?.customization?.customMessage ||
+              "We'd love to hear about your experience!"}
+          </Typography>
+          {campaign?.seller?.name && (
+            <Typography
+              variant="caption"
+              sx={{ opacity: 0.8, display: "block", mt: 1 }}
             >
-              {submitting ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-6 w-6 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Submitting...
-                </span>
-              ) : (
-                "Submit Feedback"
-              )}
-            </button>
-
-            {/* Amazon Review Button - Only show when satisfaction is Very Satisfied or Somewhat Satisfied */}
-            {shouldShowAmazonButton() && (
-              <div className="pt-4 border-t border-gray-200">
-                <div className="bg-orange-50 p-4 rounded-2xl border border-orange-200 mb-4">
-                  <p className="text-orange-800 font-medium text-center">
-                    ⭐ We'd love your review on Amazon too!
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Get the selected product's marketplace ID
-                    const selectedProduct = campaign?.products?.find(
-                      (p) => p._id === form.selectedProduct
-                    );
-                    const productId =
-                      selectedProduct?.marketplaceProductId ||
-                      "PRODUCT_ID_NOT_FOUND";
-
-                    // Construct Amazon review URL
-                    const amazonReviewUrl = `https://www.amazon.in/review/create-review/?asin=${productId}`;
-
-                    // Open in new tab
-                    window.open(
-                      amazonReviewUrl,
-                      "_blank",
-                      "noopener,noreferrer"
-                    );
-                  }}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-4 rounded-2xl font-bold text-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              By {campaign.seller.name}
+            </Typography>
+          )}
+        </GradientHeader>
+        {/* Stepper */}
+        <Box sx={{ px: 2, pt: 2 }}>
+          <StyledStepper activeStep={currentStep} alternativeLabel={isMobile}>
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel
+                  icon={
+                    <Box
+                      sx={{
+                        color:
+                          index <= currentStep ? "primary.main" : "grey.400",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {index < currentStep ? <CheckCircle /> : step.icon}
+                    </Box>
+                  }
                 >
-                  📝 Review on Amazon
-                </button>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
-    </div>
+                  {!isMobile && step.label}
+                </StepLabel>
+              </Step>
+            ))}
+          </StyledStepper>
+        </Box>
+
+        {/* Content */}
+        <CardContent sx={{ px: 3, pb: 2 }}>
+          <Fade in timeout={300}>
+            <Box>
+              {currentStep === 0 && renderStep0()}
+              {currentStep === 1 && renderStep1()}
+              {currentStep === 2 && renderStep2()}
+              {currentStep === 3 && renderStep3()}
+            </Box>
+          </Fade>
+
+          {/* Error Alert */}
+          {error && currentStep < 3 && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
+        </CardContent>
+        {/* Footer Navigation */}
+        {currentStep < 3 && (
+          <>
+            <Divider />
+            <Box
+              sx={{
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                onClick={handleBack}
+                disabled={currentStep === 0}
+                startIcon={<ArrowBack />}
+                variant="outlined"
+              >
+                Back
+              </Button>
+
+              <Typography variant="body2" color="text.secondary">
+                Step {currentStep + 1} of {steps.length - 1}
+              </Typography>
+
+              <Button
+                onClick={handleNext}
+                disabled={submitting}
+                endIcon={
+                  submitting ? <CircularProgress size={16} /> : <ArrowForward />
+                }
+                variant="contained"
+              >
+                {currentStep === 2 ? "Submit" : "Next"}
+              </Button>
+            </Box>
+          </>
+        )}
+      </StyledCard>
+
+      {/* Success Snackbar */}
+      <Snackbar
+        open={!!success}
+        autoHideDuration={6000}
+        onClose={() => setSuccess("")}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={() => setSuccess("")} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 }

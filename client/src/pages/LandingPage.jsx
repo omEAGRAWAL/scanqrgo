@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Heromage from "../assets/scanmobile.png"; // Adjust the path as necessary
 import Navbar from "./NavBar";
+import { useNavigate } from "react-router-dom";
 // Helper component for the hero image graphic
 const HeroImage = () => (
   <div className="relative w-full max-w-lg mx-auto">
@@ -32,6 +33,15 @@ const StarRating = ({ rating = 5 }) => (
 );
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (localStorage.getItem("token")) {
+      navigate("/home");
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <div className="bg-white text-gray-800 font-sans">
       {/* Navbar */}
@@ -331,54 +341,77 @@ export default function LandingPage() {
               Cancel anytime.
             </p>
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Starter Plan */}
+              {/* Monthly Plan */}
               <div className="bg-white rounded-2xl shadow-lg flex flex-col items-center px-8 py-10 border-2 border-gray-100">
-                <h3 className="text-xl font-bold mb-2">Starter</h3>
+                <h3 className="text-xl font-bold mb-2">Monthly</h3>
                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-                  $19<span className="text-base font-normal">/month</span>
+                  ₹2,499<span className="text-base font-normal">/month</span>
                 </div>
+                <p className="text-sm text-gray-600 mb-4">Billed monthly</p>
                 <ul className="text-gray-700 mb-6 space-y-2 text-sm">
-                  <li>✅ Up to 500 scans/month</li>
-                  <li>✅ Basic templates</li>
-                  <li>✅ Email support</li>
+                  <li>✅ Flexible monthly plan</li>
+                  <li>✅ Cancel anytime</li>
+                  <li>✅ Full feature access</li>
                 </ul>
-                <button className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold transition hover:bg-gray-300 cursor-pointer">
+                <button
+                  onClick={handleClick}
+                  className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold transition hover:bg-gray-300 cursor-pointer"
+                >
                   Get Started
                 </button>
               </div>
-              {/* Business Plan */}
-              <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center px-8 py-10 border-4 border-blue-500 relative scale-105 z-10">
+
+              {/* Annual Plan → CENTER & Highlight */}
+              <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center px-8 py-10 border-4 border-blue-600 relative scale-105 z-10">
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white rounded-full px-4 py-1 text-xs font-semibold">
-                  Most Popular
+                  Best Value
                 </div>
-                <h3 className="text-xl font-bold mb-2">Business</h3>
+                <h3 className="text-xl font-bold mb-2">Annual</h3>
                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-                  $49<span className="text-base font-normal">/month</span>
+                  ₹12,000<span className="text-base font-normal">/year</span>
                 </div>
-                <ul className="text-gray-700 mb-6 space-y-2 text-sm">
-                  <li>✅ Up to 2,000 scans/month</li>
-                  <li>✅ Advanced templates</li>
-                  <li>✅ Priority support</li>
-                  <li>✅ Analytics dashboard</li>
+                <p className="text-sm text-green-600 font-semibold mb-2">
+                  Effective: ₹1,000 /month
+                </p>
+                <p className="text-sm text-green-600 font-semibold mb-4">
+                  Save ₹17,988 per year (60% vs monthly)
+                </p>
+                <ul className="text-gray-700 mb-6 space-y-2 text-sm text-center">
+                  <li>✅ Best savings option</li>
+                  <li>✅ Full feature access</li>
+                  <li>✅ Premium priority support</li>
                 </ul>
-                <button className="w-full bg-blue-600 text-white rounded-lg py-2 font-semibold hover:bg-blue-700 transition">
+                <button
+                  onClick={handleClick}
+                  className="w-full bg-blue-600 text-white rounded-lg py-2 font-semibold hover:bg-blue-700 transition"
+                >
                   Get Started
                 </button>
               </div>
-              {/* Enterprise Plan */}
+
+              {/* 6-Month Plan */}
               <div className="bg-white rounded-2xl shadow-lg flex flex-col items-center px-8 py-10 border-2 border-gray-100">
-                <h3 className="text-xl font-bold mb-2">Enterprise</h3>
+                <h3 className="text-xl font-bold mb-2">6-Month</h3>
                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-                  $99<span className="text-base font-normal">/month</span>
+                  ₹10,620
+                  <span className="text-base font-normal">/6 months</span>
                 </div>
-                <ul className="text-gray-700 mb-6 space-y-2 text-sm">
-                  <li>✅ Unlimited scans</li>
-                  <li>✅ Custom templates</li>
-                  <li>✅ 24/7 support</li>
-                  <li>✅ API access</li>
+                <p className="text-sm text-green-600 font-semibold mb-2">
+                  Effective: ₹1,770 /month
+                </p>
+                <p className="text-sm text-green-600 font-semibold mb-4">
+                  Save ₹4,374 per 6 months (29% vs monthly)
+                </p>
+                <ul className="text-gray-700 mb-6 space-y-2 text-sm text-center">
+                  <li>✅ Discounted semi-annual pricing</li>
+                  <li>✅ Full feature access</li>
+                  <li>✅ Priority support</li>
                 </ul>
-                <button className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold hover:bg-gray-300 cursor-pointer">
-                  Contact Sales
+                <button
+                  onClick={handleClick}
+                  className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold transition hover:bg-gray-300 cursor-pointer"
+                >
+                  Get Started
                 </button>
               </div>
             </div>
@@ -449,7 +482,7 @@ export default function LandingPage() {
             <a href="/privacy" className="hover:text-blue-300 transition">
               Privacy Policy
             </a>
-            <a href="/terms" className="hover:text-blue-300 transition">
+            <a href="/tc" className="hover:text-blue-300 transition">
               Terms of Service
             </a>
           </div>
