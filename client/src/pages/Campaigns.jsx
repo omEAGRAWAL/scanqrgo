@@ -507,23 +507,25 @@ export default function Campaigns() {
           <Grid item xs={12} sm={6} md={3} key={i}>
             <Card elevation={2}>
               <CardContent
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
+                sx={
+                  {
+                    // display: "flex",
+                    // // alignItems: "center",
+                    // justifyContent: "space-between",
+                  }
+                }
               >
                 <Box>
                   <Typography
-                    variant="body2"
+                    // variant="body2"
                     color="text.secondary"
                     sx={{ mb: 0.5 }}
                   >
                     {s.label}
+                    {/* {s.value} */}
                   </Typography>
                   <Typography variant="h6">{s.value}</Typography>
                 </Box>
-                {s.icon}
               </CardContent>
             </Card>
           </Grid>
@@ -608,7 +610,7 @@ export default function Campaigns() {
                           href={`/campaign/${campaign._id}`}
                         >
                           <Launch fontSize="small" />
-                        </IconButton> form
+                        </IconButton>
                       </Tooltip>
                       <Tooltip
                         title={
