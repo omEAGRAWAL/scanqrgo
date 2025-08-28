@@ -38,6 +38,11 @@ router.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
       role: role || "seller", // default role
+      subscription: {
+        status: "freeTrial",
+        freeTrialStart: new Date(),
+        freeTrialEnd: new Date(Date.now() + 1000),
+      },
     });
 
     await user.save();
@@ -111,7 +116,9 @@ router.get("/profile", async (req, res) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.id).select("name email role");
+    const user = await User.findById(decoded.id).select(
+      "name email role subscription"
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -120,6 +127,20 @@ router.get("/profile", async (req, res) => {
     res.json(user);
   } catch (err) {
     console.error("Get user error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//route to get list of all userS
+// route to get list of all users
+router.get("/userall", async (req, res) => {
+  try {
+    const users = await User.find().select(
+      "name email role subscription.status   "
+    );
+    res.json(users);
+  } catch (err) {
+    console.error("Get users error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

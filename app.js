@@ -27,7 +27,10 @@ const promotionRoutes = require("./routes/promotion");
 const campaignRoutes = require("./routes/campaign");
 const publicReviewRoutes = require("./routes/publicReview");
 const upload = require("./routes/upload");
+// require("./routes/admin.users");
+const adminUsers = require("./routes/admin");
 
+//
 // Connect to MongoDB Atlas
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -40,6 +43,9 @@ mongoose
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+// });
 
 // API Routes
 app.use("/api/users", userRoutes);
@@ -48,7 +54,7 @@ app.use("/api/promotions", promotionRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/public", publicReviewRoutes);
 app.use("/api/upload", upload);
-
+app.use("/api/admin", adminUsers);
 // Serve static files from the client/dist directory
 app.use(express.static(path.join(__dirname, "client/dist")));
 

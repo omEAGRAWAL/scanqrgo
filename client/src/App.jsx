@@ -182,6 +182,7 @@ import PublicCampaignForm from "./pages/PublicCampaignForm";
 import LandingPage from "./pages/LandingPage";
 import { API_URL } from "./config/api";
 import TermsAndConditions from "./pages/T&C";
+import AdminUsers from "./pages/AdminUsers";
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem("token");
@@ -253,6 +254,15 @@ export default function App() {
             </RequireAuth>
           }
         />
+      <Route
+          path="/admin/users"
+          element={
+            <RequireAuth>
+              <AdminUsers />
+            </RequireAuth>
+          }
+        />
+
         <Route
           path="/products/:id"
           element={
@@ -319,6 +329,7 @@ export default function App() {
             </RequireAuth>
           }
         />
+
         <Route
           path="/campaigns/:id"
           element={
