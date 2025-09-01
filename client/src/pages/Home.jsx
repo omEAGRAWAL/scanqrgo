@@ -925,7 +925,7 @@ export default function Dashboard() {
                   <TableCell>{r.customerName || "-"}</TableCell>
                   <TableCell>{r.email || "-"}</TableCell>
                   <TableCell>{r.phoneNumber || "-"}</TableCell>
-                  <TableCell sx={{ maxWidth: 360 }}>
+                  <TableCell sx={{ maxWidth: 30 }}>
                     <Tooltip title={r.review || ""} arrow>
                       <Typography variant="body2" noWrap>
                         {r.review || "-"}
