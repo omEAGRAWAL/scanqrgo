@@ -14,19 +14,22 @@ const auth = async (req, res, next) => {
     );
     req.user = decoded;
     // Optionally ensure user still exists
-    const dbUser = await User.findById(decoded.id).select("_id role");
+    // const dbUser = await User.findById(decoded.id).select("_id role");
+    const dbUser = await User.findById(decoded.id).select(
+      "_id role subscription.status"
+    );
+
     if (!dbUser) return res.status(401).json({ message: "Account not found" });
+    sub = dbUser.subscription.status;
+    if (sub === "expired") {
+      return res.status(401).json({ message: "Subscription expired" });
+    }
     req.user.role = dbUser.role;
+
     next();
   } catch (e) {
     return res.status(401).json({ message: "Token is not valid" });
   }
-};
-
-const isAdmin = (req, res, next) => {
-  if (req.user?.role !== "admin")
-    return res.status(403).json({ message: "Admin only" });
-  next();
 };
 
 module.exports = auth;

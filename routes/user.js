@@ -43,6 +43,8 @@ router.post("/register", async (req, res) => {
         freeTrialStart: new Date(),
         freeTrialEnd: new Date(Date.now() + 1000),
       },
+      organization: req.body.organization,
+      organizationRole: req.body.organizationRole,
     });
 
     await user.save();

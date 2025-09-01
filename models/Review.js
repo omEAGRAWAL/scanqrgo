@@ -6,6 +6,9 @@ const ReviewSchema = new mongoose.Schema({
     ref: "Campaign",
     required: true,
   },
+  marketplace: {
+    type: String,
+  },
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
@@ -16,7 +19,10 @@ const ReviewSchema = new mongoose.Schema({
   email: String,
   phoneNumber: String,
   review: { type: String, required: true },
-  seller: { // campaign owner's userId
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  clickedMarketplaceButton: Boolean,
+  seller: {
+    // campaign owner's userId
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,

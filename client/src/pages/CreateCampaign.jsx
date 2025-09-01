@@ -49,12 +49,9 @@ export default function CreateCampaign() {
 
   async function fetchPromotions() {
     try {
-      const res = await fetch(
-        `${API_URL}/promotions?status=active`,
-        {
-          headers: { Authorization: token },
-        }
-      );
+      const res = await fetch(`${API_URL}/promotions?status=active`, {
+        headers: { Authorization: token },
+      });
       const data = await res.json();
       if (res.ok) setPromotions(data.promotions || []);
     } catch (err) {
@@ -318,7 +315,7 @@ export default function CreateCampaign() {
                     )}
                   </div>
 
-                  <div className="space-y-4">
+                  {/* <div className="space-y-4">
                     <label className="text-lg font-semibold text-gray-800 block">
                       Promotion Settings
                     </label>
@@ -369,50 +366,50 @@ export default function CreateCampaign() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                 </>
               )}
 
               {/* Review-specific fields */}
-              {form.category === "review" && (
-                <div className="space-y-4">
-                  <label className="text-lg font-semibold text-gray-800 block">
-                    Review Settings
-                  </label>
-                  <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Minimum Review Length
-                      </label>
+
+              <div className="space-y-4">
+                <label className="text-lg font-semibold text-gray-800 block">
+                  Review Settings
+                </label>
+                <div className="bg-gray-50 rounded-xl p-6 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Minimum Review Length
+                    </label>
+                    <input
+                      type="number"
+                      name="reviewMinimumLength"
+                      value={form.reviewMinimumLength}
+                      onChange={handleChange}
+                      className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      min="1"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-3">
                       <input
-                        type="number"
-                        name="reviewMinimumLength"
-                        value={form.reviewMinimumLength}
+                        type="checkbox"
+                        name="enableSmartFunnel"
+                        checked={form.enableSmartFunnel}
                         onChange={handleChange}
-                        className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        min="1"
+                        className="w-4 h-4 text-blue-600"
                       />
-                    </div>
-                    <div>
-                      <label className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          name="enableSmartFunnel"
-                          checked={form.enableSmartFunnel}
-                          onChange={handleChange}
-                          className="w-4 h-4 text-blue-600"
-                        />
-                        <span className="font-medium text-gray-700">
-                          Enable Smart Funnel
-                        </span>
-                      </label>
-                      <p className="text-sm text-gray-500 ml-7">
-                        Only request reviews from satisfied customers
-                      </p>
-                    </div>
+                      <span className="font-medium text-gray-700">
+                        Enable Smart Funnel
+                      </span>
+                    </label>
+                    <p className="text-sm text-gray-500 ml-7">
+                      Only request reviews from satisfied customers
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
+              {/* )} */}
 
               {/* Customization */}
               <div className="space-y-4">

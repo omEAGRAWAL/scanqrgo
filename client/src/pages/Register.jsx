@@ -16,6 +16,16 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  function handleConfirmPasswordChange(e) {
+    setConfirmPassword(e.target.value);
+    if (form.password !== e.target.value) {
+      setError("Passwords do not match");
+    } else {
+      setError("");
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -58,7 +68,12 @@ export default function Register() {
       }}
     >
       <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
-        <Typography variant="h5" fontWeight="bold" textAlign="center" gutterBottom>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          textAlign="center"
+          gutterBottom
+        >
           Create an Account
         </Typography>
 
@@ -98,6 +113,37 @@ export default function Register() {
             required
             margin="normal"
           />
+          {/* //confirm the password
+          //  */}
+          <TextField
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+
+          <TextField
+            label="Organization"
+            name="organization"
+            value={form.organization}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Organization Role"
+            name="organizationRole"
+            value={form.organizationRole}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
 
           <Button
             type="submit"
@@ -107,13 +153,20 @@ export default function Register() {
             sx={{ mt: 2 }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Register"
+            )}
           </Button>
         </form>
 
         <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
           Already have an account?{" "}
-          <Link to="/login" style={{ color: "#1976d2", textDecoration: "none" }}>
+          <Link
+            to="/login"
+            style={{ color: "#1976d2", textDecoration: "none" }}
+          >
             Login
           </Link>
         </Typography>

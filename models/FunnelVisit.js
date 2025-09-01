@@ -1,12 +1,27 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const FunnelVisitSchema = new mongoose.Schema({
-  campaign: { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign' },
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // optional, could be anonymous
+  campaign: { type: mongoose.Schema.Types.ObjectId, ref: "Campaign" },
+  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+  seller: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional
   scannedAt: { type: Date, default: Date.now },
   customerFeedback: { type: String },
-  stepData: mongoose.Schema.Types.Mixed      // To store dynamic funnel step data
+
+  // step data holds flexible funnel inputs
+  stepData: {
+    orderNumber: String,
+    satisfaction: String,
+    usedMoreDays: String,
+    customerName: String,
+    email: String,
+    phoneNumber: String,
+    review: String,
+    rating: Number,
+    marketplace: String,
+    clickedMarketplaceButton: { type: Boolean, default: false },
+    shouldRequestReview: { type: Boolean, default: false },
+  },
 });
 
-module.exports = mongoose.model('FunnelVisit', FunnelVisitSchema);
+module.exports = mongoose.model("FunnelVisit", FunnelVisitSchema);
+//

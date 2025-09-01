@@ -208,7 +208,7 @@ export default function CreatePromotion() {
               </div>
 
               {/* Provider & Value Amount */}
-              <div className="grid md:grid-cols-2 gap-6">
+              {/* <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-lg font-semibold text-gray-800 mb-1">
                     Provider
@@ -246,7 +246,7 @@ export default function CreatePromotion() {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Code Configuration */}
               <div>
@@ -266,17 +266,6 @@ export default function CreatePromotion() {
                       />
                       <span>Same code for everyone</span>
                     </label>
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="codeType"
-                        value="unique"
-                        checked={form.codeType === "unique"}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-blue-600"
-                      />
-                      <span>Unique codes (upload CSV)</span>
-                    </label>
                   </div>
 
                   {form.codeType === "same" && (
@@ -288,21 +277,6 @@ export default function CreatePromotion() {
                       placeholder="Enter promo code (e.g., SAVE100)"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
-                  )}
-
-                  {form.codeType === "unique" && (
-                    <input
-                      type="file"
-                      name="csvFile"
-                      accept=".csv"
-                      onChange={(e) => setCsvFile(e.target.files[0])}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  )}
-                  {csvFile && (
-                    <p className="text-gray-600 mt-1">
-                      Selected file: {csvFile.name}
-                    </p>
                   )}
                 </div>
               </div>
