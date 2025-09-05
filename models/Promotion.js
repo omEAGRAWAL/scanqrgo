@@ -14,6 +14,7 @@ const PromotionSchema = new mongoose.Schema({
   deliveryType: { type: String, enum: ["auto", "manual"], default: "auto" },
   status: { type: String, enum: ["active", "inactive"], default: "active" },
   createdAt: { type: Date, default: Date.now },
+  codeValue: { type: String }, // For discount codes
 });
 
 module.exports = mongoose.model("Promotion", PromotionSchema);

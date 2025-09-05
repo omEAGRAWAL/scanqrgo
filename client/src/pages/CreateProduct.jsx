@@ -409,6 +409,9 @@ export default function CreateProduct() {
         </div>
         <div className="bg-white rounded shadow p-8 max-w-lg mx-auto">
           <h2 className="text-2xl mb-4 font-bold">Bulk Product Upload</h2>
+          <h3>
+            Excel headers. Must be: name, flipkart-fsn, amazon-asin, imageurl.
+          </h3>
           <input
             type="file"
             accept=".xlsx,.xls"

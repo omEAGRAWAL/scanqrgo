@@ -9,14 +9,42 @@ import {
   Button,
   Alert,
   CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    organization: "",
+    organizationRole: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Handle input change with name restriction
+  function handleChange(e) {
+    const { name, value } = e.target;
+    if (name === "name") {
+      // Only letters and spaces allowed for name
+      if (/^[a-zA-Z\s]*$/.test(value)) {
+        setForm({ ...form, [name]: value });
+        setError("");
+      } else {
+        setError("Only letters and spaces are allowed in the name.");
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  }
 
   function handleConfirmPasswordChange(e) {
     setConfirmPassword(e.target.value);
@@ -31,6 +59,22 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (form.password !== confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+    if (form.name.trim() === "") {
+      setError("Name is required");
+      setLoading(false);
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(form.name)) {
+      setError("Only letters and spaces are allowed in the name.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch(`${API_URL}/users/register`, {
@@ -50,10 +94,6 @@ export default function Register() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   return (
@@ -94,6 +134,24 @@ export default function Register() {
             margin="normal"
           />
           <TextField
+            label="Organization name"
+            name="organization"
+            value={form.organization}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Role in Organization"
+            name="organizationRole"
+            value={form.organizationRole}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
             label="Email"
             name="email"
             type="email"
@@ -106,43 +164,48 @@ export default function Register() {
           <TextField
             label="Password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={form.password}
             onChange={handleChange}
             fullWidth
             required
             margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword((show) => !show)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          {/* //confirm the password
-          //  */}
           <TextField
             label="Confirm Password"
             name="confirmPassword"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
             fullWidth
             required
             margin="normal"
-          />
-
-          <TextField
-            label="Organization"
-            name="organization"
-            value={form.organization}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Organization Role"
-            name="organizationRole"
-            value={form.organizationRole}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle confirm password visibility"
+                    onClick={() => setShowConfirmPassword((show) => !show)}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
 
           <Button

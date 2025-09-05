@@ -7,7 +7,8 @@ const router = express.Router();
 // POST /api/promotions - Create a new promotion
 router.post("/", auth, async (req, res) => {
   try {
-    let { name, type, description, provider, value, deliveryType } = req.body;
+    let { name, type, description, provider, value, deliveryType, codeValue } =
+      req.body;
 
     // Basic validation
     if (!name || !type) {
@@ -31,8 +32,7 @@ router.post("/", auth, async (req, res) => {
         description =
           "Give us honest feedback and get 3 months extended warranty (period customizable)";
       } else if (type === "discount code") {
-        description =
-          "Get 20% off on your future purchase with Promo Code";
+        description = "Get 20% off on your future purchase with Promo Code";
       }
     }
 
@@ -45,6 +45,7 @@ router.post("/", auth, async (req, res) => {
       value,
       deliveryType: deliveryType || "auto",
       owner: req.user.id,
+      codeValue,
     });
 
     await promotion.save();

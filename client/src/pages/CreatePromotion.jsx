@@ -264,7 +264,7 @@ export default function CreatePromotion() {
                         onChange={handleChange}
                         className="w-4 h-4 text-blue-600"
                       />
-                      <span>Same code for everyone</span>
+                      <span>Coupon code</span>
                     </label>
                   </div>
 

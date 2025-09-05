@@ -3122,7 +3122,7 @@ export default function PublicCampaignForm() {
 
   const renderStep3 = () => (
     <Stack spacing={3} alignItems="center" textAlign="center">
-      <Box sx={{ fontSize: "4rem" }}>🎉</Box>
+      <Box sx={{ fontSize: "4rem" }}></Box>
       <Typography variant="h4" color="primary">
         {response?.shouldShowReward && response?.reward
           ? "Congratulations!"
@@ -3132,28 +3132,25 @@ export default function PublicCampaignForm() {
       {response?.shouldShowReward && response?.reward ? (
         <Paper
           elevation={3}
-          sx={{ p: 3, bgcolor: "success.light", maxWidth: 400 }}
+          sx={{ p: 3, maxWidth: 400 }}
         >
           <Stack spacing={2} alignItems="center">
-            <Box sx={{ fontSize: "2rem" }}>🎁</Box>
-            <Typography variant="h6" sx={{ color: "success.main" }}>
-              Here is your gift!
+                 <Typography variant="body2" color="text.primary">
+              Use code <strong>{response.reward.codeValue}</strong> at checkout of your next purchase.
             </Typography>
+            {/* <Box sx={{ fontSize: "2rem" }}>🎁</Box> */}
+            {/* <Typography variant="h6">Here is your discount coupon</Typography>
             <Typography variant="h5" fontWeight="bold" color="primary">
               {response.reward.name}
-            </Typography>
+            </Typography> */}
             {response.reward.description && (
               <Typography variant="body1" color="text.secondary">
                 {response.reward.description}
               </Typography>
             )}
-            {response.reward.provider && (
-              <Chip
-                label={`Provider: ${response.reward.provider}`}
-                color="primary"
-                variant="outlined"
-              />
-            )}
+            {/* //display code
+            //  */}
+       
           </Stack>
         </Paper>
       ) : (
