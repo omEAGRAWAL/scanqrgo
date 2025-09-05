@@ -585,8 +585,9 @@ export default function Promotions() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
+                <TableCell sx={{ width: "30px" }}>Description</TableCell>
                 <TableCell>Type</TableCell>
+                <TableCell>Code Value</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Created</TableCell>
                 <TableCell align="right">Actions</TableCell>
@@ -598,6 +599,7 @@ export default function Promotions() {
                   <TableCell>{promotion.name}</TableCell>
                   <TableCell>{promotion.description || "-"}</TableCell>
                   <TableCell>{promotion.type || "-"}</TableCell>
+                  <TableCell>{promotion.codeValue || "-"}</TableCell>
                   <TableCell>
                     <Chip
                       label={promotion.status || "-"}
