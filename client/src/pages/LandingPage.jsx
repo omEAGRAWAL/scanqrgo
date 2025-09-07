@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import Heromage from "../assets/scanmobile.png"; // Adjust the path as necessary
 import Navbar from "./NavBar";
 import { useNavigate } from "react-router-dom";
+import rev from "../assets/Reviu_Logo.png";
 // Helper component for the hero image graphic
 const HeroImage = () => (
   <div className="relative w-full max-w-lg mx-auto">
     <div className="absolute inset-0 bg-blue-200 rounded-full blur-2xl opacity-30"></div>
     <img
-      //C:\Users\Om - Gandu\Desktop\scanqrgo\client\src\assets\scanmobile.png
+      //C:\Users\Om - Gandu\Desktop\Reviu\client\src\assets\scanmobile.png
       src={Heromage}
       alt="Phone showing a QR code scan"
       className="relative z-10 w-10% h-auto rounded-lg shadow-lg"
@@ -52,7 +53,7 @@ export default function LandingPage() {
             <span className="text-2xl" role="img" aria-label="QR Code icon">
               📱
             </span>
-            <span className="text-xl font-bold text-gray-900">ScanQRGo</span>
+            <span className="text-xl font-bold text-gray-900">Reviu</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
             <a
@@ -462,19 +463,15 @@ export default function LandingPage() {
       <footer className="bg-gray-900 text-gray-100 pt-12 pb-8 mt-12">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:justify-between items-center gap-8">
           <div className="flex items-center space-x-3 mb-6 md:mb-0">
-            <span className="text-2xl" role="img" aria-label="ScanQRGo logo">
-              📱
-            </span>
-            <span className="font-black text-lg tracking-tight bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              ScanQRGo
-            </span>
+            <img src={rev} alt="Reviu" style={{ height: 30 }} />
           </div>
+
           <div className="text-sm text-gray-400 text-center md:text-left mb-6 md:mb-0">
-            © {new Date().getFullYear()} ScanQRGo. All rights reserved.
+            © {new Date().getFullYear()} Reviu. All rights reserved.
           </div>
           <div className="flex space-x-5">
             <a
-              href="mailto:hello@scanqrgo.com"
+              href="mailto:hello@Reviu.com"
               className="hover:text-blue-300 transition"
             >
               Contact
@@ -487,7 +484,7 @@ export default function LandingPage() {
             </a>
           </div>
         </div>
-        <div className="pt-6 flex justify-center text-2xl space-x-6">
+        {/* <div className="pt-6 flex justify-center text-2xl space-x-6">
           <a
             href="https://twitter.com/"
             aria-label="Twitter"
@@ -509,7 +506,7 @@ export default function LandingPage() {
           >
             💻
           </a>
-        </div>
+        </div> */}
       </footer>
     </div>
   );

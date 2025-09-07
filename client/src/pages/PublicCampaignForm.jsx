@@ -53,6 +53,7 @@ import { styled } from "@mui/material/styles";
 import { API_URL } from "../config/api";
 import { SiFlipkart } from "react-icons/si";
 import { FaAmazon } from "react-icons/fa";
+import rev from "../assets/Reviu_Logo.png";
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -810,12 +811,25 @@ export default function PublicCampaignForm() {
           </Typography> */}
 
           {/* display in bottom right corner with small font " powered by ScanQRGo" */}
-          <Typography
-            variant="caption"
-            sx={{ opacity: 0.8, display: "block", mt: 1, textAlign: "right" }}
+          {/* display in same line and make background little white */}
+          {/* <div>// position absolute bottom right with some 
+          // padding and white background and in same line */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 16,
+              bgcolor: "background.paper",
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              p: "6px",
+              borderRadius: 2,
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            powered by ScanQRGo
-          </Typography>
+            <Typography variant="caption">powered by</Typography>
+            <img src={rev} alt="Reviu" style={{ height: 16 }} />
+          </div>
         </GradientHeader>
 
         {/* Stepper */}

@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { API_URL } from "../config/api";
+import rev from "../assets/Reviu_Logo.png";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -167,10 +167,9 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl" role="img" aria-label="QR Code icon">
-            📱
-          </span>
-          <span className="text-xl font-bold text-gray-900">ScanQRGo</span>
+          
+          {/* <span className="text-xl font-bold text-gray-900"></span> */}
+          <img src={rev} alt="Reviu Logo" className="h-8 w-auto" />
         </Link>
         {/* Desktop menu */}
         <nav className="hidden md:block">{token ? authLinks : guestLinks}</nav>

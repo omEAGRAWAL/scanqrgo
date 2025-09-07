@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import LeftNav from "./LeftNav";
+import rev from "../assets/Reviu_Logo.png";
 
 const drawerWidth = 280;
 
@@ -41,9 +42,10 @@ export default function DashboardLayout({ user }) {
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Box sx={{ p: 2 }}>
         <a href="/">
-          <Typography variant="h6" fontWeight={800}>
+          {/* <Typography variant="h6" fontWeight={800}>
             ScanQRGo
-          </Typography>
+          </Typography> */}
+          <img src={rev} alt="Reviu Logo" className="h-8 w-auto" />
         </a>
       </Box>
       <Divider />
