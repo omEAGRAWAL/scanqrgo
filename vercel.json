@@ -9,3 +9,4 @@
     { "src": "/(.*)", "dest": "/client/dist/$1" }
   ]
 }
+

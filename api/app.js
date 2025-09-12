@@ -237,7 +237,7 @@ const app = express();
 
 app.use(express.json());
 
-app.post("/api/users/login", (req, res) => {
+app.get("/api/users/login", (req, res) => {
   res.json({ message: "Login route working!" });
 });
 
