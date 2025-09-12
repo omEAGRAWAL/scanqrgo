@@ -215,7 +215,7 @@ require("../models/FunnelVisit");
 app.use(express.json());
 
 // Routes
-app.use("/api/users", require("../routes/user"));
+app.use("/users", require("../routes/user"));
 app.use("/api/products", require("../routes/product"));
 app.use("/api/promotions", require("../routes/promotion"));
 app.use("/api/campaigns", require("../routes/campaign"));
