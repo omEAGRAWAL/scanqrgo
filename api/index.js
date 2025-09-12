@@ -222,6 +222,9 @@ app.use("/api/campaigns", require("../routes/campaign"));
 app.use("/api/public", require("../routes/publicReview"));
 app.use("/api/upload", require("../routes/upload"));
 app.use("/api/admin", require("../routes/admin"));
+app.get("/ping", (req, res) => {
+  res.json({ ok: true, msg: "API alive ✅" });
+});
 
 // Serve React dist
 app.use(express.static(path.join(__dirname, "../client/dist")));
