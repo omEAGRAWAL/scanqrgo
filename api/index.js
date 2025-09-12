@@ -113,128 +113,8 @@
 // // //   }
 // // // }
 
-// // // // API Routes
-// // // app.use("/api/users", userRoutes);
-// // // app.use("/api/products", productRoutes);
-// // // app.use("/api/promotions", promotionRoutes);
-// // // app.use("/api/campaigns", campaignRoutes);
-// // // app.use("/api/public", publicReviewRoutes);
-// // // app.use("/api/upload", upload);
-// // // app.use("/api/admin", adminUsers);
+// api/index.js
 
-// // // // (Optional) Serve static assets from the client (if uploaded in public directory)
-// // // app.use(express.static(path.join(__dirname, "../client/dist")));
-
-// // // // Fallback for SPA client-side routing (only valid if /client/dist exists and deployed statically in Vercel)
-// // // app.get("/*", (req, res) => {
-// // //   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// // // });
-
-// // // module.exports = async (req, res) => {
-// // //   await connectDB();
-// // //   return app(req, res);
-// // // };
-// // const express = require("express");
-// // const mongoose = require("mongoose");
-// // const dotenv = require("dotenv");
-// // const cors = require("cors");
-// // const path = require("path");
-
-// // dotenv.config();
-// // const app = express();
-
-// // app.use(express.json());
-// // app.use(cors());
-
-// // // MongoDB connection
-// // mongoose
-// //   .connect(process.env.MONGO_URI, {
-// //     useNewUrlParser: true,
-// //     useUnifiedTopology: true,
-// //   })
-// //   .then(() => console.log("MongoDB Atlas connected"))
-// //   .catch((err) => console.error("MongoDB connection error:", err));
-
-// // // Routes
-// // require("../models/User");
-// // require("../models/Product");
-// // require("../models/Campaign");
-// // require("../models/Review");
-// // require("../models/Promotion");
-// // require("../models/FunnelVisit");
-
-// // app.use("/api/users", require("../routes/user"));
-// // app.use("/api/products", require("../routes/product"));
-// // app.use("/api/promotions", require("../routes/promotion"));
-// // app.use("/api/campaigns", require("../routes/campaign"));
-// // app.use("/api/public", require("../routes/publicReview"));
-// // app.use("/api/upload", require("../routes/upload"));
-// // app.use("/api/admin", require("../routes/admin"));
-
-// // // Serve React dist
-// // app.use(express.static(path.join(__dirname, "../client/dist")));
-
-// // // React fallback (SPA routing)
-// // app.get("/*", (req, res) => {
-// //   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-// // });
-
-// // // ❌ REMOVE app.listen
-// // module.exports = app;
-// const express = require("express");
-// const mongoose = require("mongoose");
-// const dotenv = require("dotenv");
-// const cors = require("cors");
-// const path = require("path");
-// const serverless = require("serverless-http");
-
-// dotenv.config();
-
-// const app = express();
-
-// app.use(express.json());
-// //allow all origins
-// app.use(cors());
-
-// // Connect Mongo
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("MongoDB Atlas connected"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
-// // Models
-// require("../models/User");
-// require("../models/Product");
-// require("../models/Campaign");
-// require("../models/Review");
-// require("../models/Promotion");
-// require("../models/FunnelVisit");
-// app.use(express.json());
-
-// // Routes
-// app.use("/users", require("../routes/user"));
-// app.use("/api/products", require("../routes/product"));
-// app.use("/api/promotions", require("../routes/promotion"));
-// app.use("/api/campaigns", require("../routes/campaign"));
-// app.use("/api/public", require("../routes/publicReview"));
-// app.use("/api/upload", require("../routes/upload"));
-// app.use("/api/admin", require("../routes/admin"));
-// app.get("/ping", (req, res) => {
-//   res.json({ ok: true, msg: "API alive ✅" });
-// });
-
-// // Serve React dist
-// app.use(express.static(path.join(__dirname, "../client/dist")));
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-// });
-
-// // Instead of app.listen, export handler
-// module.exports = app;
-// module.exports.handler = serverless(app);
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -243,18 +123,20 @@ const path = require("path");
 const serverless = require("serverless-http");
 
 dotenv.config();
+
 const app = express();
 
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
-// Mongo connection
+// --- Connect to MongoDB ---
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Atlas connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => console.log("✅ MongoDB Atlas connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Models
+// --- Import models ---
 require("../models/User");
 require("../models/Product");
 require("../models/Campaign");
@@ -262,8 +144,8 @@ require("../models/Review");
 require("../models/Promotion");
 require("../models/FunnelVisit");
 
-// Routes
-app.use("/users", require("../routes/user"));
+// --- Routes ---
+app.use("/api/users", require("../routes/user"));
 app.use("/api/products", require("../routes/product"));
 app.use("/api/promotions", require("../routes/promotion"));
 app.use("/api/campaigns", require("../routes/campaign"));
@@ -271,16 +153,18 @@ app.use("/api/public", require("../routes/publicReview"));
 app.use("/api/upload", require("../routes/upload"));
 app.use("/api/admin", require("../routes/admin"));
 
-app.get("/ping", (req, res) => {
+// Health check
+app.get("/api/ping", (req, res) => {
   res.json({ ok: true, msg: "API alive ✅" });
 });
 
-// Serve React build
+// --- Serve React build ---
+// IMPORTANT: use "*" not "/*"
 app.use(express.static(path.join(__dirname, "../client/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
-// Export for Vercel
+// --- Export for Vercel ---
 module.exports = app;
 module.exports.handler = serverless(app);
