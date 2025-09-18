@@ -15,21 +15,21 @@ app.use(express.json());
 app.use(cors());
 
 // Import your models
-require("../models/User");
-require("../models/Product");
-require("../models/Campaign");
-require("../models/Review");
-require("../models/Promotion");
-require("../models/FunnelVisit");
+require("./models/User");
+require("./models/Product");
+require("./models/Campaign");
+require("./models/Review");
+require("./models/Promotion");
+require("./models/FunnelVisit");
 
-const userRoutes = require("../routes/user");
-const productRoutes = require("../routes/product");
-const promotionRoutes = require("../routes/promotion");
-const campaignRoutes = require("../routes/campaign");
-const publicReviewRoutes = require("../routes/publicReview");
-const upload = require("../routes/upload");
+const userRoutes = require("./routes/user");
+const productRoutes = require("./routes/product");
+const promotionRoutes = require("./routes/promotion");
+const campaignRoutes = require("./routes/campaign");
+const publicReviewRoutes = require("./routes/publicReview");
+const upload = require("./routes/upload");
 // require("./routes/admin.users");
-const adminUsers = require("../routes/admin");
+const adminUsers = require("./routes/admin");
 
 //
 // Connect to MongoDB Atlas
