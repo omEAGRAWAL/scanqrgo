@@ -25,8 +25,8 @@ import {
   Chip,
   Divider,
   Stack,
-  useTheme,
-  useMediaQuery,
+  // useTheme,
+  // useMediaQuery,
   Skeleton,
   Snackbar,
   Fade,
@@ -53,7 +53,7 @@ import { styled } from "@mui/material/styles";
 import { API_URL } from "../config/api";
 import { SiFlipkart } from "react-icons/si";
 import { FaAmazon } from "react-icons/fa";
-import rev from "../assets/Reviu_Logo.png";
+// import rev from "../assets/Reviu_Logo.png";
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -116,14 +116,16 @@ const MarketplaceChip = styled(Chip, {
     paddingLeft: 8,
     paddingRight: 8,
   },
-  ...(String(marketplace).toLowerCase().includes("amazon") && {
-    backgroundColor: "#FF9500",
-    color: "white",
-  }),
-  ...(String(marketplace).toLowerCase().includes("flipkart") && {
-    backgroundColor: "#2874F0",
-    color: "white",
-  }),
+  ...(String(marketplace).toLowerCase().includes("amazon") &&
+    {
+      // backgroundColor: "#FF9500",
+      // color: "white",
+    }),
+  ...(String(marketplace).toLowerCase().includes("flipkart") &&
+    {
+      // backgroundColor: "#2874F0",
+      // color: "white",
+    }),
 }));
 
 const steps = [
@@ -144,8 +146,8 @@ function mapRatingToSatisfaction(rating) {
 export default function PublicCampaignForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // State management
   const [campaign, setCampaign] = useState(null);
@@ -179,6 +181,7 @@ export default function PublicCampaignForm() {
 
   // Available marketplaces for the selected product
   const marketplaces = useMemo(() => {
+    console.log("selectedProduct", response, selectedProduct);
     if (!selectedProduct) return [];
     const arr = [];
     if (selectedProduct.amazonAsin) {
@@ -418,7 +421,6 @@ export default function PublicCampaignForm() {
     setError("");
   }, []);
 
-  // Step renderers
   const renderStep0 = () => {
     const bothAvailable =
       !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
@@ -441,14 +443,6 @@ export default function PublicCampaignForm() {
                 <MenuItem key={product._id} value={product._id}>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography>{product.name}</Typography>
-                    {badges.map((b) => (
-                      <MarketplaceChip
-                        key={b}
-                        marketplace={b}
-                        label={b}
-                        size="small"
-                      />
-                    ))}
                   </Stack>
                 </MenuItem>
               );
@@ -461,13 +455,22 @@ export default function PublicCampaignForm() {
           )}
         </FormControl>
 
+        {/* --- Marketplace Selection Logic --- */}
         {selectedProduct && (
-          <Paper elevation={1} sx={{ p: 2, bgcolor: "grey.50" }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              border: "1px solid #ddd",
+              ":hover": { border: "1px solid #aaa" },
+            }}
+          >
             <Stack spacing={2}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Store color="primary" />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Store color="action" />
                 <Typography variant="body2" color="text.secondary">
-                  Marketplace:
+                  Available on:
                 </Typography>
                 {selectedProduct.amazonAsin && (
                   <MarketplaceChip
@@ -485,10 +488,10 @@ export default function PublicCampaignForm() {
                 )}
               </Stack>
 
-              {/* Only show selection when both are available */}
+              {/* Only show radio buttons if BOTH are available */}
               {bothAvailable && (
                 <FormControl error={!!formErrors.marketplace}>
-                  <FormLabel>Choose marketplace *</FormLabel>
+                  <FormLabel>Choose where you purchased from *</FormLabel>
                   <RadioGroup
                     row
                     name="marketplace"
@@ -516,16 +519,17 @@ export default function PublicCampaignForm() {
             </Stack>
           </Paper>
         )}
+        {/* --- End of Marketplace Logic --- */}
 
         <TextField
           fullWidth
           name="orderNumber"
-          label="Order Number *"
+          label="Enter your order id *"
           value={form.orderNumber}
           onChange={handleChange}
           error={!!formErrors.orderNumber}
           helperText={formErrors.orderNumber}
-          placeholder="Enter your order number"
+          placeholder="Enter the order id from your purchase"
         />
 
         <Box>
@@ -571,88 +575,70 @@ export default function PublicCampaignForm() {
       </Stack>
     );
   };
-
   const renderStep1 = () => (
     <Stack spacing={3}>
       <TextField
         fullWidth
         name="customerName"
-        label="Your Name *"
+        label="Enter Full Name"
         value={form.customerName}
         onChange={handleChange}
         error={!!formErrors.customerName}
         helperText={formErrors.customerName}
         placeholder="Enter your full name"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Person color="action" />
-            </InputAdornment>
-          ),
-        }}
       />
 
       <TextField
         fullWidth
         name="email"
-        label="Email Address *"
+        label="Enter Email ID"
         type="email"
         value={form.email}
         onChange={handleChange}
         error={!!formErrors.email}
-        helperText={formErrors.email || "Your offer will be sent to this email"}
+        helperText={
+          formErrors.email || "Your offer will be received on this email"
+        }
         placeholder="Enter your email address"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Email color="action" />
-            </InputAdornment>
-          ),
-        }}
       />
 
       <TextField
         fullWidth
         name="phoneNumber"
-        label="Phone Number"
+        label="Enter Phone Number"
         type="tel"
         value={form.phoneNumber}
         onChange={handleChange}
         error={!!formErrors.phoneNumber}
         helperText={formErrors.phoneNumber}
         placeholder="+91 - XXXXXXXXXX"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Phone color="action" />
-            </InputAdornment>
-          ),
-        }}
       />
     </Stack>
   );
-
   const renderStep2 = () => (
-    <Stack spacing={3}>
+    <Stack spacing={2.5} alignItems="center">
       {selectedProduct && (
-        <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-          <Typography variant="h6" gutterBottom>
+        <>
+          {/* <img src={selectedProduct.imageurl} alt={selectedProduct.name} /> */}
+          <Typography variant="h6" fontWeight="bold">
             {selectedProduct.name}
           </Typography>
+
           {selectedProduct.imageurl && (
-            <Avatar
+            <Box
+              component="img"
               src={selectedProduct.imageurl}
               alt={selectedProduct.name}
-              sx={{ width: 80, height: 80, mx: "auto", mb: 2 }}
+              sx={{
+                width: 120,
+                height: 120,
+                objectFit: "contain",
+                borderRadius: 2,
+                mb: 1,
+              }}
             />
           )}
-          <Stack direction="row" spacing={1} justifyContent="center">
-            <Rating value={form.satisfaction} readOnly size="small" />
-            <Typography variant="body2" color="text.secondary">
-              ({form.satisfaction}/5)
-            </Typography>
-          </Stack>
-        </Paper>
+        </>
       )}
 
       <TextField
@@ -672,17 +658,21 @@ export default function PublicCampaignForm() {
               : ""
           } characters`
         }
-        placeholder="Share your experience with this product..."
+        placeholder="Enter Feedback"
       />
 
+      {/* Logic to show button only for high ratings remains */}
       {selectedMarketplaceConfig && form.satisfaction >= 4 && (
-        <Paper>
+        <Stack spacing={1} sx={{ width: "100%", pt: 1 }}>
           <Button
             fullWidth
             variant="contained"
             onClick={handleShareReview}
             sx={{
               bgcolor: selectedMarketplaceConfig.color,
+              color: "white",
+              fontWeight: "bold",
+              py: 1.5,
               "&:hover": {
                 bgcolor: selectedMarketplaceConfig.color,
                 opacity: 0.9,
@@ -690,79 +680,86 @@ export default function PublicCampaignForm() {
             }}
             startIcon={selectedMarketplaceConfig.icon}
           >
-            Review on {selectedMarketplaceConfig.name}
+            Copy and share on {selectedMarketplaceConfig.name}
           </Button>
-        </Paper>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            textAlign="center"
+          >
+            Click button to copy your written feedback and share it on{" "}
+            {selectedMarketplaceConfig.name}
+          </Typography>
+        </Stack>
       )}
     </Stack>
   );
 
   const renderStep3 = () => (
-    <Stack spacing={3} alignItems="center" textAlign="center">
-      <Box sx={{ fontSize: "4rem" }}></Box>
-      <Typography variant="h4" color="primary">
-        {response?.shouldShowReward && response?.reward
-          ? "Congratulations!"
-          : "Thank You!"}
+    <Stack
+      spacing={3}
+      alignItems="center"
+      textAlign="center"
+      sx={{ pt: 4, pb: 4 }}
+    >
+      <Typography variant="h4" component="h1" fontWeight="bold">
+        Congratulations! 🎉
       </Typography>
 
-      {response?.shouldShowReward && response?.reward ? (
-        <Paper elevation={3} sx={{ p: 3, maxWidth: 400 }}>
-          <Stack spacing={2} alignItems="center">
-            <Typography variant="body2" color="text.primary">
-              Use code <strong>{response.reward.codeValue}</strong> at checkout
-              of your next purchase.
-            </Typography>
-            {/* <Box sx={{ fontSize: "2rem" }}>🎁</Box> */}
-            {/* <Typography variant="h6">Here is your discount coupon</Typography>
-            <Typography variant="h5" fontWeight="bold" color="primary">
-              {response.reward.name}
-            </Typography> */}
-            {response.reward.description && (
-              <Typography variant="body1" color="text.secondary">
-                {response.reward.description}
-              </Typography>
-            )}
-            {/* //display code
-            //  */}
-          </Stack>
-        </Paper>
+      {/* Dynamic message based on promotion type */}
+      {campaign?.promotion?.type === "extended warranty" ? (
+        <Typography variant="body1" color="text.secondary">
+          You’ve successfully registered for the <strong></strong> Month
+          Extended Warranty for
+          <strong> {selectedProduct?.name || "<Product Name>"} </strong>
+          {/* on {new Date().toLocaleDateString()}. */}
+        </Typography>
       ) : (
-        <Paper
-          elevation={2}
-          sx={{ p: 3, bgcolor: "info.light", maxWidth: 400 }}
-        >
-          <Typography variant="body1" sx={{ color: "info.main" }}>
-            Thanks for the feedback! It helps improve the product.
-          </Typography>
-        </Paper>
+        <Typography variant="body1" color="text.secondary">
+          You've successfully unlocked a coupon code for your next purchase of
+          <strong> {selectedProduct?.name || "<Product Name>"} </strong>.
+          Details have been sent to your email.
+        </Typography>
       )}
 
-      <Typography variant="body2" color="text.secondary">
-        We appreciate the time taken to share the experience!
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ fontStyle: "italic" }}
+      >
+        {campaign?.promotion?.termsAndConditions
+          ? campaign.promotion.termsAndConditions
+          : "<Extended Warranty Terms & Conditions>"}
       </Typography>
+
+      <Box sx={{ pt: 2 }}>
+        <Typography variant="h6" component="p" color="text.primary">
+          We value your feedback.
+        </Typography>
+        <Typography variant="h6" component="p" color="text.primary">
+          Thanks for sharing.
+        </Typography>
+      </Box>
+      {loading && (
+        <Container maxWidth="sm" sx={{ py: 4 }}>
+          <StyledCard>
+            <Skeleton variant="rectangular" height={120} />
+            <CardContent>
+              <Stack spacing={2}>
+                <Skeleton variant="text" height={40} />
+                <Skeleton variant="rectangular" height={56} />
+                <Skeleton variant="rectangular" height={56} />
+                <Skeleton variant="rectangular" height={100} />
+              </Stack>
+            </CardContent>
+          </StyledCard>
+        </Container>
+      )}
     </Stack>
+
+    // Loading state
   );
-
-  // Loading state
-  if (loading) {
-    return (
-      <Container maxWidth="sm" sx={{ py: 4 }}>
-        <StyledCard>
-          <Skeleton variant="rectangular" height={120} />
-          <CardContent>
-            <Stack spacing={2}>
-              <Skeleton variant="text" height={40} />
-              <Skeleton variant="rectangular" height={56} />
-              <Skeleton variant="rectangular" height={56} />
-              <Skeleton variant="rectangular" height={100} />
-            </Stack>
-          </CardContent>
-        </StyledCard>
-      </Container>
-    );
-  }
-
   // Error state
   if (error && !campaign) {
     return (
@@ -785,99 +782,150 @@ export default function PublicCampaignForm() {
     );
   }
 
+  //   return (
+  //     <Container maxWidth="sm" sx={{ py: 2 }}>
+  //       <StyledCard>
+  //         {/* Header */}
+  //         <GradientHeader primaryColor={campaign?.customization?.primaryColor}>
+  //           {campaign?.seller?.logoUrl && (
+  //             <img
+  //               src={campaign.seller.logoUrl}
+  //               alt="Seller Logo"
+  //               style={{ maxHeight: 30, marginBottom: 8 }}
+  //             />
+  //           )}
+  //           <Typography variant="h5" fontWeight="bold" gutterBottom>
+  //             {campaign?.promotion?.name || "<Offer Title>"}
+  //           </Typography>
+  //         </GradientHeader>
+
+  //         {/* Content */}
+  //         <CardContent sx={{ px: { xs: 2, sm: 3 }, pb: 2 }}>
+  //           <Fade in timeout={300}>
+  //             <Box>
+  //               {/* This Box will render the correct step based on the currentStep state */}
+  //               {currentStep === 0 && renderStep0()}
+  //               {currentStep === 1 && renderStep1()}
+  //               {currentStep === 2 && renderStep2()}
+  //               {currentStep === 3 && renderStep3()}
+  //             </Box>
+  //           </Fade>
+  //           {/* Error Alert */}
+  //           {error && currentStep < 3 && (
+  //             <Alert severity="error" sx={{ mt: 2 }}>
+  //               {error}
+  //             </Alert>
+  //           )}
+  //         </CardContent>
+
+  //         {/* Footer Navigation */}
+  //         {currentStep < 4 && (
+  //           <>
+  //             <Divider />
+  //             <Box sx={{ p: 2, position: "relative", textAlign: "center" }}>
+  //               <Box
+  //                 sx={{
+  //                   display: "flex",
+  //                   justifyContent: "space-between",
+  //                   alignItems: "center",
+  //                 }}
+  //               >
+  //                 <Button
+  //                   onClick={handleBack}
+  //                   disabled={currentStep === 0 || submitting}
+  //                   startIcon={<ArrowBack />}
+  //                 >
+  //                   Back
+  //                 </Button>
+
+  //                 <Typography variant="body2" color="text.secondary">
+  //                   Step {currentStep + 1} of {steps.length - 1}
+  //                 </Typography>
+
+  //                 <Button
+  //                   onClick={handleNext}
+  //                   disabled={submitting}
+  //                   endIcon={
+  //                     submitting ? (
+  //                       <CircularProgress size={20} />
+  //                     ) : (
+  //                       <ArrowForward />
+  //                     )
+  //                   }
+  //                   variant="contained"
+  //                 >
+  //                   {currentStep === 2 ? "Submit" : "Next"}
+  //                 </Button>
+  //               </Box>
+  //               <Typography
+  //                 variant="caption"
+  //                 color="text.secondary"
+  //                 sx={{ mt: 2, display: "block" }}
+  //               >
+  //                 Powered by Reviu
+  //               </Typography>
+  //             </Box>
+  //           </>
+  //         )}
+  //       </StyledCard>
+
+  //       {/* Snackbars for user feedback */}
+  //       <Snackbar
+  //         open={!!success}
+  //         autoHideDuration={6000}
+  //         onClose={() => setSuccess("")}
+  //         anchorOrigin={{ vertical: "top", horizontal: "center" }}
+  //       >
+  //         <Alert onClose={() => setSuccess("")} severity="success">
+  //           {success}
+  //         </Alert>
+  //       </Snackbar>
+  //       <Snackbar
+  //         open={copied}
+  //         autoHideDuration={2500}
+  //         onClose={() => setCopied(false)}
+  //         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+  //       >
+  //         <Alert onClose={() => setCopied(false)} severity="info">
+  //           Review copied to clipboard!
+  //         </Alert>
+  //       </Snackbar>
+  //     </Container>
+  //   );
+  // }
   return (
     <Container maxWidth="sm" sx={{ py: 2 }}>
       <StyledCard>
         {/* Header */}
         <GradientHeader primaryColor={campaign?.customization?.primaryColor}>
-          {campaign?.seller?.organization && (
-            // shift to top left
-            <Box sx={{ position: "absolute", top: 8, left: 16 }}>
-              <Typography
-                variant="caption"
-                sx={{ opacity: 0.8, display: "block", mt: 1 }}
-              >
-                from {campaign.seller.organization}
-              </Typography>
-            </Box>
+          {campaign?.seller?.logoUrl && (
+            <img
+              src={campaign.seller.logoUrl}
+              alt="Seller Logo"
+              style={{ maxHeight: 30, marginBottom: 8 }}
+            />
           )}
-          {/* </Typography> */}
           <Typography variant="h5" fontWeight="bold" gutterBottom>
-            {campaign?.name || "$50 Amazon Gift Voucher 🎁"}
+            {campaign?.promotion?.offerTitle || "<Offer Title>"}
           </Typography>
-          {/* <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            {campaign?.customization?.customMessage ||
-              "We'd love to hear about your experience!"}
-          </Typography> */}
-
-          {/* display in bottom right corner with small font " powered by ScanQRGo" */}
-          {/* display in same line and make background little white */}
-          {/* <div>// position absolute bottom right with some 
-          // padding and white background and in same line */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 8,
-              right: 16,
-              bgcolor: "background.paper",
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
-              p: "6px",
-              borderRadius: 2,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="caption">powered by</Typography>
-            <img src={rev} alt="Reviu" style={{ height: 16 }} />
-          </div>
         </GradientHeader>
 
-        {/* Stepper */}
-        <Box sx={{ px: 2, pt: 2 }}>
-          <StyledStepper activeStep={currentStep} alternativeLabel={isMobile}>
-            {steps.map((step, index) => (
-              <Step key={step.label}>
-                <StepLabel
-                  icon={
-                    <Box
-                      sx={{
-                        color:
-                          index <= currentStep ? "primary.main" : "grey.400",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {index < currentStep ? <CheckCircle /> : step.icon}
-                    </Box>
-                  }
-                >
-                  {!isMobile && step.label}
-                </StepLabel>
-              </Step>
-            ))}
-          </StyledStepper>
-        </Box>
-
         {/* Content */}
-        <CardContent sx={{ px: 3, pb: 2 }}>
-          {/* <Fade in timeout={300}>
-            <Box>
-              {currentStep === 0 && renderStep0()}
-              {currentStep === 1 && renderStep1()}
-              {currentStep === 2 && renderStep2()}
-              {currentStep === 3 && renderStep3()}
-            </Box>
-          </Fade> */}
+        <CardContent sx={{ px: { xs: 2, sm: 3 }, pb: 2 }}>
           <Fade in timeout={300}>
+            {/* MODIFICATION: 
+              - Added a min-height to prevent the card from resizing between steps.
+              - Used flexbox to align content consistently within the fixed space.
+            */}
             <Box
               sx={{
-                minHeight: "400px",
+                minHeight: { xs: 420, sm: 450 },
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                justifyContent: "center",
               }}
             >
+              {/* This Box will render the correct step based on the currentStep state */}
               {currentStep === 0 && renderStep0()}
               {currentStep === 1 && renderStep1()}
               {currentStep === 2 && renderStep2()}
@@ -892,47 +940,62 @@ export default function PublicCampaignForm() {
           )}
         </CardContent>
 
-        {/* Footer Navigation */}
+        {/* Footer Navigation 
+          MODIFICATION: Changed condition to currentStep < 3 to hide on the final step.
+        */}
         {currentStep < 3 && (
           <>
             <Divider />
-            <Box
-              sx={{
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                onClick={handleBack}
-                disabled={currentStep === 0 || submitting}
-                startIcon={<ArrowBack />}
-                variant="outlined"
+            <Box sx={{ p: 2, position: "relative", textAlign: "center" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                Back
-              </Button>
+                <Button
+                  onClick={handleBack}
+                  disabled={currentStep === 0 || submitting}
+                  startIcon={<ArrowBack />}
+                >
+                  Back
+                </Button>
 
-              <Typography variant="body2" color="text.secondary">
-                Step {currentStep + 1} of {steps.length - 1}
-              </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Step {currentStep + 1} of {steps.length - 1}
+                </Typography>
 
-              <Button
-                onClick={handleNext}
-                disabled={submitting}
-                endIcon={
-                  submitting ? <CircularProgress size={16} /> : <ArrowForward />
-                }
-                variant="contained"
-              >
-                {currentStep === 2 ? "Submit" : "Next"}
-              </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={submitting}
+                  endIcon={
+                    submitting ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <ArrowForward />
+                    )
+                  }
+                  variant="contained"
+                >
+                  {currentStep === 2 ? "Submit" : "Next"}
+                </Button>
+              </Box>
             </Box>
           </>
         )}
+        <Box sx={{ p: 2, position: "relative", textAlign: "center" }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 2, display: "block" }}
+          >
+            Powered by Reviu
+          </Typography>
+        </Box>
       </StyledCard>
 
-      {/* Success Snackbar */}
+      {/* Snackbars for user feedback */}
       <Snackbar
         open={!!success}
         autoHideDuration={6000}
@@ -943,8 +1006,6 @@ export default function PublicCampaignForm() {
           {success}
         </Alert>
       </Snackbar>
-
-      {/* Copied Snackbar */}
       <Snackbar
         open={copied}
         autoHideDuration={2500}

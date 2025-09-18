@@ -73,9 +73,13 @@ app.get("/*splat", (req, res) => {
 app.get("/api/ping", (req, res) => {
   res.json({ ok: true, msg: "API alive ✅" });
 });
-//to serve in vercel
+// //to serve in vercel
 module.exports = app;
 module.exports.handler = serverless(app);
+
+// app.listen(5000, () => {
+//   console.log("Server is running on port 5000");
+// });
 // // // api/index.js
 
 // // // const express = require("express");

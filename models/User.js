@@ -57,6 +57,11 @@ const UserSchema = new mongoose.Schema({
     enum: ["admin", "seller", "customer"],
     default: "seller",
   },
+  logoUrl: {
+    type: String,
+    default:
+      "https://image.shutterstock.com/image-vector/tour-guide-icon-tourism-travelling-150nw-2397508365.jpg",
+  },
   organization: { type: String },
   organizationRole: { type: String },
   createdAt: { type: Date, default: Date.now },

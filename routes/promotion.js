@@ -7,45 +7,41 @@ const router = express.Router();
 // POST /api/promotions - Create a new promotion
 router.post("/", auth, async (req, res) => {
   try {
-    let { name, type, description, provider, value, deliveryType, codeValue } =
-      req.body;
+    let {
+      name,
+      offerTitle,
+      type,
+      warrantyPeriod,
+      couponCode,
+      termsAndConditions,
+    } = req.body;
 
     // Basic validation
-    if (!name || !type) {
-      return res.status(400).json({ message: "Name and type are required" });
+    if (
+      !name ||
+      !type ||
+      !offerTitle ||
+      (type === "extended warranty" && !warrantyPeriod) ||
+      (type === "discount code" && !couponCode) ||
+      !termsAndConditions
+    ) {
+      return res.status(400).json({ message: "all fields  are required" });
     }
 
     // Validate type
-    const validTypes = [
-      "giftcard",
-      "discount code",
-      "extended warranty",
-      "custom",
-    ];
-    if (!validTypes.includes(type)) {
-      return res.status(400).json({ message: "Invalid promotion type" });
-    }
 
     // Provide default description if absent
-    if (!description) {
-      if (type === "extended warranty") {
-        description =
-          "Give us honest feedback and get 3 months extended warranty (period customizable)";
-      } else if (type === "discount code") {
-        description = "Get 20% off on your future purchase with Promo Code";
-      }
-    }
 
     // Create promotion with current user as owner
     const promotion = new Promotion({
       name,
+      offerTitle,
       type,
-      description,
-      provider,
-      value,
-      deliveryType: deliveryType || "auto",
+      warrantyPeriod: type === "extended warranty" ? warrantyPeriod : undefined,
+      couponCode: type === "discount code" ? couponCode : undefined,
+      termsAndConditions,
+      description: req.body.description || "No description provided",
       owner: req.user.id,
-      codeValue,
     });
 
     await promotion.save();
@@ -118,8 +114,15 @@ router.get("/:id", auth, async (req, res) => {
 // PUT /api/promotions/:id - Update a promotion
 router.put("/:id", auth, async (req, res) => {
   try {
-    const { name, type, description, provider, value, deliveryType, status } =
-      req.body;
+    const {
+      name,
+      offerTitle,
+      type,
+      warrantyPeriod,
+      couponCode,
+      termsAndConditions,
+      status,
+    } = req.body;
 
     // Find promotion and ensure it belongs to the current user
     const promotion = await Promotion.findOne({
@@ -133,12 +136,7 @@ router.put("/:id", auth, async (req, res) => {
 
     // Validate type if provided
     if (type) {
-      const validTypes = [
-        "giftcard",
-        "discount code",
-        "extended warranty",
-        "custom",
-      ];
+      const validTypes = ["discount code", "extended warranty"];
       if (!validTypes.includes(type)) {
         return res.status(400).json({ message: "Invalid promotion type" });
       }
@@ -156,11 +154,11 @@ router.put("/:id", auth, async (req, res) => {
 
     // Update fields
     if (name) promotion.name = name;
+    if (offerTitle) promotion.offerTitle = offerTitle;
     if (type) promotion.type = type;
-    if (description) promotion.description = description;
-    if (provider !== undefined) promotion.provider = provider;
-    if (value !== undefined) promotion.value = value;
-    if (deliveryType) promotion.deliveryType = deliveryType;
+    if (warrantyPeriod) promotion.warrantyPeriod = warrantyPeriod;
+    if (couponCode) promotion.couponCode = couponCode;
+    if (termsAndConditions) promotion.termsAndConditions = termsAndConditions;
     if (status) promotion.status = status;
 
     await promotion.save();

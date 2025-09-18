@@ -19,8 +19,12 @@ router.get("/campaign/:id", async (req, res) => {
       status: "active",
     }).populate([
       { path: "products", select: "name amazonAsin flipkartFsn imageurl" },
-      { path: "promotion", select: "name type description provider value" },
-      { path: "seller", select: "organization name" },
+      {
+        path: "promotion",
+        select:
+          "name offerTitle type warrantyPeriod couponCode termsAndConditions",
+      },
+      { path: "seller", select: "organization name  logoUrl" },
     ]);
 
     if (!campaign)

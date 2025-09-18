@@ -8,7 +8,6 @@ const CampaignSchema = new mongoose.Schema({
     enum: ["active", "paused", "ended"],
     default: "active",
   },
-  category: { type: String, enum: ["review", "promotion"], required: true },
 
   // Remove the conditional required - make these optional
   promotion: {
