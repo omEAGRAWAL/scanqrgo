@@ -1,4 +1,5 @@
 const express = require("express");
+import { Route } from "react-router-dom";
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -33,6 +34,12 @@ app.use("/api/upload", require("../routes/upload"));
 app.use("/api/admin", require("../routes/admin"));
 
 app.get("/api/ping", (req, res) => res.json({ ok: true, msg: "API alive ✅" }));
+
+//serve static file client/dist that serve ui for "/" Route
+app.use(express.static("client/dist"));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+});
 
 module.exports = app;
 module.exports.handler = serverless(app);
