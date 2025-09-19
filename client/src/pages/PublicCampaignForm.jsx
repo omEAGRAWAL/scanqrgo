@@ -897,14 +897,17 @@ export default function PublicCampaignForm() {
     <Container maxWidth="sm" sx={{ py: 2 }}>
       <StyledCard>
         {/* Header */}
+        {/* Shift to center */}
         <GradientHeader primaryColor={campaign?.customization?.primaryColor}>
-          {campaign?.seller?.logoUrl && (
-            <img
-              src={campaign.seller.logoUrl}
-              alt="Seller Logo"
-              style={{ maxHeight: 30, marginBottom: 8 }}
-            />
-          )}
+          <Box sx={{ textAlign: "center", mb: 2 }}>
+            {campaign?.seller?.logoUrl && (
+              <img
+                src={campaign.seller.logoUrl}
+                alt="Seller Logo"
+                style={{ maxHeight: 30, marginBottom: 8, display: "block", marginLeft: "auto", marginRight: "auto" }}
+              />
+            )}
+          </Box>
           <Typography variant="h5" fontWeight="bold" gutterBottom>
             {campaign?.promotion?.offerTitle || "<Offer Title>"}
           </Typography>

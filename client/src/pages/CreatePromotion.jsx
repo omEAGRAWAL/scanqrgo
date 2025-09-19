@@ -469,7 +469,7 @@ export default function CreatePromotion() {
                 Select Warranty Time
               </label>
               <div className="flex space-x-2">
-                {["3 ", "6", "Custom"].map((period) => (
+                {["3 months", "6 months", "Custom"].map((period) => (
                   <button
                     key={period}
                     type="button"
@@ -499,7 +499,7 @@ export default function CreatePromotion() {
                     value={form.customWarranty}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="e.g., 1 Year"
+                    placeholder="e.g., 1 Month"
                   />
                 </div>
               )}
