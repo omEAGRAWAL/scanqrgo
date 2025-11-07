@@ -6,7 +6,7 @@ const isDevelopment =
 
 export const API_URL = isDevelopment
   ? "http://localhost:5000/api" // Local development
-  : "/api"; // Production - served from same domain
+  : "https://scanqrgo.onrender.com/api"; // Production - served from same domain
 
 // // AWS-specific configuration
 // export const AWS_CONFIG = {
