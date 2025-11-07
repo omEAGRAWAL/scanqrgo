@@ -21,9 +21,7 @@ const auth = async (req, res, next) => {
 
     if (!dbUser) return res.status(401).json({ message: "Account not found" });
     sub = dbUser.subscription.status;
-    if (sub === "expired") {
-      return res.status(401).json({ message: "Subscription expired" });
-    }
+
     req.user.role = dbUser.role;
 
     next();

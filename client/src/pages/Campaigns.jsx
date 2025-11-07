@@ -18,10 +18,10 @@ import {
   TableBody,
   TableContainer,
   Paper,
-  CircularProgress,
   Stack,
   IconButton,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 
 import { API_URL } from "../config/api";
@@ -34,7 +34,7 @@ import {
   BarChart,
   Campaign,
 } from "@mui/icons-material";
-import QRCode from "react-qr-code";
+
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,25 +66,6 @@ export default function Campaigns() {
     } finally {
       setLoading(false);
     }
-  }
-  //download as jpg
-  
-
-  function downloadQR(campaignid) {
-    // Download SVG QR code
-    const svg = document.querySelector("#qr-code-svg");
-    if (!svg) return;
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svg);
-    const blob = new Blob([svgString], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `campaign_${campaignid}_qr.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   }
 
   async function fetchStats() {
@@ -157,6 +138,54 @@ export default function Campaigns() {
     },
   ];
 
+  // Skeleton for stats cards
+  const statCardSkeletons = Array.from({ length: 4 }).map((_, i) => (
+    <Grid item xs={12} sm={6} md={3} key={`sk-stat-${i}`}>
+      <Card elevation={2}>
+        <CardContent>
+          <Skeleton variant="text" width={100} />
+          <Skeleton variant="text" width={60} height={28} />
+        </CardContent>
+      </Card>
+    </Grid>
+  ));
+
+  // Skeleton for table rows
+  const rowsSkeleton = Array.from({ length: 6 }).map((_, i) => (
+    <TableRow key={`sk-row-${i}`}>
+      <TableCell>
+        <Skeleton variant="text" width={30} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={160} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={100} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="rectangular" width={70} height={24} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={120} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={60} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={80} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={60} />
+      </TableCell>
+      <TableCell>
+        <Skeleton variant="text" width={100} />
+      </TableCell>
+      <TableCell align="right">
+        <Skeleton variant="rectangular" width={150} height={32} />
+      </TableCell>
+    </TableRow>
+  ));
+
   return (
     <Box p={4}>
       {/* Header */}
@@ -206,69 +235,58 @@ export default function Campaigns() {
 
       {/* Stats Cards */}
       <Grid container spacing={2} mb={4}>
-        {statCards.map((s, i) => (
-          <Grid item xs={12} sm={6} md={3} key={i}>
-            <Card elevation={2}>
-              <CardContent
-                sx={
-                  {
-                    // display: "flex",
-                    // // alignItems: "center",
-                    // justifyContent: "space-between",
-                  }
-                }
-              >
-                <Box>
-                  <Typography
-                    // variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 0.5 }}
-                  >
-                    {s.label}
-                    {/* {s.value} */}
-                  </Typography>
-                  <Typography variant="h6">{s.value}</Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+        {loading
+          ? statCardSkeletons
+          : statCards.map((s, i) => (
+              <Grid item xs={12} sm={6} md={3} key={i}>
+                <Card elevation={2}>
+                  <CardContent>
+                    <Box>
+                      <Typography color="text.secondary" sx={{ mb: 0.5 }}>
+                        {s.label}
+                      </Typography>
+                      <Typography variant="h6">{s.value}</Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
       </Grid>
 
-      {/* Error & Loading */}
+      {/* Error */}
       {error && <Typography color="error">{error}</Typography>}
-      {loading && (
-        <Box display="flex" justifyContent="center" mt={5}>
-          <CircularProgress />
-        </Box>
-      )}
 
       {/* Campaigns Table */}
-      {!loading && campaigns.length === 0 && (
-        <Typography>No campaigns found</Typography>
-      )}
-      {!loading && campaigns.length > 0 && (
-        <TableContainer component={Paper}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>#</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Products</TableCell>
-                <TableCell>Scans</TableCell>
-                <TableCell>Completions</TableCell>
-                <TableCell>Conversion</TableCell>
-                <TableCell>Created</TableCell>
-                <TableCell align="right">Actions</TableCell>
+      <TableContainer component={Paper}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Products</TableCell>
+              <TableCell>Scans</TableCell>
+              <TableCell>Completions</TableCell>
+              <TableCell>Conversion</TableCell>
+              <TableCell>Created</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading && rowsSkeleton}
 
-                {/* <TableCell align="right">Download QR</TableCell>
-                <TableCell align="right">QR</TableCell> */}
+            {!loading && campaigns.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={10} align="center">
+                  <Typography>No campaigns found</Typography>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {campaigns.map((campaign, i) => (
+            )}
+
+            {!loading &&
+              campaigns.length > 0 &&
+              campaigns.map((campaign, i) => (
                 <TableRow key={campaign._id} hover>
                   <TableCell>{i + 1}</TableCell>
                   <TableCell>{campaign.name}</TableCell>
@@ -351,43 +369,11 @@ export default function Campaigns() {
                       </Tooltip>
                     </Stack>
                   </TableCell>
-                  {/* <QRCode
-                  id="qr-code-svg"
-                  value={`https://reviu.store/campaign/${campaign._id}`}
-                  size={120}
-                  bgColor="#fff"
-                  fgColor="#000"
-                  level="Q"
-                  style={{ width: 120, height: 120 }}
-                /> */}
-                  <TableCell align="right">
-                    <Button
-                      variant="outlined"
-                      // extra small
-                      style={{ fontSize: "8px" }}
-                      onClick={() => downloadQR(campaign._id)}
-                    >
-                      Download QR
-                    </Button>
-                  </TableCell>
-                  {/* <TableCell align="right">//display small qr code</TableCell> */}
-                  {/* <TableCell align="right">
-                    <QRCode
-                      id="qr-code-svg"
-                      value={`https://reviu.store/campaign/${campaign._id}`}
-                      size={120}
-                      bgColor="#fff"
-                      fgColor="#000"
-                      level="Q"
-                      style={{ width: 25, height: 25 }}
-                    />
-                  </TableCell> */}
                 </TableRow>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-// In a real app, this would likely be in a config file
-// const API_URL = "/api"; // Example API endpoint
+import Select from "react-select"; // ✅ react-select
 import { API_URL } from "../config/api";
+
 export default function CreateCampaign() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -15,7 +14,7 @@ export default function CreateCampaign() {
     name: "",
     category: "promotion",
     promotion: "",
-    products: [], // This will hold the multiple selected product IDs
+    products: [], // Multiple product IDs
     reviewMinimumLength: 10,
     enableSmartFunnel: false,
     promotionSettings: {
@@ -63,7 +62,7 @@ export default function CreateCampaign() {
   }
 
   function handleChange(e) {
-    const { name, value, type, checked, options } = e.target;
+    const { name, value, type, checked } = e.target;
 
     if (name.startsWith("promotionSettings.")) {
       const settingKey = name.split(".")[1];
@@ -76,14 +75,6 @@ export default function CreateCampaign() {
       setForm({
         ...form,
         customization: { ...form.customization, [customKey]: value },
-      });
-    } else if (name === "products" && type === "select-multiple") {
-      const selectedProducts = Array.from(options)
-        .filter((option) => option.selected)
-        .map((option) => option.value);
-      setForm({
-        ...form,
-        products: selectedProducts,
       });
     } else {
       setForm({
@@ -173,14 +164,11 @@ export default function CreateCampaign() {
                 />
               </div>
 
-              {/* Products Selection - Updated to multi-select dropdown */}
+              {/* Products Selection - react-select */}
               <div className="space-y-4">
                 <label className="text-lg font-semibold text-gray-800 block">
                   Select Products *
                 </label>
-                <p className="text-sm text-gray-500 -mt-2">
-                  Hold down Ctrl (or Cmd on Mac) to select multiple products.
-                </p>
                 {products.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-xl">
                     <p className="text-gray-500 mb-4">No products found</p>
@@ -192,60 +180,67 @@ export default function CreateCampaign() {
                     </Link>
                   </div>
                 ) : (
-                  <select
-                    multiple
+                  <Select
+                    isMulti
                     name="products"
-                    value={form.products}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all h-40"
-                  >
-                    {products.map((product) => (
-                      <option
-                        key={product._id}
-                        value={product._id}
-                        className="p-2"
-                      >
-                        {product.name} ({product.marketplace})
-                      </option>
-                    ))}
-                  </select>
+                    options={products.map((p) => ({
+                      value: p._id,
+                      label: `${p.name} (${p.marketplace})`,
+                    }))}
+                    value={form.products.map((id) => {
+                      const product = products.find((p) => p._id === id);
+                      return product
+                        ? {
+                            value: product._id,
+                            label: `${product.name} (${product.marketplace})`,
+                          }
+                        : null;
+                    })}
+                    onChange={(selected) =>
+                      setForm({
+                        ...form,
+                        products: selected.map((s) => s.value),
+                      })
+                    }
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    placeholder="Choose products..."
+                  />
                 )}
               </div>
 
               {/* Promotion-specific fields */}
               {form.category === "promotion" && (
-                <>
-                  <div className="space-y-4">
-                    <label className="text-lg font-semibold text-gray-800 block">
-                      Select Promotion *
-                    </label>
-                    <select
-                      name="promotion"
-                      value={form.promotion}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    >
-                      <option value="">Choose a promotion</option>
-                      {promotions.map((promo) => (
-                        <option key={promo._id} value={promo._id}>
-                          {promo.name} ({promo.type})
-                        </option>
-                      ))}
-                    </select>
-                    {promotions.length === 0 && (
-                      <p className="text-sm text-gray-500">
-                        No active promotions found.{" "}
-                        <Link
-                          to="/promotions/create"
-                          className="text-blue-600 hover:underline"
-                        >
-                          Create one first
-                        </Link>
-                      </p>
-                    )}
-                  </div>
-                </>
+                <div className="space-y-4">
+                  <label className="text-lg font-semibold text-gray-800 block">
+                    Select Promotion *
+                  </label>
+                  <select
+                    name="promotion"
+                    value={form.promotion}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Choose a promotion</option>
+                    {promotions.map((promo) => (
+                      <option key={promo._id} value={promo._id}>
+                        {promo.name} ({promo.type})
+                      </option>
+                    ))}
+                  </select>
+                  {promotions.length === 0 && (
+                    <p className="text-sm text-gray-500">
+                      No active promotions found.{" "}
+                      <Link
+                        to="/promotions/create"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Create one first
+                      </Link>
+                    </p>
+                  )}
+                </div>
               )}
 
               {/* Error Display */}

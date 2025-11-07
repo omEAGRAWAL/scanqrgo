@@ -91,6 +91,9 @@
 //             <Skeleton variant="text" width={120} />
 //           </TableCell>
 //           <TableCell>
+//             <Skeleton variant="text" width={120} />
+//           </TableCell>
+//           <TableCell>
 //             <Skeleton variant="text" width={100} />
 //           </TableCell>
 //           <TableCell align="right">
@@ -180,7 +183,8 @@
 //               <TableRow>
 //                 <TableCell>Image</TableCell>
 //                 <TableCell>Product Name</TableCell>
-//                 <TableCell>ASIN</TableCell>
+//                 <TableCell>Amazon ASIN</TableCell>
+//                 <TableCell>Flipkart FSN</TableCell>
 //                 <TableCell>Added On</TableCell>
 //                 <TableCell align="right">Actions</TableCell>
 //               </TableRow>
@@ -191,7 +195,7 @@
 
 //               {!loading && products.length === 0 && (
 //                 <TableRow>
-//                   <TableCell colSpan={5}>{emptyState}</TableCell>
+//                   <TableCell colSpan={6}>{emptyState}</TableCell>
 //                 </TableRow>
 //               )}
 
@@ -203,7 +207,8 @@
 //                   const created = product?.createdAt
 //                     ? new Date(product.createdAt).toLocaleDateString()
 //                     : "-";
-//                   const asin = product?.marketplaceProductId || "--";
+//                   const asin = product?.amazonAsin || "–";
+//                   const fsn = product?.flipkartFsn || "–";
 //                   const name = product?.name || "-";
 
 //                   return (
@@ -234,7 +239,6 @@
 //                       <TableCell>
 //                         <Stack direction="row" spacing={1} alignItems="center">
 //                           <Typography fontWeight={400}>{name}</Typography>
-//                           {/* Example badge for optional situations (e.g., new) */}
 //                           {product?.isNew && (
 //                             <Chip
 //                               label="New"
@@ -249,10 +253,18 @@
 //                         <Typography
 //                           variant="body2"
 //                           color={
-//                             asin === "--" ? "text.disabled" : "text.primary"
+//                             asin === "–" ? "text.disabled" : "text.primary"
 //                           }
 //                         >
 //                           {asin}
+//                         </Typography>
+//                       </TableCell>
+//                       <TableCell>
+//                         <Typography
+//                           variant="body2"
+//                           color={fsn === "–" ? "text.disabled" : "text.primary"}
+//                         >
+//                           {fsn}
 //                         </Typography>
 //                       </TableCell>
 //                       <TableCell>{created}</TableCell>
@@ -328,7 +340,7 @@ import {
   Skeleton,
   Tooltip,
 } from "@mui/material";
-import { Add, Edit, Delete } from "@mui/icons-material";
+import { Add, Edit, Delete, ShoppingBag } from "@mui/icons-material";
 import { API_URL } from "../config/api";
 
 export default function Products() {
@@ -336,6 +348,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -352,9 +365,16 @@ export default function Products() {
       setLoading(true);
       const token = localStorage.getItem("token");
       const url = `${API_URL}/products`;
-      const res = await fetch(url, { headers: { Authorization: token || "" } });
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `${token}` || "",
+        },
+      });
       const data = await res.json();
+
       if (!res.ok) throw new Error(data.message || "Failed to fetch products");
+
+      // Go backend returns { count, products }
       setProducts(data.products || []);
       setError("");
     } catch (err) {
@@ -367,22 +387,59 @@ export default function Products() {
   async function handleDelete(productId) {
     if (!window.confirm("Are you sure you want to delete this product?"))
       return;
+
     setError("");
     setSuccess("");
+    setDeletingId(productId);
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/products/${productId}`, {
         method: "DELETE",
-        headers: { Authorization: token || "" },
+        headers: {
+          Authorization: `${token}` || "",
+        },
       });
       const data = await res.json();
+
       if (!res.ok) throw new Error(data.message || "Failed to delete product");
-      setProducts((prev) => prev.filter((p) => p._id !== productId));
-      setSuccess("Product deleted successfully.");
+
+      // Remove from state
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+      setSuccess(data.message || "Product deleted successfully.");
     } catch (err) {
       setError(err.message || "Failed to delete product");
+    } finally {
+      setDeletingId(null);
     }
   }
+
+  // Helper to render marketplace badges
+  const renderMarketplaces = (product) => {
+    const marketplaces = product?.availableMarketplaces || [];
+
+    if (marketplaces.length === 0) {
+      return (
+        <Typography variant="body2" color="text.disabled">
+          No marketplaces
+        </Typography>
+      );
+    }
+
+    return (
+      <Stack direction="row" spacing={0.5}>
+        {marketplaces.map((marketplace) => (
+          <Chip
+            key={marketplace}
+            label={marketplace}
+            size="small"
+            variant="outlined"
+            color={marketplace === "Amazon" ? "primary" : "secondary"}
+          />
+        ))}
+      </Stack>
+    );
+  };
 
   const rowsSkeleton = useMemo(
     () =>
@@ -413,14 +470,14 @@ export default function Products() {
 
   const emptyState = (
     <Box textAlign="center" py={6}>
+      <ShoppingBag sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
       <Typography variant="h6" gutterBottom>
         No products found
       </Typography>
-      <Typography color="text.secondary">
-        Add a new product to get started managing the catalog.
+      <Typography color="text.secondary" mb={2}>
+        Add a new product to get started managing your catalog.
       </Typography>
       <Button
-        sx={{ mt: 2 }}
         variant="contained"
         startIcon={<Add />}
         component={RouterLink}
@@ -438,12 +495,14 @@ export default function Products() {
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        mb={2}
+        mb={3}
       >
         <Box>
-          <Typography variant="h4">Products</Typography>
+          <Typography variant="h4" fontWeight={600} gutterBottom>
+            Products
+          </Typography>
           <Typography color="text.secondary">
-            Manage the product catalog and keep details up to date
+            Manage your product catalog and marketplace listings
           </Typography>
         </Box>
         <Button
@@ -451,6 +510,7 @@ export default function Products() {
           startIcon={<Add />}
           component={RouterLink}
           to="/products/create"
+          size="large"
         >
           New Product
         </Button>
@@ -492,6 +552,7 @@ export default function Products() {
                 <TableCell>Product Name</TableCell>
                 <TableCell>Amazon ASIN</TableCell>
                 <TableCell>Flipkart FSN</TableCell>
+                <TableCell>Marketplaces</TableCell>
                 <TableCell>Added On</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
@@ -502,13 +563,15 @@ export default function Products() {
 
               {!loading && products.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6}>{emptyState}</TableCell>
+                  <TableCell colSpan={7}>{emptyState}</TableCell>
                 </TableRow>
               )}
 
               {!loading &&
                 products.length > 0 &&
                 products.map((product) => {
+                  // Go backend uses 'id' not '_id'
+                  const productId = product.id || product._id;
                   const initial =
                     product?.name?.trim()?.charAt(0)?.toUpperCase() || "P";
                   const created = product?.createdAt
@@ -517,25 +580,26 @@ export default function Products() {
                   const asin = product?.amazonAsin || "–";
                   const fsn = product?.flipkartFsn || "–";
                   const name = product?.name || "-";
+                  const imageUrl = product?.imageurl || product?.imageUrl;
 
                   return (
-                    <TableRow key={product._id} hover>
+                    <TableRow key={productId} hover>
                       <TableCell>
-                        {product?.imageurl ? (
+                        {imageUrl ? (
                           <Avatar
-                            src={product.imageurl}
+                            src={imageUrl}
                             alt={name}
                             variant="rounded"
-                            sx={{ width: 40, height: 40 }}
+                            sx={{ width: 48, height: 48 }}
                           />
                         ) : (
                           <Avatar
                             variant="rounded"
                             sx={{
-                              width: 40,
-                              height: 40,
-                              bgcolor: "grey.200",
-                              color: "text.primary",
+                              width: 48,
+                              height: 48,
+                              bgcolor: "primary.light",
+                              color: "primary.contrastText",
                               fontWeight: 600,
                             }}
                           >
@@ -544,21 +608,12 @@ export default function Products() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Typography fontWeight={400}>{name}</Typography>
-                          {product?.isNew && (
-                            <Chip
-                              label="New"
-                              color="success"
-                              size="small"
-                              variant="outlined"
-                            />
-                          )}
-                        </Stack>
+                        <Typography fontWeight={500}>{name}</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography
                           variant="body2"
+                          fontFamily="monospace"
                           color={
                             asin === "–" ? "text.disabled" : "text.primary"
                           }
@@ -569,35 +624,42 @@ export default function Products() {
                       <TableCell>
                         <Typography
                           variant="body2"
+                          fontFamily="monospace"
                           color={fsn === "–" ? "text.disabled" : "text.primary"}
                         >
                           {fsn}
                         </Typography>
                       </TableCell>
-                      <TableCell>{created}</TableCell>
+                      <TableCell>{renderMarketplaces(product)}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {created}
+                        </Typography>
+                      </TableCell>
                       <TableCell align="right">
                         <Stack
                           direction="row"
                           spacing={1}
                           justifyContent="flex-end"
                         >
-                          <Tooltip title="Edit">
+                          <Tooltip title="Edit Product">
                             <IconButton
                               component={RouterLink}
-                              to={`/products/${product._id}/edit`}
+                              to={`/products/${productId}/edit`}
                               size="small"
                               color="primary"
                             >
                               <Edit fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Delete">
+                          <Tooltip title="Delete Product">
                             <IconButton
-                              onClick={() => handleDelete(product._id)}
+                              onClick={() => handleDelete(productId)}
                               size="small"
                               color="error"
+                              disabled={deletingId === productId}
                             >
-                              {loading ? (
+                              {deletingId === productId ? (
                                 <CircularProgress size={16} />
                               ) : (
                                 <Delete fontSize="small" />
@@ -614,9 +676,10 @@ export default function Products() {
         </TableContainer>
 
         {!loading && products.length > 0 && (
-          <Box px={2} py={1}>
+          <Box px={3} py={2} borderTop={1} borderColor="divider">
             <Typography variant="body2" color="text.secondary">
-              Showing {products.length} product{products.length > 1 ? "s" : ""}
+              Showing {products.length} product
+              {products.length !== 1 ? "s" : ""}
             </Typography>
           </Box>
         )}

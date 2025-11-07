@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indian Polity Quiz</title>
+    <style>
+      /* Basic Styling */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: #000000;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Main Container */
+      #quiz-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #0f0f0f;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #ebf0f5;
+        margin-bottom: 25px;
+      }
+
+      /* Question Block */
+      .question-block {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .question-block:last-child {
+        border-bottom: none;
+      }
+
+      .question-text {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #ebf0f5;
+      }
+
+      /* Options */
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: #000;
+      }
+
+      .option-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e9f3f9;
+        border-radius: 5px;
+        background-color: #aaa7a7;
+        text-align: left;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .option-btn:hover:not(:disabled) {
+        background-color: #ecf0f1;
+        border-color: #3498db;
+      }
+
+      .option-btn:disabled {
+        cursor: not-allowed;
+        color: #333; /* Keep text color readable */
+      }
+
+      /* Feedback Styles */
+      .result {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: none; /* Hidden by default */
+      }
+
+      .correct {
+        background-color: #d4edda !important; /* Light Green */
+        border-color: #c3e6cb !important;
+      }
+
+      .incorrect {
+        background-color: #f8d7da !important; /* Light Red */
+        border-color: #f5c6cb !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="quiz-container">
+      <h1>Indian Polity Quiz: The President</h1>
+    </div>
+
+    <script>
+      const quizData = [
+        {
+          qNum: 23,
+          question:
+            "As per provisions of the Constitution of India, who makes rules for more convenient transaction of the business of the Government of India, and for allocation among Ministers of the said business?",
+          options: {
+            a: "The President",
+            b: "The Union Law Minister",
+            c: "The Attorney-General of India",
+            d: "The Cabinet Secretariat",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 24,
+          question:
+            "On receipt of a Constitutional Amendment Bill after its passing by each House of the Parliament, the President:",
+          options: {
+            a: "Shall give his assent",
+            b: "May give his assent",
+            c: "May withhold his assent",
+            d: "May return the Bill for reconsideration",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 25,
+          question:
+            "“The President may require the Council of Ministers to reconsider the advice tendered by the latter and shall act in accordance with the advice tendered after such reconsideration.” The above provision was inserted in the Indian Constitution by the:",
+          options: {
+            a: "38th Amendment",
+            b: "42nd Amendment",
+            c: "44th Amendment",
+            d: "52nd Amendment",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 26,
+          question:
+            "Assertion (A): The President of India can return any bill passed by Parliament for reconsideration of the Houses. Reason (R): The President cannot return money bills to the Parliament for reconsideration of the Houses.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 27,
+          question:
+            "Which one of the following is not correct about the powers of the President of India to grant pardons, reprieves, respites or remissions of punishment or to suspend, remit or commute the sentence of any person convicted of any offence?",
+          options: {
+            a: "The President can do so in all cases where the punishment or sentence is by a Court Martial.",
+            b: "The President may exercise such powers in all cases where punishment or sentence is for an offence against any law falling within the executive power of the Union.",
+            c: "The President may exercise such powers in all cases where the sentence is a sentence of death.",
+            d: "The President may reject a petition for mercy but he must hear a petition for mercy before rejecting.",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 28,
+          question:
+            "Which one of the following statements about the executive powers of the President is incorrect?",
+          options: {
+            a: "All important appointments are made by the President on the advice of the Council of Ministers.",
+            b: "The Prime Minister and all Union Ministers are appointed by the President.",
+            c: "The President has the absolute power to appoint and remove the chairmen and the members of statutory bodies at his discretion.",
+            d: "The President is the supreme commander of the Armed Forces.",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 29,
+          question:
+            "The President of India is elected by the ‘Electoral College’ consisting of:",
+          options: {
+            a: "All Members of Parliament.",
+            b: "Elected Members of Parliament and State Legislative Assemblies.",
+            c: "Members of Parliament, State Legislative Assemblies and Legislative Councils.",
+            d: "All the Members of Parliament and State Legislative Assemblies.",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 30,
+          question:
+            "Consider the following statements:\n1. If a Bill other than Money Bill is returned by the President for reconsideration of the Houses and the Bill is again passed by both the Houses of Parliament with or without amendments and again presented to the President, then also it is not obligatory upon him to declare his assent to it.\n2. A Bill for the purpose of formation of new States and alteration of areas, boundaries or names of existing States can be introduced in either House of Parliament and no recommendation of the President is required for the introduction of such a Bill.\nWhich of the statement(s) given above is/are correct?",
+          options: {
+            a: "Only 1",
+            b: "Only 2",
+            c: "Both 1 and 2",
+            d: "Neither 1 nor 2",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 31,
+          question:
+            "Assertion (A): The President of India is indirectly elected. Reason (R): Under a parliamentary system of government, the head of the state is only a nominal head.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 32,
+          question:
+            "The authority to declare war or peace under the Indian Constitutions is vested in:",
+          options: {
+            a: "The Prime Minister",
+            b: "The Defence Minister",
+            c: "The Parliament",
+            d: "The President",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 33,
+          question: "Which one of the following statements is correct?",
+          options: {
+            a: "The President may continue to be a member of Parliament even after assuming charge of Presidential office.",
+            b: "The President is not barred from holding any other office of profit even after assuming charge of Presidential office.",
+            c: "The President is entitled to use his official residence only on payment of the rent fixed.",
+            d: "The emoluments and allowances of the President shall not be diminished during his term of office.",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 34,
+          question:
+            "Which one of the following is not a constitutional prerogative of the President of India?",
+          options: {
+            a: "Returning a Legislative Bill for reconsideration",
+            b: "Returning a Money Bill for reconsideration",
+            c: "Dissolving the Lok Sabha",
+            d: "Summoning the Rajya Sabha",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 35,
+          question:
+            "Consider the following statements relating to the President of India:\n1. He may resign by writing to the Vice-President.\n2. He shall continue, not withstanding the expiration of his term, to hold office until his successor enters upon his office.\n3. He is not entitled to hold the office for more than two terms.\nWhich of the statements given above are correct?",
+          options: {
+            a: "1 and 3 only",
+            b: "1 and 2 only",
+            c: "1, 2 and 3",
+            d: "2 and 3 only",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 36,
+          question:
+            "Assertion (A): The President of India occupies almost the same position as the King or Queen of England. Reason (R): The President is ultimately bound to act in accordance with the advice given by the Council of Ministers.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 37,
+          question:
+            "The President of India is not the authority for the appointment of:",
+          options: {
+            a: "Judges of the High Courts",
+            b: "State Governors",
+            c: "Union Ministers",
+            d: "Chairman of a State Public Service Commission",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 38,
+          question:
+            "Who among the following do not participate in the election of the President of India?",
+          options: {
+            a: "Elected Members of the Rajya Sabha",
+            b: "Elected Members of the Lok Sabha",
+            c: "Elected Members of the Vidhan Sabhas",
+            d: "Elected Members of the Vidhan Parishads",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 39,
+          question:
+            "Assertion (A): The President is part of the Parliament. Reason (R): A bill passed by the two Houses of Parliament cannot become law without the assent of the President.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 40,
+          question:
+            "Once the proclamation of emergency is made, the right of a citizen to move the Supreme Court for enforcement of his fundamental rights is suspended by the:",
+          options: {
+            a: "Prime Minister of India",
+            b: "President of India",
+            c: "Speaker of the Lok Sabha",
+            d: "Chief Justice of India",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 41,
+          question:
+            "Which one of the following is not correct regarding the executive powers of the President?",
+          options: {
+            a: "He must be kept informed by the Prime Minister of all decisions of the Cabinet.",
+            b: "He presides over the meetings of the Council of Ministers when he deems fit.",
+            c: "He can ask the Prime Minister to submit a decision of any minister for the consideration of the Council of Ministers.",
+            d: "He must be supplied with such other information about the administration of the country as he asks for it.",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 42,
+          question:
+            "Assertion (A): The President of India can issue a proclamation of emergency under Article 352 on the advice of the Prime Minister. Reason (R): When a proclamation of emergency is in operation, the President may suspend the operation of all the fundamental rights except Articles 20 and 21.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 43,
+          question:
+            "The power of the President of India to issue an ordinance is a / an:",
+          options: {
+            a: "Executive power",
+            b: "Legislative power",
+            c: "Constituent power",
+            d: "Quasi-judicial power",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 44,
+          question:
+            "The impeachment of the President of India can be initiated in:",
+          options: {
+            a: "Either House of Parliament",
+            b: "A joint sitting of both Houses of Parliament",
+            c: "The Lok Sabha alone",
+            d: "The Rajya Sabha alone",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 45,
+          question:
+            "Who amongst the following decides about the disqualification of the Members of Parliament?",
+          options: {
+            a: "Election Commission",
+            b: "Supreme Court",
+            c: "Speaker",
+            d: "President of India",
+          },
+          answer: "d",
+        },
+        {
+          qNum: 46,
+          question:
+            "Assertion (A): The Constitution vests the executive powers of the Union in the President of India. Reason (R): President of India is the Constitutional head of the State.",
+          options: {
+            a: "Both A and R are individually true and R is the correct explanation of A",
+            b: "Both A and R are individually true but R is not the correct explanation of A",
+            c: "A is true but R is false",
+            d: "A is false but R is true",
+          },
+          answer: "a",
+        },
+        {
+          qNum: 47,
+          question:
+            "When the President of India is satisfied that the financial credit of Government of India is threatened, he may:",
+          options: {
+            a: "Direct reduction in the number of members in the Finance Commission",
+            b: "Proclaim financial emergency",
+            c: "Impose President’s Rule in any State",
+            d: "Direct Parliament to pass a special Financial Bill.",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 48,
+          question:
+            "In the event of occurrence of vacancies in the offices of both, the President and the Vice-President of India, who among the following shall discharge the functions of the President till a new President is elected?",
+          options: {
+            a: "Speaker of the Lok Sabha",
+            b: "Leader of the majority party in the Lok Sabha",
+            c: "Chief Justice of India",
+            d: "Seniormost Governor",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 49,
+          question:
+            "The President of India has power to declare emergency under Article 352 on which of the following grounds?\n1. War\n2. Internal disturbance\n3. External aggression\n4. Armed rebellion\nSelect the correct answer using the codes given below:",
+          options: {
+            a: "1, 2 and 3",
+            b: "1, 3 and 4",
+            c: "1, 2 and 4",
+            d: "2, 3 and 4",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 50,
+          question:
+            "Consider the following statements in respect of an Ordinance promulgated by the President of India during recess of Parliament:\n1. Such an Ordinance may be withdrawn at any time by the President.\n2. Such an Ordinance shall be laid before both the Houses of Parliament and shall cease to operate at the expiration of six weeks from the reassembly of Parliament, or before that period if disapproved by both the Houses.\nWhich of the statement(s) given above is/are correct?",
+          options: {
+            a: "Only 1",
+            b: "Only 2",
+            c: "Both 1 and 2",
+            d: "Neither 1 nor 2",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 51,
+          question:
+            "Match List I (Pardoning Power of President) with List II (Implications):\nA. Commutation -> 1. Stay of the execution of a sentence for a temporary period\nB. Reprieve -> 2. Awarding a lesser sentence in place of one originally awarded.\nC. Remission -> 3. Substitution of one form of punishment for a lighter form.\nD. Respite -> 4. Reducing the period of sentence without changing its character.",
+          options: {
+            a: "A-3, B-4, C-2, D-1",
+            b: "A-4, B-2, C-1, D-3",
+            c: "A-3, B-1, C-4, D-2",
+            d: "A-4, B-3, C-2, D-1",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 52,
+          question: "The President of India is not empowered to proclaim:",
+          options: {
+            a: "Emergency arising out of war, external aggression or armed rebellion",
+            b: "Emergency due to breakdown of constitutional machinery in states",
+            c: "Financial emergency in the state of Jammu and Kashmir",
+            d: "Emergency arising out of threat to financial stability",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 53,
+          question:
+            "The President of India has the power to address both the Houses of Parliament at the commencement of:\n1. The first session after the general elections\n2. Each session\n3. The first session of each year\n4. The budget session of each year\nWhich of these are correct?",
+          options: {
+            a: "2 and 3",
+            b: "1 and 4",
+            c: "1 and 3",
+            d: "2 and 4",
+          },
+          answer: "c",
+        },
+        {
+          qNum: 54,
+          question:
+            "Consider the following statements:\n1. When the Vice-President of India acts as the President of India, he performs simultaneously the functions of the Chairman of the Rajya Sabha.\n2. The President of India can promulgate Ordinances at any time except when both the Houses of Parliament are in session.\nWhich of the statements given above is/are correct?",
+          options: {
+            a: "1 only",
+            b: "2 only",
+            c: "Both 1 and 2",
+            d: "Neither 1 nor 2",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 55,
+          question:
+            "The Constitutional Amendment relating to the declaration of emergency (1978) requires the President of India to act in accordance with the:",
+          options: {
+            a: "Collective advice of the entire Council of Ministers",
+            b: "Advice of the Union Cabinet",
+            c: "Advice of the Attorney General for India",
+            d: "Advice of the Supreme Court",
+          },
+          answer: "b",
+        },
+        {
+          qNum: 56,
+          question: "The Union Executive of India consists of:",
+          options: {
+            a: "The President, the Vice-President, the Lok Sabha Speaker and the Council of Ministers",
+            b: "The President, the Deputy Chairman of the Rajya Sabha, the Lok Sabha Speaker and the Prime Minister",
+            c: "The President and the Council of Ministers",
+            d: "The President, the Vice-President and the Council of Ministers",
+          },
+          answer: "d",
+        },
+      ];
+
+      const quizContainer = document.getElementById("quiz-container");
+
+      // Function to build the quiz on page load
+      function buildQuiz() {
+        quizData.forEach((item, index) => {
+          // Create the question block container
+          const questionBlock = document.createElement("div");
+          questionBlock.classList.add("question-block");
+          questionBlock.id = `q-${item.qNum}`;
+
+          // Create the question text element
+          const questionText = document.createElement("div");
+          questionText.classList.add("question-text");
+          questionText.innerText = `${item.qNum}. ${item.question}`;
+          questionBlock.appendChild(questionText);
+
+          // Create the options container
+          const optionsContainer = document.createElement("div");
+          optionsContainer.classList.add("options-container");
+
+          // Create and add option buttons
+          for (const key in item.options) {
+            const button = document.createElement("button");
+            button.classList.add("option-btn");
+            button.innerText = `(${key}) ${item.options[key]}`;
+            button.dataset.option = key; // Store the option value (a, b, c, d)
+            button.dataset.qnum = item.qNum; // Store the question number
+
+            button.addEventListener("click", checkAnswer);
+
+            optionsContainer.appendChild(button);
+          }
+          questionBlock.appendChild(optionsContainer);
+
+          // Create the result feedback element
+          const resultDiv = document.createElement("div");
+          resultDiv.classList.add("result");
+          questionBlock.appendChild(resultDiv);
+
+          // Add the completed question block to the main container
+          quizContainer.appendChild(questionBlock);
+        });
+      }
+
+      // Function to check the answer when an option is clicked
+      function checkAnswer(event) {
+        const selectedButton = event.currentTarget;
+        const selectedOption = selectedButton.dataset.option;
+        const qNum = selectedButton.dataset.qnum;
+
+        // Find the question data
+        const questionData = quizData.find((q) => q.qNum == qNum);
+        const correctAnswer = questionData.answer;
+
+        // Find the elements for this specific question
+        const questionBlock = document.getElementById(`q-${qNum}`);
+        const resultDiv = questionBlock.querySelector(".result");
+        const allOptionButtons = questionBlock.querySelectorAll(".option-btn");
+
+        // Disable all buttons for this question
+        allOptionButtons.forEach((btn) => {
+          btn.disabled = true;
+        });
+
+        // Show feedback
+        resultDiv.style.display = "block";
+
+        if (selectedOption === correctAnswer) {
+          selectedButton.classList.add("correct");
+          resultDiv.classList.add("correct");
+          resultDiv.innerText = "Correct!";
+        } else {
+          selectedButton.classList.add("incorrect");
+          resultDiv.classList.add("incorrect");
+          resultDiv.innerText = `Incorrect. The correct answer is (${correctAnswer}).`;
+
+          // Highlight the correct answer button
+          const correctButton = questionBlock.querySelector(
+            `.option-btn[data-option="${correctAnswer}"]`
+          );
+          correctButton.classList.add("correct");
+        }
+      }
+
+      // Initialize the quiz
+      buildQuiz();
+    </script>
+  </body>
+</html>

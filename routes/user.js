@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET); // Changed to no expiration
 
     res.json({
       token,
