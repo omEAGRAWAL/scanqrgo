@@ -23,8 +23,14 @@ import {
   Skeleton,
   Tooltip,
 } from "@mui/material";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github.css"; // You can use 'atom-one-dark.css' for dark mode
+
 import { Add, Edit, Delete, Visibility } from "@mui/icons-material";
 import { API_URL } from "../config/api";
+import TermsAndConditions from "./T&C";
 
 export default function Promotions() {
   const [promotions, setPromotions] = useState([]);
@@ -245,7 +251,9 @@ export default function Promotions() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell sx={{ minWidth: "200px" }}>Description</TableCell>
+                <TableCell sx={{ minWidth: "100px" }}>
+                  Terms & Conditions
+                </TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Value</TableCell>
                 <TableCell>Status</TableCell>
@@ -267,7 +275,18 @@ export default function Promotions() {
                 promotions.map((promotion) => (
                   <TableRow hover key={promotion._id}>
                     <TableCell>{promotion.name}</TableCell>
-                    <TableCell>{promotion.description || "-"}</TableCell>
+                    {/* <TableCell>{promotion.termsAndConditions || "-"}</TableCell> */}
+                    <div
+                      className="prose prose-indigo max-w- p-2"
+                      style={{ maxWidth: "350px" }}
+                    >
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeHighlight]}
+                      >
+                        {promotion.termsAndConditions || "-"}
+                      </ReactMarkdown>
+                    </div>
                     <TableCell sx={{ textTransform: "capitalize" }}>
                       {promotion.type || "-"}
                     </TableCell>
@@ -291,15 +310,6 @@ export default function Promotions() {
                         spacing={0.5}
                         justifyContent="flex-end"
                       >
-                        <Tooltip title="View">
-                          <IconButton
-                            component={Link}
-                            to={`/promotions/${promotion._id}`}
-                            size="small"
-                          >
-                            <Visibility fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
                         <Tooltip title="Edit">
                           <IconButton
                             component={Link}

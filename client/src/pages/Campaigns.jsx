@@ -22,9 +22,9 @@ import {
   IconButton,
   Tooltip,
   Skeleton,
+  Popover,
+  Link,
 } from "@mui/material";
-
-import { API_URL } from "../config/api";
 import {
   PlayArrow,
   Cancel,
@@ -34,6 +34,7 @@ import {
   BarChart,
   Campaign,
 } from "@mui/icons-material";
+import { API_URL } from "../config/api";
 
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
@@ -41,6 +42,8 @@ export default function Campaigns() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState({ status: "all", category: "all" });
   const [stats, setStats] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [popoverProducts, setPopoverProducts] = useState([]);
 
   useEffect(() => {
     fetchCampaigns();
@@ -76,29 +79,9 @@ export default function Campaigns() {
       });
       const data = await res.json();
       if (res.ok) setStats(data);
+      console.log("Stats data:", error, stats);
     } catch (err) {
       console.error("Failed to fetch stats:", err);
-    }
-  }
-
-  async function toggleStatus(campaignId, currentStatus) {
-    try {
-      const token = localStorage.getItem("token");
-      const newStatus = currentStatus === "active" ? "ended" : "active";
-      const res = await fetch(`${API_URL}/campaigns/${campaignId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to update status");
-      await fetchCampaigns();
-      await fetchStats();
-    } catch (err) {
-      alert(err.message);
     }
   }
 
@@ -115,80 +98,21 @@ export default function Campaigns() {
     }
   };
 
-  const statCards = [
-    {
-      label: "Total Campaigns",
-      value: stats?.summary?.total ?? 0,
-      icon: <Campaign color="primary" />,
-    },
-    {
-      label: "Active Campaigns",
-      value: stats?.summary?.active ?? 0,
-      icon: <PlayArrow color="success" />,
-    },
-    {
-      label: "Total Scans",
-      value: stats?.analytics?.totalScans ?? 0,
-      icon: <BarChart color="info" />,
-    },
-    {
-      label: "Completions",
-      value: stats?.analytics?.totalCompletions ?? 0,
-      icon: <BarChart color="secondary" />,
-    },
-  ];
+  // 🟢 Handle popover open/close
+  const handlePopoverOpen = (event, products) => {
+    setAnchorEl(event.currentTarget);
+    setPopoverProducts(products);
+  };
 
-  // Skeleton for stats cards
-  const statCardSkeletons = Array.from({ length: 4 }).map((_, i) => (
-    <Grid item xs={12} sm={6} md={3} key={`sk-stat-${i}`}>
-      <Card elevation={2}>
-        <CardContent>
-          <Skeleton variant="text" width={100} />
-          <Skeleton variant="text" width={60} height={28} />
-        </CardContent>
-      </Card>
-    </Grid>
-  ));
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setPopoverProducts([]);
+  };
 
-  // Skeleton for table rows
-  const rowsSkeleton = Array.from({ length: 6 }).map((_, i) => (
-    <TableRow key={`sk-row-${i}`}>
-      <TableCell>
-        <Skeleton variant="text" width={30} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={160} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={100} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="rectangular" width={70} height={24} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={120} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={60} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={80} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={60} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={100} />
-      </TableCell>
-      <TableCell align="right">
-        <Skeleton variant="rectangular" width={150} height={32} />
-      </TableCell>
-    </TableRow>
-  ));
+  const open = Boolean(anchorEl);
 
   return (
     <Box p={4}>
-      {/* Header */}
       <Stack
         direction="row"
         alignItems="center"
@@ -233,31 +157,16 @@ export default function Campaigns() {
         </FormControl>
       </Stack>
 
-      {/* Stats Cards */}
-      <Grid container spacing={2} mb={4}>
-        {loading
-          ? statCardSkeletons
-          : statCards.map((s, i) => (
-              <Grid item xs={12} sm={6} md={3} key={i}>
-                <Card elevation={2}>
-                  <CardContent>
-                    <Box>
-                      <Typography color="text.secondary" sx={{ mb: 0.5 }}>
-                        {s.label}
-                      </Typography>
-                      <Typography variant="h6">{s.value}</Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-      </Grid>
-
-      {/* Error */}
-      {error && <Typography color="error">{error}</Typography>}
-
       {/* Campaigns Table */}
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          maxHeight: "75vh",
+          overflow: "auto",
+          borderRadius: 2,
+          boxShadow: 2,
+        }}
+      >
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -265,7 +174,7 @@ export default function Campaigns() {
               <TableCell>Name</TableCell>
               <TableCell>Category</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Products</TableCell>
+              <TableCell width={150}>Products</TableCell>
               <TableCell>Scans</TableCell>
               <TableCell>Completions</TableCell>
               <TableCell>Conversion</TableCell>
@@ -274,7 +183,13 @@ export default function Campaigns() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading && rowsSkeleton}
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={10} align="center">
+                  <Skeleton variant="text" width="80%" />
+                </TableCell>
+              </TableRow>
+            )}
 
             {!loading && campaigns.length === 0 && (
               <TableRow>
@@ -285,95 +200,107 @@ export default function Campaigns() {
             )}
 
             {!loading &&
-              campaigns.length > 0 &&
-              campaigns.map((campaign, i) => (
-                <TableRow key={campaign._id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell>{campaign.name}</TableCell>
-                  <TableCell>{campaign.category}</TableCell>
-                  <TableCell>{statusChip(campaign.status)}</TableCell>
-                  <TableCell>
-                    {(campaign.products || []).map((p) => p.name).join(", ") ||
-                      "-"}
-                  </TableCell>
-                  <TableCell>{campaign.analytics?.totalScans || 0}</TableCell>
-                  <TableCell>
-                    {campaign.analytics?.totalCompletions || 0}
-                  </TableCell>
-                  <TableCell>
-                    {campaign.analytics?.conversionRate
-                      ? campaign.analytics.conversionRate.toFixed(1) + "%"
-                      : "0%"}
-                  </TableCell>
-                  <TableCell>
-                    {campaign.createdAt
-                      ? new Date(campaign.createdAt).toLocaleDateString()
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Stack direction="row" spacing={1}>
-                      <Tooltip title="Edit">
-                        <IconButton
+              campaigns.map((campaign, i) => {
+                const products = campaign.products || [];
+                const visible = products.slice(0, 3);
+                const remaining = products.length - visible.length;
+
+                return (
+                  <TableRow key={campaign._id} hover>
+                    <TableCell>{i + 1}</TableCell>
+                    <TableCell>{campaign.name}</TableCell>
+                    <TableCell>{campaign.category}</TableCell>
+                    <TableCell>{statusChip(campaign.status)}</TableCell>
+
+                    {/* 🟢 Improved Products Column */}
+                    <TableCell width={150}>
+                      {visible.map((p, idx) => (
+                        <Chip
+                          key={idx}
+                          label={p.name}
                           size="small"
-                          href={`/campaigns/${campaign._id}/edit`}
+                          sx={{ mr: 0.5, mb: 0.5, width: "200px " }}
+                          width={100}
+                        />
+                      ))}
+                      {remaining > 0 && (
+                        <Link
+                          component="button"
+                          variant="body2"
+                          onClick={(e) => handlePopoverOpen(e, products)}
                         >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="View">
-                        <IconButton
-                          size="small"
-                          href={`/campaigns/${campaign._id}`}
-                        >
-                          <Visibility fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="View Form">
-                        <IconButton
-                          size="small"
-                          href={`/campaign/${campaign._id}`}
-                        >
-                          <Launch fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip
-                        title={
-                          campaign.status === "active"
-                            ? "End Campaign"
-                            : "Activate Campaign"
-                        }
-                      >
-                        <Button
-                          size="small"
-                          variant={
-                            campaign.status === "active"
-                              ? "outlined"
-                              : "contained"
-                          }
-                          color={
-                            campaign.status === "active" ? "error" : "success"
-                          }
-                          startIcon={
-                            campaign.status === "active" ? (
-                              <Cancel />
-                            ) : (
-                              <PlayArrow />
-                            )
-                          }
-                          onClick={() =>
-                            toggleStatus(campaign._id, campaign.status)
-                          }
-                        >
-                          {campaign.status === "active" ? "End" : "Activate"}
-                        </Button>
-                      </Tooltip>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
+                          +{remaining} more
+                        </Link>
+                      )}
+                    </TableCell>
+
+                    <TableCell>{campaign.analytics?.totalScans || 0}</TableCell>
+                    <TableCell>
+                      {campaign.analytics?.totalCompletions || 0}
+                    </TableCell>
+                    <TableCell>
+                      {campaign.analytics?.conversionRate
+                        ? campaign.analytics.conversionRate.toFixed(1) + "%"
+                        : "0%"}
+                    </TableCell>
+                    <TableCell>
+                      {campaign.createdAt
+                        ? new Date(campaign.createdAt).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Stack direction="row" spacing={1}>
+                        {/* <Tooltip title="Edit">
+                          <IconButton
+                            size="small"
+                            href={`/campaigns/${campaign._id}/edit`}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                        </Tooltip> */}
+                        <Tooltip title="View">
+                          <IconButton
+                            size="small"
+                            href={`/campaigns/${campaign._id}`}
+                          >
+                            <Visibility fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="View Form">
+                          <IconButton
+                            size="small"
+                            href={`/campaign/${campaign._id}`}
+                          >
+                            <Launch fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* 🟢 Product List Popover */}
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Box p={2} sx={{ maxWidth: 500 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+            Products
+          </Typography>
+          <Stack spacing={0.5}>
+            {popoverProducts.map((p, idx) => (
+              <Chip key={idx} label={p.name} />
+            ))}
+          </Stack>
+        </Box>
+      </Popover>
     </Box>
   );
 }

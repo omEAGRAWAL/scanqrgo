@@ -121,7 +121,6 @@ router.put("/:id", auth, async (req, res) => {
       warrantyPeriod,
       couponCode,
       termsAndConditions,
-      status,
     } = req.body;
 
     // Find promotion and ensure it belongs to the current user
@@ -143,14 +142,12 @@ router.put("/:id", auth, async (req, res) => {
     }
 
     // Validate status if provided
-    if (status && !["active", "inactive"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
-
-    // Validate deliveryType if provided
-    if (deliveryType && !["auto", "manual"].includes(deliveryType)) {
-      return res.status(400).json({ message: "Invalid delivery type" });
-    }
+    // name,
+    //       offerTitle,
+    //       type,
+    //       warrantyPeriod,
+    //       couponCode,
+    //       termsAndConditions,
 
     // Update fields
     if (name) promotion.name = name;
@@ -159,7 +156,6 @@ router.put("/:id", auth, async (req, res) => {
     if (warrantyPeriod) promotion.warrantyPeriod = warrantyPeriod;
     if (couponCode) promotion.couponCode = couponCode;
     if (termsAndConditions) promotion.termsAndConditions = termsAndConditions;
-    if (status) promotion.status = status;
 
     await promotion.save();
 
@@ -175,7 +171,7 @@ router.put("/:id", auth, async (req, res) => {
     if (error.name === "CastError") {
       return res.status(400).json({ message: "Invalid promotion ID" });
     }
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error });
   }
 });
 

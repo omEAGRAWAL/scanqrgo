@@ -117,7 +117,7 @@ export default function LeftNav({ user }) {
                     ? "success.light"
                     : user?.subscription?.status === "freeTrial"
                     ? "warning.light"
-                    : "error.light",
+                    : "white",
                 color: "#fff",
                 fontWeight: 500,
               }}
@@ -126,7 +126,7 @@ export default function LeftNav({ user }) {
                 ? "Free Trial"
                 : user?.subscription?.status === "active"
                 ? "Active"
-                : "Expired"}
+                : ""}
             </Typography>
           </Box>
         </Stack>

@@ -53,6 +53,11 @@ import { styled } from "@mui/material/styles";
 import { API_URL } from "../config/api";
 import { SiFlipkart } from "react-icons/si";
 import { FaAmazon } from "react-icons/fa";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github.css"; // You can use 'atom-one-dark.css' for dark mode
+
 // import rev from "../assets/Reviu_Logo.png";
 
 // Styled components
@@ -723,7 +728,7 @@ export default function PublicCampaignForm() {
         </Typography>
       )}
 
-      <Typography
+      {/* <Typography
         variant="body2"
         color="text.secondary"
         sx={{ fontStyle: "italic" }}
@@ -731,7 +736,18 @@ export default function PublicCampaignForm() {
         {campaign?.promotion?.termsAndConditions
           ? campaign.promotion.termsAndConditions
           : "<Extended Warranty Terms & Conditions>"}
-      </Typography>
+      </Typography> */}
+
+      <div className="prose prose-indigo max-w-none">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+        >
+          {campaign?.promotion?.termsAndConditions
+            ? campaign.promotion.termsAndConditions
+            : "warrenty is extended"}
+        </ReactMarkdown>
+      </div>
 
       <Box sx={{ pt: 2 }}>
         <Typography variant="h6" component="p" color="text.primary">
@@ -904,7 +920,13 @@ export default function PublicCampaignForm() {
               <img
                 src={campaign.seller.logoUrl}
                 alt="Seller Logo"
-                style={{ maxHeight: 30, marginBottom: 8, display: "block", marginLeft: "auto", marginRight: "auto" }}
+                style={{
+                  maxHeight: 30,
+                  marginBottom: 8,
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
               />
             )}
           </Box>

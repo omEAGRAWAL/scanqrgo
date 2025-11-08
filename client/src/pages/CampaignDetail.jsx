@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import {
@@ -18,15 +17,19 @@ import {
   CardContent,
   Divider,
   IconButton,
+  Snackbar,
+  Tooltip,
 } from "@mui/material";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
-import RedeemRoundedIcon from "@mui/icons-material/RedeemRounded";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
+import {
+  ArrowBackRounded,
+  EditRounded,
+  ContentCopyRounded,
+  OpenInNewRounded,
+  DownloadRounded,
+  RedeemRounded,
+  StarRounded,
+  LaunchRounded,
+} from "@mui/icons-material";
 import { API_URL } from "../config/api";
 import QRCode from "react-qr-code";
 
@@ -34,6 +37,7 @@ export default function CampaignDetail() {
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -59,15 +63,16 @@ export default function CampaignDetail() {
     }
   }
 
-  const publicURL = `${window.location.origin}/campaign/${id}`;
+  const publicURL = `https://reviu.store/campaign/${id}`;
 
-  function copyToClipboard(text, message = "Copied to clipboard!") {
+  function copyToClipboardOnce(text) {
+    if (copied) return; // Prevent multiple copies
     navigator.clipboard.writeText(text);
-    alert(message);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000); // Reset after 3s
   }
 
   function downloadQR() {
-    // Download SVG QR code
     const svg = document.querySelector("#qr-code-svg");
     if (!svg) return;
     const serializer = new XMLSerializer();
@@ -85,16 +90,18 @@ export default function CampaignDetail() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
-        <Skeleton variant="rectangular" height={120} />
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Skeleton variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
       </Container>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="lg">
-        <Alert severity="error">{error}</Alert>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error" sx={{ borderRadius: 2 }}>
+          {error}
+        </Alert>
       </Container>
     );
   }
@@ -102,65 +109,73 @@ export default function CampaignDetail() {
   if (!campaign) return null;
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Breadcrumb + Header */}
       <Stack spacing={2} mb={3}>
-        <Breadcrumbs separator="›">
-          <Link component={RouterLink} to="/campaigns">
+        <Breadcrumbs separator="›" sx={{ color: "text.secondary" }}>
+          <Link component={RouterLink} to="/campaigns" underline="hover">
             Campaigns
           </Link>
-          <Typography>{campaign.name}</Typography>
+          <Typography color="text.primary">{campaign.name}</Typography>
         </Breadcrumbs>
 
         <Stack
-          direction="row"
+          direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
-          alignItems="center"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          spacing={2}
         >
           <Stack spacing={1}>
-            <Typography variant="h4">{campaign.name}</Typography>
-            <Stack direction="row" spacing={1}>
-              <Chip
+            <Typography variant="h4" fontWeight={600}>
+              {campaign.name}
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {/* <Chip
                 icon={
                   campaign.category === "promotion" ? (
-                    <RedeemRoundedIcon />
+                    <RedeemRounded />
                   ) : (
-                    <StarRoundedIcon />
+                    <StarRounded />
                   )
                 }
-                label={`${campaign.category} Campaign`.toUpperCase()}
-              />
+                label={`${campaign.category} Campaign`}
+                color="primary"
+                variant="outlined"
+              /> */}
               <Chip
                 label={campaign.status.toUpperCase()}
                 color={campaign.status === "active" ? "success" : "default"}
               />
               <Chip
-                icon={<LaunchRoundedIcon />}
+                icon={<LaunchRounded />}
                 label={new Date(campaign.createdAt).toLocaleDateString()}
               />
             </Stack>
           </Stack>
+
           <Stack direction="row" spacing={1}>
             <Button
-              startIcon={<ArrowBackRoundedIcon />}
+              startIcon={<ArrowBackRounded />}
               component={RouterLink}
               to="/campaigns"
+              variant="outlined"
             >
               Back
             </Button>
-            <Button
-              startIcon={<EditRoundedIcon />}
+            {/* <Button
+              startIcon={<EditRounded />}
               component={RouterLink}
               to={`/campaigns/${campaign._id}/edit`}
+              variant="contained"
             >
               Edit
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
       </Stack>
 
       {/* Analytics */}
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={2} mb={4}>
         {[
           { label: "Total Scans", value: campaign.analytics?.totalScans || 0 },
           {
@@ -176,10 +191,21 @@ export default function CampaignDetail() {
             value:
               (campaign.analytics?.conversionRate?.toFixed?.(1) || 0) + "%",
           },
-        ].map((stat, idx) => (
-          <Grid item xs={6} md={3} key={idx}>
-            <Paper elevation={2} sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="h6">{stat.value}</Typography>
+        ].map((stat, i) => (
+          <Grid item xs={6} md={3} key={i}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                textAlign: "center",
+                borderRadius: 2,
+                transition: "0.3s",
+                "&:hover": { boxShadow: 6 },
+              }}
+            >
+              <Typography variant="h5" fontWeight={600}>
+                {stat.value}
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 {stat.label}
               </Typography>
@@ -189,35 +215,33 @@ export default function CampaignDetail() {
       </Grid>
 
       <Stack spacing={3}>
-        {/* Campaign Details */}
-        <Card>
+        {/* <Card elevation={2} sx={{ borderRadius: 3 }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Campaign Details
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Typography>Name: {campaign.name}</Typography>
-            <Typography>Category: {campaign.category}</Typography>
-            <Typography>Status: {campaign.status.toUpperCase()}</Typography>
-          </CardContent>
-        </Card>
-
-        {/* Products */}
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom fontWeight={600}>
               Associated Products
             </Typography>
             <Divider sx={{ mb: 2 }} />
             {(campaign.products || []).length > 0 ? (
               <Grid container spacing={2}>
                 {campaign.products.map((p) => (
-                  <Grid item xs={12} md={6} key={p._id}>
-                    <Paper sx={{ p: 2 }}>
-                      <Typography variant="subtitle1">{p.name}</Typography>
-                      <Typography variant="body2">{p.marketplace}</Typography>
+                  <Grid item xs={12} sm={6} md={4} key={p._id}>
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        transition: "0.3s",
+                        "&:hover": { boxShadow: 4 },
+                      }}
+                    >
+                      <Typography variant="subtitle1" fontWeight={500}>
+                        {p.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {p.marketplace || "N/A"}
+                      </Typography>
                       {p.marketplaceProductId && (
-                        <Typography variant="caption">
+                        <Typography variant="caption" color="text.secondary">
                           ID: {p.marketplaceProductId}
                         </Typography>
                       )}
@@ -227,84 +251,80 @@ export default function CampaignDetail() {
               </Grid>
             ) : (
               <Typography color="text.secondary">
-                No products linked.
+                No products linked to this campaign.
               </Typography>
             )}
           </CardContent>
-        </Card>
-
-        {/* Public Form */}
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Public Form
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography>{publicURL}</Typography>
-              <IconButton onClick={() => copyToClipboard(publicURL)}>
-                <ContentCopyRoundedIcon />
-              </IconButton>
-              <IconButton
-                component="a"
-                href={publicURL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <OpenInNewRoundedIcon />
-              </IconButton>
-            </Stack>
-          </CardContent>
-        </Card>
+        </Card> */}
 
         {/* QR Code */}
-        <Card>
+        <Card elevation={2} sx={{ borderRadius: 3 }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom fontWeight={600}>
               QR Code
             </Typography>
             <Divider sx={{ mb: 2 }} />
-
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Box sx={{ p: 1, background: "#fff", borderRadius: 1 }}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              alignItems="center"
+              spacing={3}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "#fff",
+                  borderRadius: 2,
+                  boxShadow: 2,
+                  transition: "0.3s",
+                  "&:hover": { transform: "scale(1.05)" },
+                }}
+              >
                 <QRCode
                   id="qr-code-svg"
-                  value={`https://reviu.store/campaign/${campaign._id}`}
-                  size={120}
-                  bgColor="#fff"
-                  fgColor="#000"
+                  value={publicURL}
+                  size={140}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
                   level="Q"
-                  style={{ width: 120, height: 120 }}
                 />
               </Box>
+
               <Stack direction="row" spacing={1}>
-                <IconButton
-                  onClick={() =>
-                    window.open(
-                      `https://reviu.store/campaign/${campaign._id}`,
-                      "_blank"
-                    )
-                  }
+                <Button
+                  variant="outlined"
+                  startIcon={<OpenInNewRounded />}
+                  onClick={() => window.open(publicURL, "_blank")}
                 >
-                  <OpenInNewRoundedIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() =>
-                    copyToClipboard(
-                      `https://reviu.store/campaign/${campaign._id}`
-                    )
-                  }
+                  Open
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<ContentCopyRounded />}
+                  onClick={() => copyToClipboardOnce(publicURL)}
                 >
-                  <ContentCopyRoundedIcon />
-                </IconButton>
-                <IconButton onClick={downloadQR}>
-                  <DownloadRoundedIcon />
-                </IconButton>
+                  Copy Link
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<DownloadRounded />}
+                  onClick={downloadQR}
+                >
+                  Download QR
+                </Button>
               </Stack>
             </Stack>
           </CardContent>
         </Card>
       </Stack>
+
+      {/* Snackbar for Copy */}
+      <Snackbar
+        open={copied}
+        message="Link copied to clipboard"
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        autoHideDuration={3000}
+        onClose={() => setCopied(false)}
+      />
     </Container>
   );
 }

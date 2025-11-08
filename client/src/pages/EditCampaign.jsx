@@ -89,12 +89,9 @@ export default function EditCampaign() {
 
   async function fetchPromotions() {
     try {
-      const res = await fetch(
-        `${API_URL}/promotions?status=active`,
-        {
-          headers: { Authorization: token },
-        }
-      );
+      const res = await fetch(`${API_URL}/promotions?status=active`, {
+        headers: { Authorization: token },
+      });
       const data = await res.json();
       if (res.ok) setPromotions(data.promotions || []);
     } catch (err) {

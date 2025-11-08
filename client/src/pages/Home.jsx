@@ -599,16 +599,19 @@ export default function Dashboard() {
                     {r.date ? new Date(r.date).toLocaleDateString() : "-"}
                   </TableCell>
                   <TableCell>{r.campaignName || "-"}</TableCell>
-                  <TableCell>{r.productName || "-"}</TableCell>
+                  <TableCell sx={{ maxWidth: 50 }}>
+                    <Tooltip title={r.productName || ""} arrow>
+                      <Typography variant="body2" noWrap>
+                        {r.productName || "-"}
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>{r.customerName || "-"}</TableCell>
                   <TableCell>{r.email || "-"}</TableCell>
                   <TableCell>{r.phoneNumber || "-"}</TableCell>
-                  <TableCell sx={{ maxWidth: 30 }}>
-                    <Tooltip title={r.review || ""} arrow>
-                      <Typography variant="body2" noWrap>
-                        {r.review || "-"}
-                      </Typography>
-                    </Tooltip>
+                  
+                  <TableCell>
+                    {r.review || "-"}
                   </TableCell>
                   <TableCell>
                     <Rating
