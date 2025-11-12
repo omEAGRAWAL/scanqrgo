@@ -738,8 +738,8 @@ export default function LandingPage() {
           Ready to grow your reputation?
         </h2>
         <p className="text-lg mb-8">
-          Start free today — no credit card required. Turn every order into a
-          5-star review.
+          Start free today, no credit card required. Collect real feedback and
+          build lasting customer trust.
         </p>
         <Link
           to="/register"
