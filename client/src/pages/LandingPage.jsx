@@ -564,9 +564,9 @@ export default function LandingPage() {
             </h1>
             <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0">
               Turn every delivery into a growth moment. Collect verified
-              feedback, resolve issues quickly, and build loyal repeat customers
-              — all while staying 100% compliant with Amazon and Flipkart
-              policies.
+              feedback, resolve issues quickly, and build loyal repeat
+              customers, all while staying 100% compliant with Amazon and
+              Flipkart policies.
             </p>
             <div className="flex justify-center lg:justify-start space-x-4">
               <Link
