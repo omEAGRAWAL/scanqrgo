@@ -688,13 +688,11 @@ export default function LandingPage() {
             Works Seamlessly With All Major Platforms
           </h2>
           <div className="flex flex-wrap justify-center items-center gap-8 text-gray-600 font-medium">
-            {["Amazon", "Flipkart", "eBay", "Etsy", "Shopify", "Walmart"].map(
-              (p, i) => (
-                <span key={i} className="text-lg">
-                  {p}
-                </span>
-              )
-            )}
+            {["Amazon", "Flipkart"].map((p, i) => (
+              <span key={i} className="text-lg">
+                {p}
+              </span>
+            ))}
           </div>
         </div>
       </section>
