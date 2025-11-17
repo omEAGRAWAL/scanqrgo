@@ -445,9 +445,53 @@ export default function PublicCampaignForm() {
               if (product.amazonAsin) badges.push("Amazon");
               if (product.flipkartFsn) badges.push("Flipkart");
               return (
+                // <MenuItem key={product._id} value={product._id}>
+                //   <Stack direction="row" spacing={1} alignItems="center">
+                //     {/* //logo if any in same row */}
+                //     {product.imageurl ? (
+                //       <Box
+                //         component="img"
+                //         src={product.imageurl}
+                //         alt={product.name}
+                //         sx={{
+                //           width: 40,
+                //           height: 40,
+                //           objectFit: "contain",
+                //           borderRadius: 1,
+                //           mr: 1,
+                //         }}
+                //       />
+                //     ) : (
+                //       <Box
+                //         sx={{
+                //           width: 40,
+                //           height: 40,
+                //           bgcolor: "grey.200",
+                //           borderRadius: 1,
+                //           display: "flex",
+                //           justifyContent: "center",
+                //           alignItems: "center",
+                //           mr: 1,
+                //         }}
+                //       />
+                //     )}
+                //     // <Typography>{product.name}</Typography>
+                //   </Stack>
+                // </MenuItem>
                 <MenuItem key={product._id} value={product._id}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography>{product.name}</Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar
+                      src={product.imageurl}
+                      alt={product.name}
+                      variant="rounded"
+                      sx={{ width: 40, height: 40 }}
+                    />
+                    <Box>
+                      <Typography variant="body1">{product.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {product.brand || ""}
+                      </Typography>
+                    </Box>
                   </Stack>
                 </MenuItem>
               );

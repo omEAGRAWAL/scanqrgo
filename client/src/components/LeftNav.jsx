@@ -70,6 +70,7 @@ export default function LeftNav({ user }) {
           </Button>
         </Stack>
       </Box>
+      
     );
   }
 
