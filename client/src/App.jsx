@@ -183,6 +183,7 @@ import LandingPage from "./pages/LandingPage";
 import { API_URL } from "./config/api";
 import TermsAndConditions from "./pages/T&C";
 import AdminUsers from "./pages/AdminUsers";
+import Profile from "./pages/Profile";
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem("token");
@@ -239,6 +240,15 @@ export default function App() {
           }
         />
         <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
+            </RequireAuth>
+          }
+        />
+
+        <Route
           path="/products"
           element={
             <RequireAuth>
@@ -254,7 +264,7 @@ export default function App() {
             </RequireAuth>
           }
         />
-      <Route
+        <Route
           path="/admin/users"
           element={
             <RequireAuth>

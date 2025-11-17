@@ -31,6 +31,11 @@ export default function LeftNav({ user }) {
     { label: "Products", to: "/products", icon: <Inventory2RoundedIcon /> },
     { label: "Promotions", to: "/promotions", icon: <LocalOfferRoundedIcon /> },
     { label: "Campaigns", to: "/campaigns", icon: <CampaignRoundedIcon /> },
+    {
+      label: "Profile",
+      to: "/profile",
+      icon: <Avatar sx={{ width: 24, height: 24, fontSize: 14 }} />,
+    },
   ];
 
   function handleLogout() {
@@ -90,7 +95,19 @@ export default function LeftNav({ user }) {
               fontWeight: 600,
             }}
           >
-            {(user?.name?.[0] || "U").toUpperCase()}
+            {user?.logoUrl ? (
+              <img
+                src={user.logoUrl}
+                alt="Logo"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              user?.name
+                ?.split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+            )}
           </Avatar>
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="subtitle1" fontWeight={600} noWrap>
