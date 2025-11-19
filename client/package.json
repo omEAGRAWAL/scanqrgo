@@ -19,6 +19,7 @@
     "@tailwindcss/vite": "^4.1.12",
     "@uiw/react-md-editor": "^4.0.8",
     "@untitledui/icons": "^0.0.19",
+    "@vercel/analytics": "^1.5.0",
     "axios": "^1.11.0",
     "easymde": "^2.20.0",
     "react": "^19.1.0",
