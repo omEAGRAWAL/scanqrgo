@@ -10,9 +10,12 @@ const FunnelVisitSchema = new mongoose.Schema({
   // step data holds flexible funnel inputs
   stepData: {
     orderNumber: String,
+    
     satisfaction: String,
+
     usedMoreDays: String,
     customerName: String,
+
     email: String,
     phoneNumber: String,
     review: String,
