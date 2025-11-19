@@ -398,7 +398,7 @@ import TermsAndConditions from "./pages/T&C";
 import AdminUsers from "./pages/AdminUsers";
 import Profile from "./pages/Profile";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem("token");
