@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
 import * as XLSX from "xlsx";
+import Button from "../components/base/Button";
 
 export default function CreateProduct() {
   const [form, setForm] = useState({
@@ -218,13 +219,15 @@ export default function CreateProduct() {
                 disabled={uploading}
               />
 
-              <button
+              <Button
                 onClick={handleDownloadSample}
                 type="button"
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm transition"
+                variant="success"
+                size="sm"
+                className="whitespace-nowrap"
               >
                 ⬇ Download Sample Excel
-              </button>
+              </Button>
             </div>
 
             {fileName && (
@@ -324,16 +327,18 @@ export default function CreateProduct() {
             )}
 
             <div className="flex gap-4">
-              <button
+              <Button
                 type="submit"
                 disabled={loading || uploading}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                loading={loading}
+                variant="primary"
+                className="flex-1"
               >
-                {loading ? "Creating..." : "Create Product"}
-              </button>
+                Create Product
+              </Button>
               <Link
                 to="/products"
-                className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 text-center transition"
+                className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-400 text-center transition font-semibold flex items-center justify-center"
               >
                 Cancel
               </Link>

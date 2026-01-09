@@ -6,12 +6,10 @@ import {
   Paper,
   TextField,
   Typography,
-  Button,
-  Alert,
-  CircularProgress,
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import Button from "../components/base/Button";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
@@ -210,17 +208,13 @@ export default function Register() {
 
           <Button
             type="submit"
-            variant="contained"
-            color="primary"
+            variant="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            className="mt-4"
             disabled={loading}
+            loading={loading}
           >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Register"
-            )}
+            Register
           </Button>
         </form>
 

@@ -1099,7 +1099,7 @@ import {
   StepLabel,
   StepConnector,
   Typography,
-  Button,
+  Button as MuiButton,
   FormControl,
   InputLabel,
   Select,
@@ -1150,6 +1150,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
+import Button from "../components/base/Button";
 
 // --- Styled Components ---
 
@@ -1187,9 +1188,9 @@ const GradientHeader = styled(Box, {
 })(({ theme, primaryColor }) => ({
   background: primaryColor
     ? `linear-gradient(135deg, ${primaryColor} 0%, ${alpha(
-        primaryColor,
-        0.8
-      )} 100%)`
+      primaryColor,
+      0.8
+    )} 100%)`
     : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
   color: "white",
   padding: theme.spacing(3, 3, 5, 3),
@@ -1236,7 +1237,7 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
   },
 }));
 
-const MarketplaceButton = styled(Button, {
+const MarketplaceButton = styled(MuiButton, {
   shouldForwardProp: (prop) => prop !== "selected" && prop !== "brandColor",
 })(({ theme, selected, brandColor }) => ({
   border: `2px solid ${selected ? brandColor : theme.palette.grey[300]}`,
@@ -1864,7 +1865,7 @@ export default function PublicCampaignForm() {
               Copy your review and paste it on {selectedMarketplaceConfig.name}{" "}
               to help others.
             </Typography>
-            <Button
+            <MuiButton
               fullWidth
               variant="contained"
               onClick={handleShareReview}
@@ -1877,7 +1878,7 @@ export default function PublicCampaignForm() {
               }}
             >
               Copy Text & Open {selectedMarketplaceConfig.name}
-            </Button>
+            </MuiButton>
           </Stack>
         </Paper>
       )}
@@ -1896,9 +1897,8 @@ export default function PublicCampaignForm() {
 
       <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
         {campaign?.promotion?.type === "extended warranty"
-          ? `You have successfully registered for the Extended Warranty for ${
-              selectedProduct?.name || "your product"
-            }.`
+          ? `You have successfully registered for the Extended Warranty for ${selectedProduct?.name || "your product"
+          }.`
           : `You have unlocked your coupon code! Details have been sent to ${form.email}.`}
       </Typography>
 
@@ -1954,7 +1954,7 @@ export default function PublicCampaignForm() {
             <Typography variant="body2" color="text.secondary" paragraph>
               {error}
             </Typography>
-            <Button variant="outlined" onClick={() => navigate("/")}>
+            <Button variant="secondary" onClick={() => navigate("/")}>
               Go Home
             </Button>
           </CardContent>
@@ -2072,35 +2072,26 @@ export default function PublicCampaignForm() {
               <Button
                 onClick={handleBack}
                 disabled={currentStep === 0 || submitting}
-                startIcon={<ArrowBack />}
-                sx={{ color: "text.secondary" }}
+                variant="ghost"
+                className="text-gray-500"
+                icon={<ArrowBack className="w-4 h-4" />}
               >
                 Back
               </Button>
 
               <Button
-                variant="contained"
                 onClick={handleNext}
                 disabled={submitting}
-                endIcon={
-                  submitting ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : (
-                    <ArrowForward />
-                  )
-                }
-                sx={{
-                  px: 4,
-                  borderRadius: 5,
-                  bgcolor: campaign?.customization?.primaryColor,
-                  "&:hover": {
-                    bgcolor: campaign?.customization?.primaryColor
-                      ? alpha(campaign?.customization?.primaryColor, 0.9)
-                      : "primary.dark",
-                  },
+                loading={submitting}
+                variant="primary"
+                className="px-8 rounded-full"
+                style={{
+                  backgroundColor: campaign?.customization?.primaryColor,
+                  borderColor: campaign?.customization?.primaryColor,
                 }}
               >
                 {currentStep === 2 ? "Submit Claim" : "Next"}
+                {!submitting && <ArrowForward className="w-4 h-4 ml-2" />}
               </Button>
             </Stack>
           </Box>

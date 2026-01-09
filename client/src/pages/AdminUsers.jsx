@@ -6,6 +6,7 @@ import {
   ClockIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import Button from "../components/base/Button";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -105,13 +106,12 @@ export default function AdminUsers() {
                 <td className="px-6 py-4 text-sm">{u.role}</td>
                 <td className="px-6 py-4 text-sm">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      u.subscription?.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : u.subscription?.status === "freeTrial"
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${u.subscription?.status === "active"
+                      ? "bg-green-100 text-green-700"
+                      : u.subscription?.status === "freeTrial"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-red-100 text-red-700"
-                    }`}
+                      }`}
                   >
                     {u.subscription?.status || "none"}
                   </span>
@@ -127,24 +127,28 @@ export default function AdminUsers() {
                     : "—"}
                 </td>
                 <td className="px-6 py-4 flex justify-center space-x-2">
-                  <button
+                  <Button
                     onClick={() => updateSubscription(u._id, "freeTrial")}
-                    className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs px-3 py-1 rounded-full"
+                    size="sm"
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-700 font-normal px-3 py-1"
                   >
-                    <ClockIcon className="h-4 w-4" /> Trial
-                  </button>
-                  <button
+                    <ClockIcon className="h-4 w-4 mr-1" /> Trial
+                  </Button>
+                  <Button
                     onClick={() => updateSubscription(u._id, "active")}
-                    className="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-700 text-xs px-3 py-1 rounded-full"
+                    size="sm"
+                    className="bg-green-100 hover:bg-green-200 text-green-700 font-normal px-3 py-1"
                   >
-                    <CheckCircleIcon className="h-4 w-4" /> Active
-                  </button>
-                  <button
+                    <CheckCircleIcon className="h-4 w-4 mr-1" /> Active
+                  </Button>
+                  <Button
                     onClick={() => updateSubscription(u._id, "expired")}
-                    className="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-1 rounded-full"
+                    size="sm"
+                    variant="danger"
+                    className="bg-red-100 hover:bg-red-200 text-red-700 font-normal px-3 py-1 shadow-none hover:shadow-none"
                   >
-                    <XCircleIcon className="h-4 w-4" /> Expire
-                  </button>
+                    <XCircleIcon className="h-4 w-4 mr-1" /> Expire
+                  </Button>
                 </td>
               </tr>
             ))}

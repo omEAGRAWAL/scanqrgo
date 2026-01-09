@@ -6,10 +6,10 @@ import {
   Paper,
   TextField,
   Typography,
-  Button,
   Alert,
   CircularProgress,
 } from "@mui/material";
+import Button from "../components/base/Button";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -97,13 +97,13 @@ export default function Login() {
 
           <Button
             type="submit"
-            variant="contained"
-            color="success"
+            variant="success"
             fullWidth
-            sx={{ mt: 2 }}
+            className="mt-4"
             disabled={loading}
+            loading={loading}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+            Login
           </Button>
         </form>
 

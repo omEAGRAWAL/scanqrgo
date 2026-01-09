@@ -1,777 +1,550 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-// import Heromage from "../assets/scanmobile.png"; // Adjust the path as necessary
-// import Navbar from "./NavBar";
-// import { useNavigate } from "react-router-dom";
-// import rev from "../assets/Reviu_Logo.png";
-// // Helper component for the hero image graphic
-// const HeroImage = () => (
-//   <div className="relative w-full max-w-lg mx-auto">
-//     <div className="absolute inset-0 bg-blue-200 rounded-full blur-2xl opacity-30"></div>
-//     <img
-//       //C:\Users\Om - Gandu\Desktop\Reviu\client\src\assets\scanmobile.png
-//       src={Heromage}
-//       alt="Phone showing a QR code scan"
-//       className="relative z-10 w-10% h-auto rounded-lg shadow-lg"
-//     />
-//   </div>
-// );
-
-// // Helper component for star ratings
-// const StarRating = ({ rating = 5 }) => (
-//   <div className="flex items-center">
-//     {Array.from({ length: rating }).map((_, index) => (
-//       <svg
-//         key={index}
-//         className="w-5 h-5 text-yellow-400"
-//         fill="currentColor"
-//         viewBox="0 0 20 20"
-//       >
-//         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-//       </svg>
-//     ))}
-//   </div>
-// );
-
-// export default function LandingPage() {
-//   const navigate = useNavigate();
-
-//   const handleClick = () => {
-//     if (localStorage.getItem("token")) {
-//       navigate("/home");
-//     } else {
-//       navigate("/login");
-//     }
-//   };
-//   return (
-//     <div className="bg-white text-gray-800 font-sans">
-//       {/* Navbar */}
-//       {/* <Navbar /> */}
-//       {/* <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
-//         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-//           <Link to="/" className="flex items-center space-x-2">
-//             <span className="text-2xl" role="img" aria-label="QR Code icon">
-//               📱
-//             </span>
-//             <span className="text-xl font-bold text-gray-900">Reviu</span>
-//           </Link>
-//           <nav className="hidden md:flex items-center space-x-8">
-//             <a
-//               href="#how-it-works"
-//               className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-//             >
-//               How It Works
-//             </a>
-//             <a
-//               href="#features"
-//               className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-//             >
-//               Why It Works
-//             </a>
-//             <a
-//               href="#testimonials"
-//               className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-//             >
-//               Testimonials
-//             </a>
-//           </nav>
-//           <div className="flex items-center space-x-4">
-//             <Link
-//               to="/login"
-//               className="text-gray-600 hover:text-blue-600 font-medium"
-//             >
-//               Login
-//             </Link>
-//             <Link
-//               to="/register"
-//               className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-//             >
-//               Start Free
-//             </Link>
-//           </div>
-//         </div>
-//       </header> */}
-
-//       <main>
-//         {/* Hero Section */}
-//         <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28">
-//           <div className="absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-700 overflow-hidden">
-//             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-70"></div>
-//           </div>
-//           <div className="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12 text-center lg:text-left">
-//             <div className="lg:w-1/2">
-//               <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-//                 Turn Every Purchase into a 5-Star Review
-//               </h1>
-//               <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-xl mx-auto lg:mx-0">
-//                 Collect more reviews and leads with smart QR code funnels—fully
-//                 compliant with Amazon, eBay, and Shopify.
-//               </p>
-//               <div className="flex justify-center lg:justify-start space-x-4">
-//                 <Link
-//                   to="/register"
-//                   className="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:bg-gray-100 transition-transform hover:scale-105"
-//                 >
-//                   Start Free
-//                 </Link>
-//                 <a
-//                   href="#how-it-works"
-//                   className="px-8 py-3 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-blue-600 transition-colors"
-//                 >
-//                   See How It Works
-//                 </a>
-//               </div>
-//             </div>
-//             <div className="lg:w-1/2">
-//               <HeroImage />
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* How It Works Section */}
-//         <section id="how-it-works" className="py-20 bg-gray-50">
-//           <div className="max-w-7xl mx-auto px-6 text-center">
-//             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-//               How It Works
-//             </h2>
-//             <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-//               Simple 4-step process to boost your reviews and grow your
-//               business.
-//             </p>
-//             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-//               <div className="p-8 bg-white rounded-xl shadow-md">
-//                 <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-blue-100 text-blue-600 rounded-full text-3xl font-bold">
-//                   1
-//                 </div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Create Campaign
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Set up your review funnel with our pre-built templates.
-//                 </p>
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-md">
-//                 <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-purple-100 text-purple-600 rounded-full text-3xl font-bold">
-//                   2
-//                 </div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Print Insert Card
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Include QR code cards in your product packages.
-//                 </p>
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-md">
-//                 <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-pink-100 text-pink-600 rounded-full text-3xl font-bold">
-//                   3
-//                 </div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Customer Scans QR
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Customers scan and follow the smart funnel.
-//                 </p>
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-md">
-//                 <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-green-100 text-green-600 rounded-full text-3xl font-bold">
-//                   4
-//                 </div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Collect Reviews
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Get more 5-star reviews and valuable feedback.
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Why It Works (Features) Section */}
-//         <section id="features" className="py-20">
-//           <div className="max-w-7xl mx-auto px-6 text-center">
-//             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12">
-//               Why It Works
-//             </h2>
-//             <div className="grid md:grid-cols-3 gap-8 text-left">
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100">
-//                 <div className="text-3xl mb-4">🛡️</div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   100% Compliant
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Follow all marketplace rules without violating terms of
-//                   service.
-//                 </p>
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100">
-//                 <div className="text-3xl mb-4">📧</div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Collect Emails
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Build your email list while gathering feedback in one place.
-//                 </p>
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100">
-//                 <div className="text-3xl mb-4">🚀</div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-//                   Easy Setup
-//                 </h3>
-//                 <p className="text-gray-600">
-//                   Get started in minutes with pre-built templates.
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Platforms Section */}
-//         <section className="py-16 bg-gray-50">
-//           <div className="max-w-7xl mx-auto px-6">
-//             <h2 className="text-center text-2xl font-semibold text-gray-700 mb-8">
-//               Works With All Major Platforms
-//             </h2>
-//             <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
-//               <span className="text-lg font-medium text-gray-600">Amazon</span>
-//               <span className="text-lg font-medium text-gray-600">eBay</span>
-//               <span className="text-lg font-medium text-gray-600">Etsy</span>
-//               <span className="text-lg font-medium text-gray-600">Shopify</span>
-//               <span className="text-lg font-medium text-gray-600">Walmart</span>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Testimonials Section */}
-//         <section id="testimonials" className="py-20">
-//           <div className="max-w-7xl mx-auto px-6 text-center">
-//             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12">
-//               What Our Users Say
-//             </h2>
-//             <div className="grid lg:grid-cols-3 gap-8">
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100 text-left">
-//                 <div className="flex items-center mb-4">
-//                   <img
-//                     className="w-12 h-12 rounded-full mr-4"
-//                     src="https://randomuser.me/api/portraits/women/68.jpg"
-//                     alt="Sarah Johnson"
-//                   />
-//                   <div>
-//                     <h4 className="font-semibold text-gray-900">
-//                       Sarah Johnson
-//                     </h4>
-//                     <p className="text-gray-500 text-sm">Amazon Seller</p>
-//                   </div>
-//                 </div>
-//                 <p className="text-gray-700 mb-4">
-//                   "Increased our review rate by 400% in just 2 months. The QR
-//                   code system is genius!"
-//                 </p>
-//                 <StarRating />
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100 text-left">
-//                 <div className="flex items-center mb-4">
-//                   <img
-//                     className="w-12 h-12 rounded-full mr-4"
-//                     src="https://randomuser.me/api/portraits/men/32.jpg"
-//                     alt="Mike Chen"
-//                   />
-//                   <div>
-//                     <h4 className="font-semibold text-gray-900">Mike Chen</h4>
-//                     <p className="text-gray-500 text-sm">Shopify Store Owner</p>
-//                   </div>
-//                 </div>
-//                 <p className="text-gray-700 mb-4">
-//                   "Finally a solution that's actually compliant. No more
-//                   worrying about policy violations."
-//                 </p>
-//                 <StarRating />
-//               </div>
-//               <div className="p-8 bg-white rounded-xl shadow-lg border border-gray-100 text-left">
-//                 <div className="flex items-center mb-4">
-//                   <img
-//                     className="w-12 h-12 rounded-full mr-4"
-//                     src="https://randomuser.me/api/portraits/men/86.jpg"
-//                     alt="David Wilson"
-//                   />
-//                   <div>
-//                     <h4 className="font-semibold text-gray-900">
-//                       David Wilson
-//                     </h4>
-//                     <p className="text-gray-500 text-sm">eBay Seller</p>
-//                   </div>
-//                 </div>
-//                 <p className="text-gray-700 mb-4">
-//                   "Setup was incredibly easy. Started seeing results within the
-//                   first week of using it."
-//                 </p>
-//                 <StarRating />
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Final CTA Section */}
-//         <section className="bg-gray-100">
-//           <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-//             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-//               Ready to boost your reviews?
-//             </h2>
-//             <p className="text-lg text-gray-600 mb-8">
-//               Start your free trial today. No credit card required.
-//             </p>
-//             <Link
-//               to="/register"
-//               className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-colors text-lg"
-//             >
-//               Get Started for Free
-//             </Link>
-//           </div>
-//         </section>
-//         {/* --- Pricing Table Section --- */}
-//         <section
-//           id="pricing"
-//           className="py-20 bg-gradient-to-b from-white via-blue-50 to-white"
-//         >
-//           <div className="max-w-5xl mx-auto px-6">
-//             <h2 className="text-3xl font-bold text-center mb-6 text-gray-900">
-//               Simple, Transparent Pricing
-//             </h2>
-//             <p className="text-center text-gray-600 mb-14">
-//               Choose the plan that fits your growth stage. No hidden fees.
-//               Cancel anytime.
-//             </p>
-//             <div className="grid md:grid-cols-3 gap-8">
-//               {/* Monthly Plan */}
-//               <div className="bg-white rounded-2xl shadow-lg flex flex-col items-center px-8 py-10 border-2 border-gray-100">
-//                 <h3 className="text-xl font-bold mb-2">Monthly</h3>
-//                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-//                   ₹2,499<span className="text-base font-normal">/month</span>
-//                 </div>
-//                 <p className="text-sm text-gray-600 mb-4">Billed monthly</p>
-//                 <ul className="text-gray-700 mb-6 space-y-2 text-sm">
-//                   <li>✅ Flexible monthly plan</li>
-//                   <li>✅ Cancel anytime</li>
-//                   <li>✅ Full feature access</li>
-//                 </ul>
-//                 <button
-//                   onClick={handleClick}
-//                   className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold transition hover:bg-gray-300 cursor-pointer"
-//                 >
-//                   Get Started
-//                 </button>
-//               </div>
-
-//               {/* Annual Plan → CENTER & Highlight */}
-//               <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center px-8 py-10 border-4 border-blue-600 relative scale-105 z-10">
-//                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white rounded-full px-4 py-1 text-xs font-semibold">
-//                   Best Value
-//                 </div>
-//                 <h3 className="text-xl font-bold mb-2">Annual</h3>
-//                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-//                   ₹12,000<span className="text-base font-normal">/year</span>
-//                 </div>
-//                 <p className="text-sm text-green-600 font-semibold mb-2">
-//                   Effective: ₹1,000 /month
-//                 </p>
-//                 <p className="text-sm text-green-600 font-semibold mb-4">
-//                   Save ₹17,988 per year (60% vs monthly)
-//                 </p>
-//                 <ul className="text-gray-700 mb-6 space-y-2 text-sm text-center">
-//                   <li>✅ Best savings option</li>
-//                   <li>✅ Full feature access</li>
-//                   <li>✅ Premium priority support</li>
-//                 </ul>
-//                 <button
-//                   onClick={handleClick}
-//                   className="w-full bg-blue-600 text-white rounded-lg py-2 font-semibold hover:bg-blue-700 transition"
-//                 >
-//                   Get Started
-//                 </button>
-//               </div>
-
-//               {/* 6-Month Plan */}
-//               <div className="bg-white rounded-2xl shadow-lg flex flex-col items-center px-8 py-10 border-2 border-gray-100">
-//                 <h3 className="text-xl font-bold mb-2">6-Month</h3>
-//                 <div className="text-4xl font-extrabold text-blue-600 mb-2">
-//                   ₹10,620
-//                   <span className="text-base font-normal">/6 months</span>
-//                 </div>
-//                 <p className="text-sm text-green-600 font-semibold mb-2">
-//                   Effective: ₹1,770 /month
-//                 </p>
-//                 <p className="text-sm text-green-600 font-semibold mb-4">
-//                   Save ₹4,374 per 6 months (29% vs monthly)
-//                 </p>
-//                 <ul className="text-gray-700 mb-6 space-y-2 text-sm text-center">
-//                   <li>✅ Discounted semi-annual pricing</li>
-//                   <li>✅ Full feature access</li>
-//                   <li>✅ Priority support</li>
-//                 </ul>
-//                 <button
-//                   onClick={handleClick}
-//                   className="w-full bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold transition hover:bg-gray-300 cursor-pointer"
-//                 >
-//                   Get Started
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* --- FAQ Section --- */}
-//         <section id="faq" className="py-20 bg-white">
-//           <div className="max-w-3xl mx-auto px-6">
-//             <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
-//               Frequently Asked Questions
-//             </h2>
-//             <div className="space-y-5">
-//               <div className="bg-blue-50 rounded-lg p-5 shadow-sm">
-//                 <h4 className="font-semibold mb-2 text-blue-700">
-//                   Is this compliant with Amazon's terms of service?
-//                 </h4>
-//                 <p className="text-gray-700">
-//                   Yes, our system is 100% compliant with all major marketplace
-//                   policies including Amazon, eBay, and Shopify.
-//                 </p>
-//               </div>
-//               <div className="bg-blue-50 rounded-lg p-5 shadow-sm">
-//                 <h4 className="font-semibold mb-2 text-blue-700">
-//                   How do QR codes work for collecting reviews?
-//                 </h4>
-//                 <p className="text-gray-700">
-//                   Customers scan the QR code which takes them through a smart
-//                   funnel that guides them to leave reviews while collecting
-//                   their contact information.
-//                 </p>
-//               </div>
-//               <div className="bg-blue-50 rounded-lg p-5 shadow-sm">
-//                 <h4 className="font-semibold mb-2 text-blue-700">
-//                   Can I customize the review funnel?
-//                 </h4>
-//                 <p className="text-gray-700">
-//                   Yes, you can customize templates, add your branding, and
-//                   create different funnels for different products or campaigns.
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-//       </main>
-
-//       {/* --- Footer Section --- */}
-//       <footer className="bg-gray-900 text-gray-100 pt-12 pb-8 mt-12">
-//         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:justify-between items-center gap-8">
-//           <div className="flex items-center space-x-3 mb-6 md:mb-0">
-//             <img src={rev} alt="Reviu" style={{ height: 30 }} />
-//           </div>
-
-//           <div className="text-sm text-gray-400 text-center md:text-left mb-6 md:mb-0">
-//             © {new Date().getFullYear()} Reviu. All rights reserved.
-//           </div>
-//           <div className="flex space-x-5">
-//             <a
-//               href="mailto:hello@Reviu.com"
-//               className="hover:text-blue-300 transition"
-//             >
-//               Contact
-//             </a>
-//             <a href="/privacy" className="hover:text-blue-300 transition">
-//               Privacy Policy
-//             </a>
-//             <a href="/tc" className="hover:text-blue-300 transition">
-//               Terms of Service
-//             </a>
-//           </div>
-//         </div>
-//         {/* <div className="pt-6 flex justify-center text-2xl space-x-6">
-//           <a
-//             href="https://twitter.com/"
-//             aria-label="Twitter"
-//             className="hover:text-blue-400 transition"
-//           >
-//             🐦
-//           </a>
-//           <a
-//             href="https://linkedin.com/"
-//             aria-label="LinkedIn"
-//             className="hover:text-blue-400 transition"
-//           >
-//             💼
-//           </a>
-//           <a
-//             href="https://github.com/"
-//             aria-label="GitHub"
-//             className="hover:text-blue-400 transition"
-//           >
-//             💻
-//           </a>
-//         </div> */}
-//       </footer>
-//     </div>
-//   );
-// }
 import React from "react";
 import { Link } from "react-router-dom";
-import Heromage from "../assets/scanmobile.png";
-import rev from "../assets/Reviu_Logo.png";
+import { Helmet } from "react-helmet-async";
+import AmazonLogo from "../assets/Amazon logo.png";
+import ShopifyLogo from "../assets/shopify.png";
+import ReviuLogo from "../assets/Reviu_Logo.png";
+import Button from "../components/base/Button";
+import Image1 from "../assets/image1.png";
+import Image2 from "../assets/image2.png";
+import Image3 from "../assets/image3.png";
+import { FiShield, FiMessageSquare, FiStar, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import LogoDevPunya from "../assets/logo_devpunya.png";
+import LogoOoge from "../assets/logo_ooge.png";
+import TestimonialBg from "../assets/testimonia_background.png";
+import TestimonialImg from "../assets/testimonail.png";
+import GetInTouchImg from "../assets/get_in_touch.png";
 
-// --- Hero Image Component ---
-const HeroImage = () => (
-  <div className="relative w-full max-w-md mx-auto drop-shadow-2xl">
-    <div className="absolute inset-0 bg-blue-400 rounded-full blur-3xl opacity-30"></div>
-    <img
-      src={Heromage}
-      alt="QR funnel demo"
-      className="relative z-10 w-full h-auto rounded-2xl shadow-xl"
-    />
-  </div>
-);
+// --- Components ---
 
-// --- Star Rating ---
-const StarRating = ({ rating = 5 }) => (
-  <div className="flex items-center">
-    {Array.from({ length: rating }).map((_, index) => (
-      <svg
-        key={index}
-        className="w-5 h-5 text-yellow-400"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
-    ))}
-  </div>
-);
-
-export default function LandingPage() {
-  // const navigate = useNavigate();
-
-  // const handleClick = () => {
-  //   localStorage.getItem("token") ? navigate("/home") : navigate("/login");
-  // };
+const NavBar = () => {
+  const navLinks = [
+    "Platforms",
+    "How it works",
+    "Integration",
+    "Compliance",
+    "Pricing",
+    "FAQ",
+    "Contact us",
+  ];
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 via-white to-blue-50 text-gray-800 font-sans scroll-smooth">
+    <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+      {/* Logo */}
+      <div className="flex items-center">
+        <Link to="/">
+          <img src={ReviuLogo} alt="Reviu" className="h-8 md:h-10" />
+        </Link>
+      </div>
+
+      {/* Links (Hidden on mobile for simplicity, or we can make a mobile menu later) */}
+      <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-600">
+        {navLinks.map((link) => (
+          <a
+            key={link}
+            href={`#${link.toLowerCase().replace(/\s/g, "-")}`}
+            className="hover:text-blue-600 transition-colors"
+          >
+            {link}
+          </a>
+        ))}
+      </div>
+
+      {/* Auth Buttons */}
+      <div className="flex items-center space-x-3">
+        <Link
+          to="/login"
+          className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          Login
+        </Link>
+        <Link
+          to="/register"
+          className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+        >
+          Start Free
+        </Link>
+      </div>
+    </nav>
+  );
+};
+
+const ReviewCard = () => (
+  <div className="relative bg-white p-6 rounded-xl shadow-lg border border-blue-50 transform rotate-[-3deg] z-10 max-w-sm">
+    <div className="flex space-x-1 mb-2">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <svg
+          key={s}
+          className="w-5 h-5 text-blue-500 fill-current"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+    <h3 className="text-lg font-bold text-gray-900 mb-1">
+      Performs its task perfectly
+    </h3>
+    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+      Good quality, Average good cable length, Good strength, looks like the
+      image exact, and the experience is good as well.
+    </p>
+    <div className="flex items-center space-x-3">
+      <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+        {/* Placeholder avatar or initial */}
+        <img
+          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Yashasvi"
+          alt="User"
+        />
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-gray-900">Yashasvi</p>
+        <p className="text-xs text-gray-500">29 Oct, 2025</p>
+      </div>
+    </div>
+  </div>
+);
+
+const RatingCard = () => (
+  <div className="relative bg-white p-6 rounded-xl shadow-lg border border-blue-50 transform rotate-[3deg] z-10 max-w-sm ml-auto mt-8 md:mt-0">
+    <div className="flex items-start justify-between">
+      <div>
+        <span className="text-5xl font-bold text-gray-900">4.5</span>
+        <p className="text-xs text-gray-400 mt-1">1240 reviews</p>
+      </div>
+      <div className="flex flex-col space-y-1 w-32">
+        {[5, 4, 3, 2, 1].map((num) => (
+          <div key={num} className="flex items-center text-xs">
+            <span className="w-3 mr-1">{num}</span>
+            <span className="text-blue-500 mr-1">★</span>
+            <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 rounded-full"
+                style={{
+                  width: num === 5 ? '70%' : num === 4 ? '20%' : num === 3 ? '5%' : num === 2 ? '3%' : '2%'
+                }}
+              ></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)
+
+export default function LandingPage() {
+  const [openFaq, setOpenFaq] = React.useState(0);
+
+  const faqs = [
+    {
+      q: "Is this compliant with Amazon's terms of service?",
+      a: "Yes. Reviu.Store is fully compliant including Amazon and Shopify. Every campaign follows platform rules and best practices.",
+    },
+    {
+      q: "How does the system collect feedback from customers?",
+      a: "Customers are guided through an automated post-purchase flow that makes sharing genuine feedback effortless and fully compliant.",
+    },
+    {
+      q: "Can I customize the review funnel?",
+      a: "Absolutely! Add your branding, tweak templates, and create funnels for different products or campaigns.",
+    },
+    {
+      q: "Are QR codes allowed for Amazon reviews?",
+      a: "Yes, using QR codes on product inserts is allowed as long as you do not incentivize reviews or specifically ask only for positive feedback.",
+    },
+    {
+      q: "How does Reviu stay compliant with Amazon review policies?",
+      a: "Reviu is built to be neutral and objective, ensuring that the review request flow complies with Amazon's selling policies regarding customer communication.",
+    },
+    {
+      q: "Can QR codes be included inside product packaging?",
+      a: "Yes, placing QR codes inside product packaging is a standard practice for directing customers to warranty registration, instructions, or neutral review flows.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#F4F8FF] font-sans relative overflow-x-hidden">
+      <Helmet>
+        <title>Amazon Review QR Code Software for Sellers</title>
+        <meta
+          name="description"
+          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
+        />
+        <meta
+          name="keywords"
+          content="reviews, amazon reviews, shopify reviews, qr code reviews, ecommerce, trust, sales"
+        />
+        <link rel="canonical" href="https://reviu.store" />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://reviu.store/" />
+        <meta
+          property="og:title"
+          content="Amazon Review QR Code Software for Sellers"
+        />
+        <meta
+          property="og:description"
+          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
+        />
+        <meta property="og:image" content="https://reviu.store/og-image.jpg" />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://reviu.store/" />
+        <meta
+          property="twitter:title"
+          content="Amazon Review QR Code Software for Sellers"
+        />
+        <meta
+          property="twitter:description"
+          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
+        />
+        <meta
+          property="twitter:image"
+          content="https://reviu.store/twitter-image.jpg"
+        />
+      </Helmet>
+      {/* Background Grid Lines (Decorative) */}
+      <div className="absolute inset-x-0 top-[20%] border-t border-dashed border-blue-200 opacity-50"></div>
+      <div className="absolute inset-y-0 left-1/4 border-r border-dashed border-blue-200 opacity-50 hidden lg:block"></div>
+      <div className="absolute inset-y-0 right-1/4 border-r border-dashed border-blue-200 opacity-50 hidden lg:block"></div>
+
+
+      {/* --- HEADER --- */}
+      <NavBar />
+
       {/* --- HERO SECTION --- */}
-      <section className="relative overflow-hidden pt-32 pb-24">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
-        <div className="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-14 text-center lg:text-left">
-          {/* Text Section */}
-          <div className="lg:w-1/2">
-            <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg">
-              More Reviews. More Trust. More Sales.
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0">
-              Turn every delivery into a growth moment. Collect verified
-              feedback, resolve issues quickly, and build loyal repeat
-              customers, all while staying 100% compliant with Amazon and
-              Flipkart policies.
-            </p>
-            <div className="flex justify-center lg:justify-start space-x-4">
-              <Link
-                to="/register"
-                className="px-8 py-3 bg-white text-blue-700 font-semibold rounded-lg shadow-lg hover:bg-gray-100 transition-transform hover:scale-105"
-              >
-                Start Free
-              </Link>
-              <a
-                href="#how-it-works"
-                className="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors"
-              >
-                See How It Works
-              </a>
+      <section className="relative pt-16 pb-32 text-center max-w-5xl mx-auto px-6 z-10">
+
+        {/* Amazon Logo Floating Left */}
+        {/* Amazon Logo Floating Left */}
+        <div className="absolute top-1/2 left-0 md:-left-12 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
+          <div className="transform -rotate-12">
+            <div className="animate-float-slow">
+              <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 w-40">
+                <img src={AmazonLogo} alt="Amazon" className="w-full opacity-90" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Shopify Logo Floating Right */}
+        <div className="absolute top-2/3 right-0 md:-right-4 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
+          <div className="transform rotate-12">
+            <div className="animate-float-slower">
+              <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 w-36 flex items-center justify-center">
+                <img src={ShopifyLogo} alt="Shopify" className="w-full opacity-90" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <h1 className="text-5xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+          QR Code Review Software for Amazon & Shopify Sellers
+        </h1>
+
+        <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          Collect honest customer feedback and product reviews using compliant QR codes.<br className="hidden md:block" />
+          Fully Compliant with <span className="font-bold text-gray-900">Amazon</span> and <span className="font-bold text-gray-900">Shopify</span>.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+          <Button
+            to="/register"
+            className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+          >
+            Start Free
+          </Button>
+          <Button
+            href="#schedule"
+            className="w-full sm:w-auto px-8 py-3 bg-white text-blue-600"
+          >
+            Schedule a call
+          </Button>
+        </div>
+
+        {/* --- FEATURE PREVIEW CARDS (Bottom Box) --- */}
+        <div className="relative mx-auto max-w-4xl">
+          {/* The box border effect */}
+          <div className="absolute inset-0 border-2 border-blue-400 opacity-20 rounded-xl pointer-events-none"></div>
+
+          <div className="grid md:grid-cols-2 gap-10 p-10 items-center">
+            <ReviewCard />
+            <RatingCard />
+          </div>
+        </div>
+
+      </section>
+
+      {/* --- PLATFORMS SECTION --- */}
+      <section className="py-24 bg-white text-center">
+        <div className="max-w-4xl mx-auto px-6">
+          <p className="text-blue-500 font-medium mb-4">Platforms</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Works with your favourite platforms
+          </h2>
+          <p className="text-gray-500 mb-12 max-w-xl mx-auto">
+            Reviu works across leading ecommerce and marketplace platforms
+          </p>
+
+          <div className="flex flex-wrap justify-center items-center gap-12 sm:gap-20 mb-8">
+            <img src={AmazonLogo} alt="Amazon" className="h-10 sm:h-12 object-contain" />
+            <div className="flex items-center gap-2">
+              <img src={ShopifyLogo} alt="Shopify" className="h-10 sm:h-12 object-contain" />
+              <span className="text-2xl font-bold font-sans text-gray-800">shopify</span>
             </div>
           </div>
 
-          {/* Image */}
-          <div className="lg:w-1/2">
-            <HeroImage />
-          </div>
+          <p className="text-gray-600 mb-10 font-medium">Works with Amazon, Shopify and leading ecommerce platforms.</p>
+
+          <p className="text-gray-400 text-sm mb-10">more coming soon...</p>
+
+          <Button
+            to="/register"
+            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+          >
+            Start Free Now
+          </Button>
         </div>
       </section>
 
-      {/* --- HOW IT WORKS --- */}
-      <section id="how-it-works" className="py-24 bg-white">
+      {/* --- HOW IT WORKS SECTION --- */}
+      <section className="py-24 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            How It Works
+          <h4 className="text-blue-500 font-semibold mb-3">How it Works?</h4>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
+          <p className="text-gray-500 mb-16 text-lg">Get started in minutes with our intuitive platform</p>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {/* Step 1 */}
+            <div className="flex flex-col items-center">
+              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <img src={Image1} alt="Create a feedback flow" className="w-full h-full object-contain mix-blend-multiply" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Create a feedback flow</h3>
+              <p className="text-gray-500 leading-relaxed max-w-sm">
+                Create a QR-based post-purchase review flow for your product.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center">
+              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <img src={Image2} alt="Collect verified feedback" className="w-full h-full object-contain mix-blend-multiply" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Collect verified feedback</h3>
+              <p className="text-gray-500 leading-relaxed max-w-sm">
+                Customers scan the QR code to share feedback or leave a marketplace review through smart funnel.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col items-center">
+              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <img src={Image3} alt="Analyse & automate" className="w-full h-full object-contain mix-blend-multiply" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Analyse & automate</h3>
+              <p className="text-gray-500 leading-relaxed max-w-sm">
+                Track customer reviews and insights to improve listings and buyer experience.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            to="/register"
+            className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+          >
+            Start Free Now
+          </Button>
+        </div>
+      </section>
+
+      {/* --- COMPLIANCE SECTION --- */}
+      <section className="py-24 bg-gradient-to-b from-blue-50 to-white text-center">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            Built for platform compliance
           </h2>
-          <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-            A simple 4-step process to collect feedback, strengthen trust, and
-            grow your marketplace reputation.
+          <p className="text-gray-500 max-w-2xl mx-auto mb-16 text-lg">
+            Reviu is designed to follow marketplace guidelines. Customers are encouraged to share honest feedback—positive or negative—without pressure or bias.
           </p>
+          <p className="text-gray-600 mb-8 font-medium">Designed to comply with Amazon review and marketplace feedback policies.</p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[
-              {
-                step: "1",
-                title: "Create Campaign",
-                desc: "Design a post-purchase feedback flow in minutes using built-in templates. No tech skills needed.",
-              },
-              {
-                step: "2",
-                title: "Engage Customers",
-                desc: "Reach buyers instantly after delivery with effortless automated funnels that drive real engagement.",
-              },
-              {
-                step: "3",
-                title: "Collect Feedback",
-                desc: "Gather honest customer feedback and ratings that reveal what they love—and what to improve.",
-              },
-              {
-                step: "4",
-                title: "Gain Insights & Take Action",
-                desc: "Monitor sentiment, track issues early, and build stronger customer trust that fuels repeat sales.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-8 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-transform hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-blue-100 text-blue-700 rounded-full text-3xl font-bold">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">{item.desc}</p>
+          <div className="grid md:grid-cols-3 gap-12 text-center">
+            {/* Feature 1 */}
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
+                <FiShield size={32} />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Platform Compliant</h3>
+              <p className="text-gray-500">Follows all marketplace guidelines</p>
+            </div>
 
-      {/* --- FEATURES --- */}
-      <section className="py-24 bg-gradient-to-b from-blue-50 via-white to-blue-50">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-12">
-            Why Reviu Works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-10 text-left">
-            {[
-              {
-                icon: "🔒",
-                title: "100% Compliant",
-                desc: "Follow all marketplace guidelines while collecting feedback that strengthens customer trust.",
-              },
-              {
-                icon: "💬",
-                title: "Collect Customer Insights",
-                desc: "Gather verified feedback in one place to understand your customers better and build relationships.",
-              },
-              {
-                icon: "🚀",
-                title: "Easy Setup",
-                desc: "Get started in minutes with pre-built templates — perfect for busy sellers and growing brands.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition"
-              >
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">{item.desc}</p>
+            {/* Feature 2 */}
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
+                <FiMessageSquare size={32} />
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Unbiased Feedback</h3>
+              <p className="text-gray-500">No pressure or sentiment-tied incentives</p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
+                <FiStar size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Honest Reviews</h3>
+              <p className="text-gray-500">Positive or negative—we encourage authenticity</p>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <Button
+              to="/register"
+              className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+            >
+              Start Free Now
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* --- PLATFORMS --- */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-semibold mb-8 text-gray-700">
-            Works Seamlessly With All Major Platforms
-          </h2>
-          <div className="flex flex-wrap justify-center items-center gap-8 text-gray-600 font-medium">
-            {["Amazon", "Flipkart"].map((p, i) => (
-              <span key={i} className="text-lg">
-                {p}
-              </span>
-            ))}
+
+
+      {/* --- PRICING SECTION --- */}
+      <section className="py-24 bg-white text-center">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Pricing</h2>
+          <p className="text-gray-500 text-lg mb-8">
+            Simple pricing for Amazon and Shopify sellers collecting reviews via QR codes.
+          </p>
+          {/* Detailed pricing cards can go here */}
+          <div className="p-8 border rounded-xl bg-gray-50 inline-block">
+            <h3 className="text-2xl font-bold mb-2">Pro Plan</h3>
+            <p className="text-gray-500">Everything you need to grow.</p>
           </div>
         </div>
       </section>
 
-      {/* --- FAQ --- */}
+      {/* --- TESTIMONIALS SECTION --- */}
+      <section className="py-24 bg-[#F4F8FF] overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Content */}
+          <div className="text-left">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">Loved By Brands</h2>
+            <p className="text-gray-500 text-lg mb-12 max-w-lg">
+              See what our customers have to say about their experience with Reviu
+            </p>
+
+            <div className="flex items-center gap-8">
+              <img src={LogoDevPunya} alt="DevPunya" className="h-10 object-contain" />
+              <img src={LogoOoge} alt="OOGE" className="h-10 object-contain" />
+            </div>
+          </div>
+
+          {/* Right Image Composition */}
+          <div className="relative flex justify-center lg:justify-end">
+            {/* Background Decorative */}
+            <img
+              src={TestimonialBg}
+              alt=""
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-none opacity-80 pointer-events-none"
+            />
+
+            {/* Front Card */}
+            <img
+              src={TestimonialImg}
+              alt="Customer Testimonials"
+              className="relative z-10 w-full max-w-md shadow-2xl rounded-2xl transform hover:scale-[1.02] transition-transform duration-500"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* --- FAQ SECTION --- */}
       <section id="faq" className="py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-8 text-gray-900">
-            FAQ
-          </h2>
-          <div className="space-y-5">
-            {[
-              {
-                q: "Is this compliant with Amazon's terms of service?",
-                a: "Yes. Reviu.Store is fully compliant with all major marketplace policies, including Amazon, Flipkart, eBay, and Shopify. Every campaign follows platform rules and best practices.",
-              },
-              {
-                q: "How does the system collect feedback from customers?",
-                a: "Customers are guided through an automated post-purchase flow that makes sharing genuine feedback effortless and fully compliant.",
-              },
-              {
-                q: "Can I customize the review funnel?",
-                a: "Absolutely! Add your branding, tweak templates, and create funnels for different products or campaigns.",
-              },
-            ].map((item, i) => (
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Frequently asked questions
+            </h2>
+            <p className="text-gray-500 text-lg">
+              Everything you need to know about the product
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {faqs.map((item, i) => (
               <div
                 key={i}
-                className="bg-blue-50 rounded-lg p-6 shadow-sm hover:shadow-md transition"
+                className="border-b border-gray-100 pb-6"
               >
-                <h4 className="font-semibold mb-2 text-blue-700">{item.q}</h4>
-                <p className="text-gray-700">{item.a}</p>
+                <button
+                  className="w-full flex justify-between items-start text-left focus:outline-none group"
+                  onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
+                >
+                  <h4 className="text-lg font-semibold text-gray-900 pr-8">
+                    {item.q}
+                  </h4>
+                  <span className="text-blue-500 text-2xl flex-shrink-0">
+                    {openFaq === i ? (
+                      <FiMinusCircle />
+                    ) : (
+                      <FiPlusCircle className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+                    )}
+                  </span>
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === i ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0"
+                    }`}
+                >
+                  <p className="text-gray-500 leading-relaxed">
+                    {item.a}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- CTA --- */}
-      <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600 text-center text-white">
-        <h2 className="text-4xl font-bold mb-4">
-          Ready to grow your reputation?
-        </h2>
-        <p className="text-lg mb-8">
-          Start free today, no credit card required. Collect real feedback and
-          build lasting customer trust.
-        </p>
-        <Link
-          to="/register"
-          className="px-10 py-4 bg-white text-blue-700 font-bold rounded-lg shadow-xl hover:scale-105 transition-transform"
-        >
-          Start Free Now
-        </Link>
-      </section>
+      {/* --- CONTACT SECTION --- */}
+      <section className="py-24 bg-[#F4F8FF]">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Image */}
+          <div className="relative">
+            <img src={GetInTouchImg} alt="Get in touch" className="rounded-3xl shadow-2xl w-full object-cover" />
+          </div>
 
-      {/* --- FOOTER --- */}
-      <footer className="bg-gray-900 text-gray-300 py-10 mt-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-3 mb-6 md:mb-0">
-            <img src={rev} alt="Reviu" style={{ height: 28 }} />
-          </div>
-          <p className="text-sm">
-            © {new Date().getFullYear()} Reviu. All rights reserved.
-          </p>
-          <div className="flex space-x-5 text-sm">
-            <a
-              href="mailto:hello@Reviu.com"
-              className="hover:text-blue-400 transition"
-            >
-              Contact
-            </a>
-            <a href="/privacy" className="hover:text-blue-400 transition">
-              Privacy
-            </a>
-            <a href="/tc" className="hover:text-blue-400 transition">
-              Terms
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
+          {/* Right Form */}
+          <div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-2">Get in touch</h2>
+            <p className="text-gray-500 mb-8">Our friendly team would love to hear from you.</p>
+
+            <form className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
+                  <input type="text" placeholder="First name" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+                  <input type="text" placeholder="Last name" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" placeholder="you@company.com" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
+                <div className="flex">
+                  <select className="px-3 py-3 rounded-l-lg border border-r-0 border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>US</option>
+                  </select>
+                  <input type="tel

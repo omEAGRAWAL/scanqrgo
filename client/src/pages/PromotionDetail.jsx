@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import Button from "../components/base/Button";
 export default function PromotionDetail() {
   const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -77,11 +78,10 @@ export default function PromotionDetail() {
           {/* Status Banner */}
           <div className={`px-6 py-3 ${promotion.status === 'active' ? 'bg-green-50 border-b border-green-200' : 'bg-red-50 border-b border-red-200'}`}>
             <div className="flex items-center justify-between">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                promotion.status === 'active' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${promotion.status === 'active'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+                }`}>
                 {promotion.status === 'active' ? '✅ Active' : '❌ Inactive'}
               </span>
               <span className="text-sm text-gray-500">
@@ -124,8 +124,8 @@ export default function PromotionDetail() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">Value Details</h3>
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="text-2xl font-bold text-green-600">
-                        {typeof promotion.value === 'object' 
-                          ? `${promotion.value.amount || 'N/A'} ${promotion.value.currency || ''}` 
+                        {typeof promotion.value === 'object'
+                          ? `${promotion.value.amount || 'N/A'} ${promotion.value.currency || ''}`
                           : promotion.value}
                       </div>
                     </div>
@@ -140,21 +140,19 @@ export default function PromotionDetail() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="font-medium text-gray-700">Delivery Type</span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        promotion.deliveryType === 'auto' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${promotion.deliveryType === 'auto'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                        }`}>
                         {promotion.deliveryType === 'auto' ? '🤖 Automatic' : '👤 Manual'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="font-medium text-gray-700">Status</span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        promotion.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${promotion.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                        }`}>
                         {promotion.status}
                       </span>
                     </div>
@@ -182,24 +180,24 @@ export default function PromotionDetail() {
 
             {/* Action Buttons */}
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link
+              <Button
                 to={`/promotions/${promotion._id}/edit`}
-                className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700"
+                variant="primary"
               >
                 Edit Promotion
-              </Link>
-              <Link
+              </Button>
+              <Button
                 to="/promotions"
-                className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+                variant="secondary"
               >
                 Back to Promotions
-              </Link>
-              <button
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              </Button>
+              <Button
+                variant="primary"
                 onClick={() => alert('Campaign creation with this promotion coming soon!')}
               >
                 Create Campaign
-              </button>
+              </Button>
             </div>
           </div>
         </div>

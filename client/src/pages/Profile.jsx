@@ -6,12 +6,13 @@ import {
   Paper,
   TextField,
   Typography,
-  Button,
+  // Button,
   Alert,
   CircularProgress,
   Avatar,
   Stack,
 } from "@mui/material";
+import Button from "../components/base/Button";
 
 export default function Profile() {
   const [form, setForm] = useState({
@@ -172,15 +173,19 @@ export default function Profile() {
             sx={{ mb: 2, alignItems: "center" }}
           >
             <Avatar src={currentLogo} sx={{ width: 80, height: 80 }} />
-            <Button variant="outlined" component="label">
+            <Button
+              variant="secondary"
+              onClick={() => document.getElementById("logo-upload").click()}
+            >
               Upload New Logo
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleFileChange}
-              />
             </Button>
+            <input
+              id="logo-upload"
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={handleFileChange}
+            />
           </Stack>
 
           <TextField
@@ -218,16 +223,12 @@ export default function Profile() {
 
           <Button
             type="submit"
-            variant="contained"
-            color="success"
+            variant="success"
+            loading={loading}
             fullWidth
-            sx={{ mt: 2 }}
+            className="mt-2"
           >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Update Profile"
-            )}
+            Update Profile
           </Button>
         </form>
       </Paper>

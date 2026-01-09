@@ -373,7 +373,7 @@ import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Typography,
-  Button,
+  // Button, // Replaced by custom Button
   Paper,
   Snackbar,
   Alert,
@@ -409,6 +409,7 @@ import {
   WarningAmberRounded,
 } from "@mui/icons-material";
 import { API_URL } from "../config/api";
+import Button from "../components/base/Button";
 
 export default function Products() {
   const theme = useTheme();
@@ -539,19 +540,19 @@ export default function Products() {
                 bgcolor: isAmazon
                   ? "#fff7ed"
                   : isFlipkart
-                  ? "#eff6ff"
-                  : "default",
+                    ? "#eff6ff"
+                    : "default",
                 color: isAmazon
                   ? "#c2410c"
                   : isFlipkart
-                  ? "#1d4ed8"
-                  : "text.primary",
+                    ? "#1d4ed8"
+                    : "text.primary",
                 border: "1px solid",
                 borderColor: isAmazon
                   ? "#fdba74"
                   : isFlipkart
-                  ? "#93c5fd"
-                  : "divider",
+                    ? "#93c5fd"
+                    : "divider",
               }}
             />
           );
@@ -579,17 +580,10 @@ export default function Products() {
           </Typography>
         </Box>
         <Button
-          variant="contained"
-          startIcon={<Add />}
-          component={RouterLink}
           to="/products/create"
-          sx={{
-            px: 3,
-            py: 1,
-            borderRadius: 2,
-            boxShadow: theme.shadows[4],
-            fontWeight: 600,
-          }}
+          icon={<Add />}
+          variant="primary"
+          className="shadow-lg px-6"
         >
           Add Product
         </Button>

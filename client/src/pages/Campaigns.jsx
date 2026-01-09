@@ -309,7 +309,7 @@ import { Link } from "react-router-dom";
 import {
   Box,
   Typography,
-  Button,
+  // Button,
   Select,
   MenuItem,
   FormControl,
@@ -349,6 +349,7 @@ import {
   MoreVert,
 } from "@mui/icons-material";
 import { API_URL } from "../config/api";
+import Button from "../components/base/Button";
 
 export default function Campaigns() {
   const theme = useTheme();
@@ -477,17 +478,10 @@ export default function Campaigns() {
           </Typography>
         </Box>
         <Button
-          variant="contained"
-          component={Link}
           to="/campaigns/create"
-          startIcon={<Add />}
-          sx={{
-            px: 3,
-            py: 1,
-            borderRadius: 2,
-            fontWeight: 600,
-            boxShadow: theme.shadows[4],
-          }}
+          icon={<Add />}
+          variant="primary"
+          className="shadow-lg px-6"
         >
           New Campaign
         </Button>
@@ -747,8 +741,8 @@ export default function Campaigns() {
                           label={
                             campaign.analytics?.conversionRate
                               ? `${campaign.analytics.conversionRate.toFixed(
-                                  1
-                                )}%`
+                                1
+                              )}%`
                               : "0%"
                           }
                           size="small"

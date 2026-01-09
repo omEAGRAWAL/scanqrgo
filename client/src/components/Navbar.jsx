@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { API_URL } from "../config/api";
 import rev from "../assets/Reviu_Logo.png";
+import Button from "./base/Button";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -93,12 +94,13 @@ export default function Navbar() {
         </Link>
       </li>
       <li>
-        <button
+        <Button
           onClick={handleLogout}
-          className="w-full text-left nav-link text-red-600 md:text-red-500 md:ml-2"
+          variant="ghost"
+          className="w-full justify-start md:w-auto text-red-600 md:text-red-500 md:ml-2 font-medium px-4 py-2 hover:bg-red-50"
         >
           Logout
-        </button>
+        </Button>
       </li>
       {user && (
         <li className="border-t border-gray-100 mt-3 pt-3 md:border-none md:mt-0 md:pt-0">
@@ -152,13 +154,14 @@ export default function Navbar() {
         </Link>
       </li>
       <li>
-        <Link
+        <Button
           to="/register"
-          className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors mt-3 md:mt-0"
+          variant="primary"
+          className="shadow-md mt-3 md:mt-0"
           onClick={() => setMenuOpen(false)}
         >
           Start Free
-        </Link>
+        </Button>
       </li>
     </ul>
   );
@@ -167,7 +170,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-2">
-          
+
           {/* <span className="text-xl font-bold text-gray-900"></span> */}
           <img src={rev} alt="Reviu Logo" className="h-8 w-auto" />
         </Link>

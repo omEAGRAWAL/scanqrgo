@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import Button from "../components/base/Button";
 
 export default function EditProduct() {
   const [form, setForm] = useState({
@@ -209,13 +210,15 @@ export default function EditProduct() {
             </div>
 
             <div className="flex space-x-4">
-              <button
+              <Button
                 type="submit"
                 disabled={loading || uploading}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                loading={loading}
+                variant="primary"
+                className="flex-1"
               >
-                {loading ? "Updating..." : "Update Product"}
-              </button>
+                Update Product
+              </Button>
               <Link
                 to="/products"
                 className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 text-center"

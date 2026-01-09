@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Button from "../components/base/Button";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -53,12 +54,13 @@ export default function Navbar() {
         </Link>
       </li>
       <li>
-        <button
+        <Button
+          variant="ghost"
           onClick={handleLogout}
-          className="w-full text-left nav-link text-red-600 md:text-red-500 md:ml-2"
+          className="w-full justify-start md:justify-center text-left md:text-center nav-link text-red-600 md:text-red-500 md:ml-2 hover:bg-red-50"
         >
           Logout
-        </button>
+        </Button>
       </li>
       <li className="border-t border-gray-100 mt-3 pt-3 md:border-none md:mt-0 md:pt-0">
         <span className="block text-sm font-semibold text-blue-800 truncate">
@@ -75,31 +77,34 @@ export default function Navbar() {
   const guestLinks = (
     <ul className="flex flex-col md:flex-row md:items-center md:space-x-8">
       <li>
-        <a
+        <Button
           href="#how-it-works"
-          className="nav-link"
+          variant="ghost"
+          className="nav-link font-medium"
           onClick={() => setMenuOpen(false)}
         >
           How It Works
-        </a>
+        </Button>
       </li>
       <li>
-        <a
+        <Button
           href="#features"
-          className="nav-link"
+          variant="ghost"
+          className="nav-link font-medium"
           onClick={() => setMenuOpen(false)}
         >
           Why It Works
-        </a>
+        </Button>
       </li>
       <li>
-        <a
+        <Button
           href="#testimonials"
-          className="nav-link"
+          variant="ghost"
+          className="nav-link font-medium"
           onClick={() => setMenuOpen(false)}
         >
           Testimonials
-        </a>
+        </Button>
       </li>
       <li>
         <Link
@@ -111,13 +116,15 @@ export default function Navbar() {
         </Link>
       </li>
       <li>
-        <Link
+        <Button
           to="/register"
-          className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors mt-3 md:mt-0"
+          variant="primary"
+          size="sm"
+          className="mt-3 md:mt-0 shadow-md"
           onClick={() => setMenuOpen(false)}
         >
           Start Free
-        </Link>
+        </Button>
       </li>
     </ul>
   );
@@ -135,7 +142,8 @@ export default function Navbar() {
         <nav className="hidden md:block">{token ? authLinks : guestLinks}</nav>
 
         {/* Mobile menu button */}
-        <button
+        <Button
+          variant="ghost"
           className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Toggle menu"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -162,7 +170,7 @@ export default function Navbar() {
               />
             )}
           </svg>
-        </button>
+        </Button>
       </div>
       {/* Mobile menu dropdown */}
       {menuOpen && (

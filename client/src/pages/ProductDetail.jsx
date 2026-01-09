@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import Button from "../components/base/Button";
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -102,18 +103,18 @@ export default function ProductDetail() {
           </div>
 
           <div className="mt-8 flex space-x-4">
-            <Link
+            <Button
               to={`/products/${product._id}/edit`}
-              className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700"
+              variant="primary"
             >
               Edit Product
-            </Link>
-            <Link
+            </Button>
+            <Button
               to="/products"
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+              variant="secondary"
             >
               Back to Products
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

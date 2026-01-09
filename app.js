@@ -76,7 +76,8 @@ const server = app.listen(PORT, () => {
   // -------------------------------
   // SELF-PING TO PREVENT COLD START
   // -------------------------------
-  const SELF_URL = process.env.SELF_URL || `https://scanqrgo.onrender.com`;
+  const SELF_URL =
+    process.env.SELF_URL || `https://katabanjicommerce-2.onrender.com`;
 
   console.log("Self-ping enabled → keeping Render awake");
 
