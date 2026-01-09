@@ -63,6 +63,7 @@ export default function App() {
         {/* Public root with old navbar */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/amazon-review-qr-code" element={<LandingPage />} />
         </Route>
 
         {/* Other public routes (no navbar) */}

@@ -29,41 +29,43 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-      {/* Logo */}
-      <div className="flex items-center">
-        <Link to="/">
-          <img src={ReviuLogo} alt="Reviu" className="h-8 md:h-10" />
-        </Link>
-      </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+        {/* Logo */}
+        <div className="flex items-center">
+          <Link to="/">
+            <img src={ReviuLogo} alt="Reviu" className="h-8 md:h-10" />
+          </Link>
+        </div>
 
-      {/* Links (Hidden on mobile for simplicity, or we can make a mobile menu later) */}
-      <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-600">
-        {navLinks.map((link) => (
-          <a
-            key={link}
-            href={`#${link.toLowerCase().replace(/\s/g, "-")}`}
-            className="hover:text-blue-600 transition-colors"
+        {/* Links (Hidden on mobile for simplicity, or we can make a mobile menu later) */}
+        <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-600">
+          {navLinks.map((link) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase().replace(/\s/g, "-")}`}
+              className="hover:text-blue-600 transition-colors"
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+
+        {/* Auth Buttons */}
+        <div className="flex items-center space-x-3">
+          <Link
+            to="/login"
+            className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
           >
-            {link}
-          </a>
-        ))}
-      </div>
-
-      {/* Auth Buttons */}
-      <div className="flex items-center space-x-3">
-        <Link
-          to="/login"
-          className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-        >
-          Start Free
-        </Link>
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+          >
+            Start Free
+          </Link>
+        </div>
       </div>
     </nav>
   );
@@ -212,10 +214,10 @@ export default function LandingPage() {
 
 
       {/* --- HEADER --- */}
-      <NavBar />
+      {!localStorage.getItem("token") && <NavBar />}
 
       {/* --- HERO SECTION --- */}
-      <section className="relative pt-16 pb-32 text-center max-w-5xl mx-auto px-6 z-10">
+      <section className="relative pt-32 pb-32 text-center max-w-5xl mx-auto px-6 z-10">
 
         {/* Amazon Logo Floating Left */}
         {/* Amazon Logo Floating Left */}
@@ -279,7 +281,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- PLATFORMS SECTION --- */}
-      <section className="py-24 bg-white text-center">
+      <section id="platforms" className="py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <p className="text-blue-500 font-medium mb-4">Platforms</p>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -311,7 +313,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- HOW IT WORKS SECTION --- */}
-      <section className="py-24 bg-[#F8FAFC]">
+      <section id="how-it-works" className="py-24 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h4 className="text-blue-500 font-semibold mb-3">How it Works?</h4>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
@@ -362,7 +364,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- COMPLIANCE SECTION --- */}
-      <section className="py-24 bg-gradient-to-b from-blue-50 to-white text-center">
+      <section id="compliance" className="py-24 bg-gradient-to-b from-blue-50 to-white text-center">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Built for platform compliance
@@ -415,7 +417,7 @@ export default function LandingPage() {
 
 
       {/* --- PRICING SECTION --- */}
-      <section className="py-24 bg-white text-center">
+      <section id="pricing" className="py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Pricing</h2>
           <p className="text-gray-500 text-lg mb-8">
@@ -512,7 +514,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- CONTACT SECTION --- */}
-      <section className="py-24 bg-[#F4F8FF]">
+      <section id="contact-us" className="py-24 bg-[#F4F8FF]">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Image */}
           <div className="relative">
@@ -547,4 +549,38 @@ export default function LandingPage() {
                   <select className="px-3 py-3 rounded-l-lg border border-r-0 border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>US</option>
                   </select>
-                  <input type="tel
+                  <input type="tel" placeholder="+1 (555) 000-0000" className="w-full px-4 py-3 rounded-r-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea rows={4} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+              </div>
+
+              <div className="flex items-center">
+                <input type="checkbox" id="privacy" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                <label htmlFor="privacy" className="ml-2 text-sm text-gray-500">
+                  You agree to our friendly <a href="#" className="underline">privacy policy</a>.
+                </label>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all"
+              >
+                Send message
+              </Button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* --- Footer / Extra (Minimal for now to match screenshot focus) --- */}
+      <div className="text-center pb-8 text-gray-400 text-sm">
+        <p>© {new Date().getFullYear()} Reviu. All rights reserved.</p>
+      </div>
+
+    </div >
+  );
+}

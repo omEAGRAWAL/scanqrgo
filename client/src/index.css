@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .animate-float-slow {
@@ -11,4 +18,8 @@
 
 .animate-float-slower {
   animation: float 8s ease-in-out infinite;
+}
+
+html {
+  scroll-behavior: smooth;
 }
