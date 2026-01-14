@@ -5,15 +5,22 @@ import AmazonLogo from "../assets/Amazon logo.png";
 import ShopifyLogo from "../assets/shopify.png";
 import ReviuLogo from "../assets/Reviu_Logo.png";
 import Button from "../components/base/Button";
+import ReviewCard1 from "../assets/Review Card1.png";
+import ReviewCard2 from "../assets/Review Card2.png";
 import Image1 from "../assets/image1.png";
 import Image2 from "../assets/image2.png";
 import Image3 from "../assets/image3.png";
-import { FiShield, FiMessageSquare, FiStar, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import { FiShield, FiMessageSquare, FiStar, FiMinusCircle, FiPlusCircle, FiCheck, FiTwitter, FiFacebook, FiInstagram, FiGithub } from "react-icons/fi";
 import LogoDevPunya from "../assets/logo_devpunya.png";
 import LogoOoge from "../assets/logo_ooge.png";
 import TestimonialBg from "../assets/testimonia_background.png";
 import TestimonialImg from "../assets/testimonail.png";
 import GetInTouchImg from "../assets/get_in_touch.png";
+import AmazonLogostraight from "../assets/amazon_straight.png";
+import ShopifyLogostraight from "../assets/shopyfy_straight.png";
+
+import { API_URL } from "../config/api";
+import axios from "axios";
 
 // --- Components ---
 
@@ -71,71 +78,51 @@ const NavBar = () => {
   );
 };
 
-const ReviewCard = () => (
-  <div className="relative bg-white p-6 rounded-xl shadow-lg border border-blue-50 transform rotate-[-3deg] z-10 max-w-sm">
-    <div className="flex space-x-1 mb-2">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <svg
-          key={s}
-          className="w-5 h-5 text-blue-500 fill-current"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-    <h3 className="text-lg font-bold text-gray-900 mb-1">
-      Performs its task perfectly
-    </h3>
-    <p className="text-sm text-gray-600 leading-relaxed mb-4">
-      Good quality, Average good cable length, Good strength, looks like the
-      image exact, and the experience is good as well.
-    </p>
-    <div className="flex items-center space-x-3">
-      <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-        {/* Placeholder avatar or initial */}
-        <img
-          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Yashasvi"
-          alt="User"
-        />
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-gray-900">Yashasvi</p>
-        <p className="text-xs text-gray-500">29 Oct, 2025</p>
-      </div>
-    </div>
-  </div>
-);
 
-const RatingCard = () => (
-  <div className="relative bg-white p-6 rounded-xl shadow-lg border border-blue-50 transform rotate-[3deg] z-10 max-w-sm ml-auto mt-8 md:mt-0">
-    <div className="flex items-start justify-between">
-      <div>
-        <span className="text-5xl font-bold text-gray-900">4.5</span>
-        <p className="text-xs text-gray-400 mt-1">1240 reviews</p>
-      </div>
-      <div className="flex flex-col space-y-1 w-32">
-        {[5, 4, 3, 2, 1].map((num) => (
-          <div key={num} className="flex items-center text-xs">
-            <span className="w-3 mr-1">{num}</span>
-            <span className="text-blue-500 mr-1">★</span>
-            <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 rounded-full"
-                style={{
-                  width: num === 5 ? '70%' : num === 4 ? '20%' : num === 3 ? '5%' : num === 2 ? '3%' : '2%'
-                }}
-              ></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = React.useState(0);
+  const [formData, setFormData] = React.useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    countryCode: "+1",
+    phone: "",
+    message: "",
+  });
+  const [status, setStatus] = React.useState("idle"); // idle, loading, success, error
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        number: `${formData.countryCode} ${formData.phone}`,
+        message: formData.message,
+      };
+
+      await axios.post(`${API_URL}/connect`, payload);
+      setStatus("success");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        countryCode: "+1",
+        phone: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setStatus("error");
+    }
+  };
 
   const faqs = [
     {
@@ -217,74 +204,77 @@ export default function LandingPage() {
       {!localStorage.getItem("token") && <NavBar />}
 
       {/* --- HERO SECTION --- */}
-      <section className="relative pt-32 pb-32 text-center max-w-5xl mx-auto px-6 z-10">
+      <section className="relative pt-24 md:pt-32 overflow-hidden z-10">
 
         {/* Amazon Logo Floating Left */}
-        {/* Amazon Logo Floating Left */}
-        <div className="absolute top-1/2 left-0 md:-left-12 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
           <div className="transform -rotate-12">
-            <div className="animate-float-slow">
-              <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 w-40">
-                <img src={AmazonLogo} alt="Amazon" className="w-full opacity-90" />
-              </div>
+            <div className="">
+              <img src={AmazonLogo} alt="Amazon" className="w-40 opacity-60" />
             </div>
           </div>
         </div>
 
         {/* Shopify Logo Floating Right */}
-        <div className="absolute top-2/3 right-0 md:-right-4 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
+        <div className="absolute top-2/3 right-0 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
           <div className="transform rotate-12">
-            <div className="animate-float-slower">
-              <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 w-36 flex items-center justify-center">
-                <img src={ShopifyLogo} alt="Shopify" className="w-full opacity-90" />
-              </div>
+            <div className="">
+              <img src={ShopifyLogo} alt="Shopify" className="w-40 opacity-60" />
             </div>
           </div>
         </div>
 
 
-        <h1 className="text-5xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
-          QR Code Review Software for Amazon & Shopify Sellers
-        </h1>
+        <div className="text-center max-w-5xl mx-auto px-6 relative z-10">
+          <h1 className="text-4xl md:text-5xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+            QR Code Review Software for Amazon & Shopify Sellers
+          </h1>
 
-        <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Collect honest customer feedback and product reviews using compliant QR codes.<br className="hidden md:block" />
-          Fully Compliant with <span className="font-bold text-gray-900">Amazon</span> and <span className="font-bold text-gray-900">Shopify</span>.
-        </p>
+          <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Collect honest customer feedback and product reviews using compliant QR codes.<br className="hidden md:block" />
+            Fully Compliant with <span className="font-bold text-gray-900">Amazon</span> and <span className="font-bold text-gray-900">Shopify</span>.
+          </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-          <Button
-            to="/register"
-            className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-          >
-            Start Free
-          </Button>
-          <Button
-            href="#schedule"
-            className="w-full sm:w-auto px-8 py-3 bg-white text-blue-600"
-          >
-            Schedule a call
-          </Button>
-        </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+            <button
+              to="/register"
+              className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white border-2 border-blue-600 font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+            >
+              Start Free
+            </button>
 
-        {/* --- FEATURE PREVIEW CARDS (Bottom Box) --- */}
-        <div className="relative mx-auto max-w-4xl">
-          {/* The box border effect */}
-          <div className="absolute inset-0 border-2 border-blue-400 opacity-20 rounded-xl pointer-events-none"></div>
+            <a
+              href="#contact-us"
+              className="w-full sm:w-auto px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all"
+            >
+              Schedule a call
+            </a>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-10 p-10 items-center">
-            <ReviewCard />
-            <RatingCard />
+
+          {/* --- REVIEW CARDS (Images) --- */}
+          <div className="relative mx-auto  mt-26">
+            <div className="grid md:grid-cols-2 gap-8 items-center justify-items-center">
+              {/* Left Card - Review Text */}
+              <div className="">
+                <img src={ReviewCard2} alt="Review Card" className="w-full max-w-lg opacity-80" />
+              </div>
+
+              {/* Right Card - Rating Stats */}
+              <div className="mt-12">
+                <img src={ReviewCard1} alt="Rating Summary" className="w-full max-w-lg opacity-80" />
+              </div>
+            </div>
           </div>
         </div>
 
       </section>
 
       {/* --- PLATFORMS SECTION --- */}
-      <section id="platforms" className="py-24 bg-white text-center">
+      <section id="platforms" className="py-12 md:py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <p className="text-blue-500 font-medium mb-4">Platforms</p>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <p className="text-blue-500 font-medium mb-4 uppercase tracking-wider">Platforms</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Works with your favourite platforms
           </h2>
           <p className="text-gray-500 mb-12 max-w-xl mx-auto">
@@ -292,14 +282,13 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-wrap justify-center items-center gap-12 sm:gap-20 mb-8">
-            <img src={AmazonLogo} alt="Amazon" className="h-10 sm:h-12 object-contain" />
+            <img src={AmazonLogostraight} alt="Amazon" className="h-10  sm:h-12 object-contain " />
             <div className="flex items-center gap-2">
-              <img src={ShopifyLogo} alt="Shopify" className="h-10 sm:h-12 object-contain" />
-              <span className="text-2xl font-bold font-sans text-gray-800">shopify</span>
+              <img src={ShopifyLogostraight} alt="Shopify" className="h-10 mb-2 sm:h-12 object-contain " />
             </div>
           </div>
 
-          <p className="text-gray-600 mb-10 font-medium">Works with Amazon, Shopify and leading ecommerce platforms.</p>
+          {/* <p className="text-gray-600 mb-10 font-medium">Works with Amazon, Shopify and leading ecommerce platforms.</p> */}
 
           <p className="text-gray-400 text-sm mb-10">more coming soon...</p>
 
@@ -313,10 +302,10 @@ export default function LandingPage() {
       </section>
 
       {/* --- HOW IT WORKS SECTION --- */}
-      <section id="how-it-works" className="py-24 bg-[#F8FAFC]">
+      <section id="how-it-works" className="py-12 md:py-24 bg-blue-50">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h4 className="text-blue-500 font-semibold mb-3">How it Works?</h4>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
+          <p className="text-blue-500 font-semibold mb-3 uppercase tracking-wider">How it Works?</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
           <p className="text-gray-500 mb-16 text-lg">Get started in minutes with our intuitive platform</p>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -364,9 +353,9 @@ export default function LandingPage() {
       </section>
 
       {/* --- COMPLIANCE SECTION --- */}
-      <section id="compliance" className="py-24 bg-gradient-to-b from-blue-50 to-white text-center">
+      <section id="compliance" className="py-12 md:py-24 bg-gradient-to-b from-blue-50 to-white text-center">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
             Built for platform compliance
           </h2>
           <p className="text-gray-500 max-w-2xl mx-auto mb-16 text-lg">
@@ -417,22 +406,61 @@ export default function LandingPage() {
 
 
       {/* --- PRICING SECTION --- */}
-      <section id="pricing" className="py-24 bg-white text-center">
+      <section id="pricing" className="py-12 md:py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Pricing</h2>
-          <p className="text-gray-500 text-lg mb-8">
-            Simple pricing for Amazon and Shopify sellers collecting reviews via QR codes.
+          <p className="text-blue-500 font-medium mb-3 uppercase tracking-wider">Pricing</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">High-quality reviews without high costs</h2>
+          <p className="text-gray-500 text-lg mb-16 max-w-2xl mx-auto">
+            Plan designed to help brands collect meaningful feedback at a cost that scales with growth.
           </p>
-          {/* Detailed pricing cards can go here */}
-          <div className="p-8 border rounded-xl bg-gray-50 inline-block">
-            <h3 className="text-2xl font-bold mb-2">Pro Plan</h3>
-            <p className="text-gray-500">Everything you need to grow.</p>
+
+          <div className="bg-blue-600 text-white rounded-3xl p-8 max-w-sm mx-auto shadow-xl relative overflow-hidden transition-transform hover:scale-[1.02] duration-300">
+            <div className="text-left relative z-10">
+              <h3 className="text-2xl font-bold mb-1">All in one</h3>
+              <p className="text-blue-100 text-sm mb-8">Single pricing for all customers</p>
+
+              <div className="flex items-baseline mb-8">
+                <span className="text-5xl font-bold">$25</span>
+                <span className="text-blue-100 ml-2 font-medium">/ Month</span>
+              </div>
+
+              <div className="w-full bg-white text-blue-600 font-bold py-3 rounded-lg mb-8 hover:bg-gray-50 transition-colors text-center cursor-pointer">
+                Get Started Now
+              </div>
+
+              <div className="space-y-4 text-left">
+                {[
+                  "Unlimited QR Campaigns",
+                  "Amazon & Shopify Integration",
+                  "Verified Review Collection",
+                  "Custom Branding & Templates",
+                  "Analytics Dashboard",
+                  "24/7 Email Support"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-start">
+                    <div className="bg-white rounded-full p-0.5 mt-0.5 mr-3 flex-shrink-0">
+                      <FiCheck className="text-blue-600 w-3 h-3" />
+                    </div>
+                    <span className="text-blue-50 text-sm font-medium">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <Button
+              to="/register"
+              className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+            >
+              Start Free Now
+            </Button>
           </div>
         </div>
       </section>
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="py-24 bg-[#F4F8FF] overflow-hidden relative">
+      <section className="p-8 pb-24 bg-[#F4F8FF] overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <div className="text-left">
@@ -453,24 +481,24 @@ export default function LandingPage() {
             <img
               src={TestimonialBg}
               alt=""
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-none opacity-80 pointer-events-none"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-none opacity-80 pointer-events-none"
             />
 
             {/* Front Card */}
             <img
               src={TestimonialImg}
               alt="Customer Testimonials"
-              className="relative z-10 w-full max-w-md shadow-2xl rounded-2xl transform hover:scale-[1.02] transition-transform duration-500"
+              className="relative z-10 w-80 max-w-md mt-40 shadow-2xl rounded-2xl"
             />
           </div>
         </div>
       </section>
 
       {/* --- FAQ SECTION --- */}
-      <section id="faq" className="py-24 bg-white">
+      <section id="faq" className="py-12 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Frequently asked questions
             </h2>
             <p className="text-gray-500 text-lg">
@@ -514,7 +542,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- CONTACT SECTION --- */}
-      <section id="contact-us" className="py-24 bg-[#F4F8FF]">
+      <section id="contact-us" className="py-12 md:py-24 bg-blue-50">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Image */}
           <div className="relative">
@@ -523,63 +551,186 @@ export default function LandingPage() {
 
           {/* Right Form */}
           <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-2">Get in touch</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Get in touch</h2>
             <p className="text-gray-500 mb-8">Our friendly team would love to hear from you.</p>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
-                  <input type="text" placeholder="First name" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="First name"
+                    className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
-                  <input type="text" placeholder="Last name" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Last name"
+                    className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" placeholder="you@company.com" className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@company.com"
+                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
                 <div className="flex">
-                  <select className="px-3 py-3 rounded-l-lg border border-r-0 border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>US</option>
+                  <select
+                    name="countryCode"
+                    value={formData.countryCode}
+                    onChange={handleChange}
+                    className="px-3 py-3 rounded-l-lg border border-gray-400 border-r-0 border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-[120px]"
+                  >
+                    {[
+                      { code: "+1", label: "US (+1)" },
+                      { code: "+1", label: "CA (+1)" },
+                      { code: "+44", label: "UK (+44)" },
+                      { code: "+61", label: "AU (+61)" },
+                      { code: "+49", label: "DE (+49)" },
+                      { code: "+33", label: "FR (+33)" },
+                      { code: "+91", label: "IN (+91)" },
+                      { code: "+81", label: "JP (+81)" },
+                      { code: "+86", label: "CN (+86)" },
+                      { code: "+55", label: "BR (+55)" },
+                      { code: "+971", label: "UAE (+971)" },
+                      { code: "+65", label: "SG (+65)" },
+                      { code: "+966", label: "SA (+966)" },
+                    ].map((country, idx) => (
+                      <option key={idx} value={country.code}>
+                        {country.label}
+                      </option>
+                    ))}
                   </select>
-                  <input type="tel" placeholder="+1 (555) 000-0000" className="w-full px-4 py-3 rounded-r-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full px-4 py-3 rounded-r-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea rows={4} className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border bg-white border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                ></textarea>
               </div>
 
               <div className="flex items-center">
-                <input type="checkbox" id="privacy" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                {/* <input type="checkbox" id="privacy" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required />
                 <label htmlFor="privacy" className="ml-2 text-sm text-gray-500">
                   You agree to our friendly <a href="#" className="underline">privacy policy</a>.
-                </label>
+                </label> */}
               </div>
 
               <Button
                 type="submit"
-                className="w-full py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all"
+                disabled={status === "loading"}
+                className="w-full py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all disabled:opacity-70"
               >
-                Send message
+                {status === "loading" ? "Sending..." : "Send message"}
               </Button>
+
+              {status === "success" && (
+                <p className="text-green-600 text-center font-medium">Message sent successfully!</p>
+              )}
+              {status === "error" && (
+                <p className="text-red-600 text-center font-medium">Failed to send message. Please try again.</p>
+              )}
             </form>
           </div>
         </div>
       </section>
 
-      {/* --- Footer / Extra (Minimal for now to match screenshot focus) --- */}
-      <div className="text-center pb-8 text-gray-400 text-sm">
-        <p>© {new Date().getFullYear()} Reviu. All rights reserved.</p>
-      </div>
+      {/* --- Footer --- */}
+      <footer className="bg-white border-t border-gray-100 pt-10 md:pt-16 pb-12 mt-12 md:mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <img src={ReviuLogo} alt="Reviu" className="h-8" />
+              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
+                More Reviews . More Trust . More Sales
+              </h2>
+            </div>
+
+            <Button
+              to="/register"
+              className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all whitespace-nowrap"
+            >
+              Start Free Now
+            </Button>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-12 border-t border-gray-100 pt-16">
+            <div className="md:col-span-2">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">About Reviu.store</h3>
+              <p className="text-gray-500 mb-8 max-w-sm leading-relaxed">
+                Reviu helps brands collect honest, verified customer feedback through compliant surveys and automation—turning real customer voices into trust and growth.
+              </p>
+              <div className="flex gap-6">
+                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiTwitter size={24} /></a>
+                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiFacebook size={24} /></a>
+                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiInstagram size={24} /></a>
+                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiGithub size={24} /></a>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-6">Company</h3>
+              <ul className="space-y-4 text-gray-500 font-medium">
+                <li><a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it works</a></li>
+                <li><a href="#integration" className="hover:text-blue-600 transition-colors">Integration</a></li>
+                <li><a href="#compliance" className="hover:text-blue-600 transition-colors">Compliance</a></li>
+                <li><a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a></li>
+                <li><a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-6">Help</h3>
+              <ul className="space-y-4 text-gray-500 font-medium">
+                <li><a href="#contact-us" className="hover:text-blue-600 transition-colors">Contact us</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
 
     </div >
   );

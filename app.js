@@ -21,6 +21,7 @@ require("./models/Campaign");
 require("./models/Review");
 require("./models/Promotion");
 require("./models/FunnelVisit");
+require("./models/Connect");
 
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
@@ -29,6 +30,7 @@ const campaignRoutes = require("./routes/campaign");
 const publicReviewRoutes = require("./routes/publicReview");
 const upload = require("./routes/upload");
 const adminUsers = require("./routes/admin");
+const connectRoutes = require("./routes/connect");
 
 // -------------------------------
 // MongoDB Connection
@@ -58,6 +60,8 @@ app.use("/api/campaigns", campaignRoutes);
 app.use("/api/public", publicReviewRoutes);
 app.use("/api/upload", upload);
 app.use("/api/admin", adminUsers);
+app.use("/api/connect", connectRoutes);
+
 
 // Static Frontend
 app.use(express.static(path.join(__dirname, "client/dist")));
