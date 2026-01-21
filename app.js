@@ -77,17 +77,17 @@ const server = app.listen(PORT, () => {
   // -------------------------------
   // SELF-PING TO PREVENT COLD START
   // -------------------------------
-  const SELF_URL =
-    process.env.SELF_URL || `https://scanqrgo.onrender.com`;
+  const SELF_URL = `https://scanqrgo.onrender.com`;
 
-  console.log("Self-ping enabled → keeping Render awake");
+  // console.log("Self-ping enabled → keeping Render awake");
+  // console.log(`🔄 Pinging: ${SELF_URL}/health every 10 seconds`);
 
   setInterval(async () => {
     try {
-      await axios.get(`${SELF_URL}/health`);
-      // console.log("Self-ping OK:", new Date().toISOString());
+      const response = await axios.get(`${SELF_URL}/health`);
+      console.log("✅ Self-ping OK:", new Date().toISOString());
     } catch (err) {
-      console.log("Self-ping FAILED:", err.message);
+      console.log("❌ Self-ping FAILED:", err.message);
     }
-  }, 1 * 60 * 1000); // every 5 minutes
+  }, 10 * 60 * 1000); // every 10 minutes
 });
