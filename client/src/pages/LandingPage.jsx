@@ -194,11 +194,6 @@ export default function LandingPage() {
           content="https://reviu.store/twitter-image.jpg"
         />
       </Helmet>
-      {/* Background Grid Lines (Decorative) */}
-      <div className="absolute inset-x-0 top-[20%] border-t border-dashed border-blue-200 opacity-50"></div>
-      <div className="absolute inset-y-0 left-1/4 border-r border-dashed border-blue-200 opacity-50 hidden lg:block"></div>
-      <div className="absolute inset-y-0 right-1/4 border-r border-dashed border-blue-200 opacity-50 hidden lg:block"></div>
-
 
       {/* --- HEADER --- */}
       {!localStorage.getItem("token") && <NavBar />}
