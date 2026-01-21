@@ -174,6 +174,7 @@ export default function PromotionForm() {
             value={form.name}
             onChange={handleInputChange}
             placeholder="e.g., 3months_EW"
+            required
           />
 
           {/* Offer Title */}
@@ -183,6 +184,7 @@ export default function PromotionForm() {
             value={form.offerTitle}
             onChange={handleInputChange}
             placeholder="Enter Offer Title"
+            required
           />
 
           {/* Offer Type */}
@@ -245,6 +247,7 @@ export default function PromotionForm() {
                 value={form.couponCode}
                 onChange={handleInputChange}
                 placeholder="e.g., SAVE10"
+                required
               />
               <Input
                 label="Expiry Date"
@@ -287,7 +290,7 @@ export default function PromotionForm() {
               }
               options={{
                 spellChecker: false,
-                autofocus: true,
+                autofocus: false,
                 autosave: {
                   enabled: false,
                 },
@@ -340,7 +343,7 @@ export default function PromotionForm() {
 }
 
 // 🔹 Reusable input field
-function Input({ label, name, value, onChange, placeholder, type = "text" }) {
+function Input({ label, name, value, onChange, placeholder, type = "text", required = false }) {
   return (
     <div>
       <label
@@ -348,6 +351,7 @@ function Input({ label, name, value, onChange, placeholder, type = "text" }) {
         className="block text-sm font-medium text-gray-700 mb-1"
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <input
         id={name}
@@ -356,6 +360,7 @@ function Input({ label, name, value, onChange, placeholder, type = "text" }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        required={required}
         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
       />
     </div>

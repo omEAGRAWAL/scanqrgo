@@ -440,9 +440,7 @@ export default function Dashboard() {
         </Box>
       </Box>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <ReviewAnalyticsCard />
-        </Grid>
+
         {/* ... other widgets ... */}
       </Grid>
 

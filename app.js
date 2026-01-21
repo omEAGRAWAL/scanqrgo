@@ -36,10 +36,7 @@ const connectRoutes = require("./routes/connect");
 // MongoDB Connection
 // -------------------------------
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -81,7 +78,7 @@ const server = app.listen(PORT, () => {
   // SELF-PING TO PREVENT COLD START
   // -------------------------------
   const SELF_URL =
-    process.env.SELF_URL || `https://katabanjicommerce-2.onrender.com`;
+    process.env.SELF_URL || `https://scanqrgo.onrender.com`;
 
   console.log("Self-ping enabled → keeping Render awake");
 

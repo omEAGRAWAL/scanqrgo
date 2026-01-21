@@ -22,12 +22,19 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 // EMAIL_PASS=your-app-password
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: process.env.EMAIL_PORT || 587,
+  port: parseInt(process.env.EMAIL_PORT) || 587,
   secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false, // Accept self-signed certificates (for dev)
+    ciphers: 'SSLv3'
+  },
+  connectionTimeout: 10000, // 10 seconds timeout
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
 // Helper Function: Send Confirmation Email
@@ -52,14 +59,12 @@ async function sendConfirmationEmail(
         <div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; margin: 20px 0;">
           <h3 style="color: #166534; margin-top: 0;">🎁 Here is your Reward!</h3>
           <p><strong>Offer:</strong> ${reward.offerTitle}</p>
-          ${
-            reward.type === "discount code"
-              ? `<p style="font-size: 18px; font-weight: bold; letter-spacing: 1px;">Code: ${reward.couponCode}</p>`
-              : `<p><strong>Warranty:</strong> ${reward.warrantyPeriod} Months Extended Warranty Activated</p>`
-          }
-          <p style="font-size: 12px; color: #666;">${
-            reward.termsAndConditions || ""
-          }</p>
+          ${reward.type === "discount code"
+          ? `<p style="font-size: 18px; font-weight: bold; letter-spacing: 1px;">Code: ${reward.couponCode}</p>`
+          : `<p><strong>Warranty:</strong> ${reward.warrantyPeriod} Months Extended Warranty Activated</p>`
+        }
+          <p style="font-size: 12px; color: #666;">${reward.termsAndConditions || ""
+        }</p>
         </div>
       `;
     }
@@ -75,9 +80,24 @@ async function sendConfirmationEmail(
       subject: subject,
       html: htmlContent,
     });
-    console.log(`Email sent successfully to ${recipientEmail}`);
+    console.log(`✅ Email sent successfully to ${recipientEmail}`);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("❌ Error sending email:", error);
+    console.error("⚠️  Email error details:", {
+      code: error.code,
+      command: error.command,
+      response: error.response,
+    });
+
+    // Log helpful troubleshooting info
+    if (error.code === 'EAUTH') {
+      console.error('🔐 Gmail Authentication Failed!');
+      console.error('   Please check:');
+      console.error('   1. 2-Step Verification is enabled on your Google account');
+      console.error('   2. You generated an App Password (not your regular password)');
+      console.error('   3. The App Password in .env has no spaces');
+      console.error('   4. Visit: https://myaccount.google.com/apppasswords');
+    }
     // Don't throw error here to prevent blocking the HTTP response
   }
 }
@@ -408,7 +428,9 @@ router.post("/campaign/:id/submit", async (req, res) => {
 
     // --- TRIGGER EMAIL ---
     // We send the email asynchronously so the user doesn't have to wait for SMTP
-    sendConfirmationEmail(email, customerName, campaign.name, reward);
+    // TODO: Uncomment after configuring Gmail App Password
+    // sendConfirmationEmail(email, customerName, campaign.name, reward);
+    console.log('📧 Email sending disabled - configure Gmail App Password to enable');
     // ---------------------
 
     res.json({
@@ -474,8 +496,7 @@ router.post("/analyze-reviews", auth, async (req, res) => {
     const reviewsText = visits
       .map(
         (v, i) =>
-          `Review ${i + 1}: [Rating: ${v.stepData.rating}/5, Satisfaction: ${
-            v.stepData.satisfaction
+          `Review ${i + 1}: [Rating: ${v.stepData.rating}/5, Satisfaction: ${v.stepData.satisfaction
           }] "${v.stepData.review}"`
       )
       .join("\n\n");
