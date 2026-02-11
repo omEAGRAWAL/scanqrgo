@@ -466,6 +466,34 @@ router.get("/reviews", auth, async (req, res) => {
   }
 });
 
+// GET reviews for a specific campaign (requires auth)
+router.get("/campaign/:id/reviews", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Validate campaign ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid campaign ID" });
+    }
+
+    // Find funnel visits for this campaign and seller
+    const funnelVisits = await FunnelVisit.find({
+      campaign: id,
+      seller: userId
+    })
+      .populate("campaign", "name")
+      .populate("product", "name amazonAsin flipkartFsn imageurl")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json(funnelVisits);
+  } catch (error) {
+    console.error("Get campaign reviews error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // POST /api/analyze-reviews - Send data to Gemini for analysis
 router.post("/analyze-reviews", auth, async (req, res) => {
   try {

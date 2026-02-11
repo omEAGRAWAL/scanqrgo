@@ -6,8 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
-import CreateProduct from "./pages/CreateProduct";
-import EditProduct from "./pages/EditProduct";
+import ProductForm from "./pages/ProductForm";
 import ProductDetail from "./pages/ProductDetail";
 import Promotions from "./pages/Promotions";
 import CreatePromotion from "./pages/CreatePromotion";
@@ -99,10 +98,10 @@ export default function App() {
             }
           />
           <Route
-            path="/products/create"
+            path="/products/new"
             element={
               <RequireAuth>
-                <CreateProduct />
+                <ProductForm />
               </RequireAuth>
             }
           />
@@ -124,10 +123,10 @@ export default function App() {
             }
           />
           <Route
-            path="/products/:id/edit"
+            path="/products/edit/:id"
             element={
               <RequireAuth>
-                <EditProduct />
+                <ProductForm />
               </RequireAuth>
             }
           />
