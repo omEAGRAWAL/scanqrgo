@@ -65,6 +65,37 @@ const CampaignSchema = new mongoose.Schema({
     },
   ],
 
+  // Dynamic form fields configuration (Google Forms-like)
+  formFields: [
+    {
+      id: { type: String, required: true },
+      type: {
+        type: String,
+        enum: [
+          "text",
+          "email",
+          "tel",
+          "textarea",
+          "number",
+          "rating",
+          "select",
+          "toggle",
+          "product_select",
+          "marketplace_select",
+        ],
+        required: true,
+      },
+      label: { type: String, required: true },
+      placeholder: { type: String, default: "" },
+      required: { type: Boolean, default: false },
+      options: [String], // for select/toggle fields
+      step: { type: Number, default: 0 },
+      order: { type: Number, default: 0 },
+      isSystem: { type: Boolean, default: false },
+      isRemovable: { type: Boolean, default: true },
+    },
+  ],
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

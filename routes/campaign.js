@@ -25,6 +25,7 @@ router.post("/", auth, async (req, res) => {
       enableSmartFunnel,
       promotionSettings,
       customization,
+      formFields,
     } = req.body;
 
     // Basic validation
@@ -73,6 +74,7 @@ router.post("/", auth, async (req, res) => {
       promotionSettings:
         category === "promotion" ? promotionSettings : undefined,
       customization: customization || {},
+      formFields: formFields || [],
     });
 
     await campaign.save();
@@ -180,6 +182,7 @@ router.put("/:id", auth, async (req, res) => {
       enableSmartFunnel,
       promotionSettings,
       customization,
+      formFields,
     } = req.body;
 
     const campaign = await Campaign.findOne({
@@ -226,6 +229,7 @@ router.put("/:id", auth, async (req, res) => {
       };
     if (customization)
       campaign.customization = { ...campaign.customization, ...customization };
+    if (formFields !== undefined) campaign.formFields = formFields;
 
     await campaign.save();
 

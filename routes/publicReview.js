@@ -140,6 +140,7 @@ router.get("/campaign/:id", async (req, res) => {
         promotion: campaign.promotion,
         reviewMinimumLength: campaign.reviewMinimumLength,
         customization: campaign.customization,
+        formFields: campaign.formFields || [],
       },
     });
   } catch (error) {
@@ -307,6 +308,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
       rating,
       clickedMarketplaceButton,
       marketplace,
+      customFields,
     } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -377,6 +379,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
         clickedMarketplaceButton: clickedMarketplaceButton || false,
         shouldRequestReview,
       },
+      customFields: customFields || {},
     });
     await funnelVisit.save();
 

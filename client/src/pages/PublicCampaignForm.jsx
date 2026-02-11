@@ -1291,6 +1291,7 @@ export default function PublicCampaignForm() {
     review: "",
     clickedMarketplaceButton: false,
     marketplace: "",
+    customFields: {},
   });
 
   // --- Hooks ---
@@ -1441,6 +1442,7 @@ export default function PublicCampaignForm() {
         satisfaction: satisfactionText,
         rating: form.satisfaction,
         marketplace: form.marketplace || selectedMarketplaceConfig?.name || "",
+        customFields: form.customFields || {},
       };
 
       const res = await fetch(`${API_URL}/public/campaign/${id}/submit`, {
@@ -1461,58 +1463,340 @@ export default function PublicCampaignForm() {
     }
   }, [id, form, selectedMarketplaceConfig]);
 
+  // --- Dynamic Form Fields Helpers ---
+  const hasCustomFormFields = campaign?.formFields?.length > 0;
+
+  const getStepFields = useCallback(
+    (step) => {
+      if (!hasCustomFormFields) return null; // fallback to hardcoded
+      return campaign.formFields
+        .filter((f) => f.step === step)
+        .sort((a, b) => a.order - b.order);
+    },
+    [campaign?.formFields, hasCustomFormFields]
+  );
+
+  const handleCustomFieldChange = useCallback(
+    (fieldId, value) => {
+      setForm((prev) => ({
+        ...prev,
+        customFields: { ...prev.customFields, [fieldId]: value },
+      }));
+      if (formErrors[fieldId]) setFormErrors((prev) => ({ ...prev, [fieldId]: "" }));
+    },
+    [formErrors]
+  );
+
+  // Get current value for a field (checks both regular form state and customFields)
+  const getFieldValue = useCallback(
+    (field) => {
+      // System/known fields are in the main form state
+      const knownKeys = [
+        "selectedProduct", "orderNumber", "satisfaction", "usedMoreDays",
+        "customerName", "email", "phoneNumber", "review", "marketplace",
+      ];
+      if (knownKeys.includes(field.id)) return form[field.id];
+      return form.customFields?.[field.id] || "";
+    },
+    [form]
+  );
+
+  const setFieldValue = useCallback(
+    (field, value) => {
+      const knownKeys = [
+        "selectedProduct", "orderNumber", "satisfaction", "usedMoreDays",
+        "customerName", "email", "phoneNumber", "review", "marketplace",
+      ];
+      if (knownKeys.includes(field.id)) {
+        setForm((prev) => ({ ...prev, [field.id]: value }));
+        if (formErrors[field.id]) setFormErrors((prev) => ({ ...prev, [field.id]: "" }));
+      } else {
+        handleCustomFieldChange(field.id, value);
+      }
+    },
+    [formErrors, handleCustomFieldChange]
+  );
+
+  // Render a single dynamic field
+  const renderDynamicField = useCallback(
+    (field) => {
+      const value = getFieldValue(field);
+      const error = formErrors[field.id];
+
+      switch (field.type) {
+        case "product_select":
+          // Use the existing product select UI
+          return (
+            <FormControl key={field.id} fullWidth error={!!error} variant="outlined">
+              <InputLabel>{field.label}</InputLabel>
+              <Select
+                name="selectedProduct"
+                value={form.selectedProduct}
+                onChange={handleChange}
+                label={field.label}
+                renderValue={(selected) => {
+                  const p = campaign?.products?.find((prod) => prod._id === selected);
+                  return (
+                    <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden" }}>
+                      <Typography noWrap sx={{ maxWidth: "100%" }}>{p?.name}</Typography>
+                    </Box>
+                  );
+                }}
+              >
+                {campaign?.products?.map((product) => (
+                  <MenuItem key={product._id} value={product._id}>
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%", overflow: "hidden" }}>
+                      <Avatar src={product.imageurl} alt={product.name} variant="rounded" sx={{ width: 40, height: 40, bgcolor: "grey.100", flexShrink: 0 }}>
+                        <ShoppingCart fontSize="small" />
+                      </Avatar>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography variant="body2" fontWeight={600} noWrap>{product.name}</Typography>
+                        <Typography variant="caption" color="text.secondary" noWrap display="block">{product.brand}</Typography>
+                      </Box>
+                    </Stack>
+                  </MenuItem>
+                ))}
+              </Select>
+              {error && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{error}</Typography>}
+            </FormControl>
+          );
+
+        case "marketplace_select": {
+          const bothAvailable = !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
+          if (!selectedProduct || !bothAvailable) return null;
+          return (
+            <Box key={field.id}>
+              <FormLabel component="legend" sx={{ mb: 1.5, fontSize: "0.9rem" }}>{field.label}</FormLabel>
+              <Stack direction="row" spacing={2}>
+                <MarketplaceButton fullWidth selected={form.marketplace === "Amazon"} brandColor="#FF9500" onClick={() => handleMarketplaceSelect("Amazon")} startIcon={<FaAmazon />}>Amazon</MarketplaceButton>
+                <MarketplaceButton fullWidth selected={form.marketplace === "Flipkart"} brandColor="#2874F0" onClick={() => handleMarketplaceSelect("Flipkart")} startIcon={<SiFlipkart />}>Flipkart</MarketplaceButton>
+              </Stack>
+              {error && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{error}</Typography>}
+            </Box>
+          );
+        }
+
+        case "rating":
+          return (
+            <Box key={field.id} sx={{ textAlign: "center", py: 1 }}>
+              <Typography component="legend" sx={{ mb: 1, fontWeight: 500 }}>{field.label}</Typography>
+              <Rating
+                name="satisfaction"
+                value={Number(form.satisfaction)}
+                onChange={handleRatingChange}
+                size="large"
+                icon={<Star fontSize="inherit" color="primary" />}
+                emptyIcon={<StarBorder fontSize="inherit" />}
+                sx={{ fontSize: "3rem" }}
+              />
+              {error && <Typography variant="caption" color="error" display="block">{error}</Typography>}
+            </Box>
+          );
+
+        case "toggle":
+          return (
+            <Box key={field.id}>
+              <Typography component="legend" gutterBottom sx={{ fontSize: "0.9rem", color: "text.secondary" }}>{field.label}</Typography>
+              <ToggleButtonGroup
+                value={value}
+                exclusive
+                onChange={(e, newVal) => { if (newVal !== null) setFieldValue(field, newVal); }}
+                fullWidth
+                color="primary"
+                size="small"
+              >
+                {(field.options?.length ? field.options : ["Yes", "No"]).map((opt) => (
+                  <ToggleButton key={opt} value={opt}>{opt}</ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+              {error && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{error}</Typography>}
+            </Box>
+          );
+
+        case "textarea":
+          return (
+            <TextField
+              key={field.id}
+              fullWidth
+              name={field.id}
+              label={field.label}
+              multiline
+              minRows={4}
+              value={value}
+              onChange={(e) => setFieldValue(field, e.target.value)}
+              error={!!error}
+              helperText={error || (field.id === "review" ? `${(value || "").length} characters` : "")}
+              placeholder={field.placeholder || ""}
+            />
+          );
+
+        case "select":
+          return (
+            <FormControl key={field.id} fullWidth error={!!error} variant="outlined">
+              <InputLabel>{field.label}</InputLabel>
+              <Select
+                value={value}
+                onChange={(e) => setFieldValue(field, e.target.value)}
+                label={field.label}
+              >
+                {(field.options || []).map((opt) => (
+                  <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                ))}
+              </Select>
+              {error && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{error}</Typography>}
+            </FormControl>
+          );
+
+        case "email":
+          return (
+            <TextField
+              key={field.id}
+              fullWidth
+              name={field.id}
+              label={field.label}
+              type="email"
+              value={value}
+              onChange={(e) => setFieldValue(field, e.target.value)}
+              error={!!error}
+              helperText={error}
+              placeholder={field.placeholder || ""}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><EmailOutlined color="action" /></InputAdornment>,
+              }}
+            />
+          );
+
+        case "tel":
+          return (
+            <TextField
+              key={field.id}
+              fullWidth
+              name={field.id}
+              label={field.label}
+              type="tel"
+              value={value}
+              onChange={(e) => setFieldValue(field, e.target.value)}
+              error={!!error}
+              helperText={error}
+              placeholder={field.placeholder || "+91"}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><PhoneOutlined color="action" /></InputAdornment>,
+              }}
+            />
+          );
+
+        case "number":
+          return (
+            <TextField
+              key={field.id}
+              fullWidth
+              name={field.id}
+              label={field.label}
+              type="number"
+              value={value}
+              onChange={(e) => setFieldValue(field, e.target.value)}
+              error={!!error}
+              helperText={error}
+              placeholder={field.placeholder || ""}
+            />
+          );
+
+        case "text":
+        default:
+          return (
+            <TextField
+              key={field.id}
+              fullWidth
+              name={field.id}
+              label={field.label}
+              value={value}
+              onChange={(e) => setFieldValue(field, e.target.value)}
+              error={!!error}
+              helperText={error || (field.placeholder ? field.placeholder : "")}
+              placeholder={field.placeholder || ""}
+              InputProps={{
+                startAdornment: field.id === "orderNumber" ? (
+                  <InputAdornment position="start"><BadgeOutlined color="action" /></InputAdornment>
+                ) : field.id === "customerName" ? (
+                  <InputAdornment position="start"><Person color="action" /></InputAdornment>
+                ) : undefined,
+              }}
+            />
+          );
+      }
+    },
+    [form, formErrors, campaign, selectedProduct, handleChange, handleRatingChange, handleMarketplaceSelect, getFieldValue, setFieldValue]
+  );
+
   const validateStep = useCallback(
     (step) => {
       const errors = {};
-      switch (step) {
-        case 0: {
-          if (!form.selectedProduct)
-            errors.selectedProduct = "Please select a product";
-          if (!form.orderNumber.trim())
-            errors.orderNumber = "Order number is required";
-          if (!form.satisfaction)
-            errors.satisfaction = "Please rate your satisfaction";
-          if (!form.usedMoreDays)
-            errors.usedMoreDays = "Please select an option";
-          const bothAvailable =
-            !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
-          if (bothAvailable && !form.marketplace) {
-            errors.marketplace = "Please select a marketplace";
-          }
-          break;
+
+      if (hasCustomFormFields) {
+        // Dynamic validation based on formFields config
+        const stepFields = getStepFields(step);
+        if (stepFields) {
+          stepFields.forEach((field) => {
+            const value = getFieldValue(field);
+            if (field.required) {
+              if (field.type === "rating") {
+                if (!form.satisfaction) errors[field.id] = "Please rate your satisfaction";
+              } else if (field.type === "product_select") {
+                if (!form.selectedProduct) errors[field.id] = "Please select a product";
+              } else if (field.type === "marketplace_select") {
+                const bothAvailable = !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
+                if (bothAvailable && !form.marketplace) errors[field.id] = "Please select a marketplace";
+              } else if (field.type === "toggle") {
+                if (!value) errors[field.id] = "Please select an option";
+              } else if (typeof value === "string" && !value.trim()) {
+                errors[field.id] = `${field.label} is required`;
+              }
+            }
+            // Type-specific validation
+            if (value && field.type === "email" && !/\S+@\S+\.\S+/.test(value)) {
+              errors[field.id] = "Please enter a valid email";
+            }
+            if (value && field.type === "tel" && !/^\+?[\d\s-()]+$/.test(value)) {
+              errors[field.id] = "Please enter a valid phone number";
+            }
+            if (field.id === "review" && field.required) {
+              const minLen = campaign?.reviewMinimumLength || 0;
+              if (value && campaign?.category === "review" && minLen > 0 && value.length < minLen) {
+                errors[field.id] = `Review must be at least ${minLen} characters`;
+              }
+            }
+          });
         }
-        case 1:
-          if (!form.customerName.trim())
-            errors.customerName = "Name is required";
-          if (!form.email.trim()) {
-            errors.email = "Email is required";
-          } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-            errors.email = "Please enter a valid email";
+      } else {
+        // Legacy hardcoded validation
+        switch (step) {
+          case 0: {
+            if (!form.selectedProduct) errors.selectedProduct = "Please select a product";
+            if (!form.orderNumber.trim()) errors.orderNumber = "Order number is required";
+            if (!form.satisfaction) errors.satisfaction = "Please rate your satisfaction";
+            if (!form.usedMoreDays) errors.usedMoreDays = "Please select an option";
+            const bothAvailable = !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
+            if (bothAvailable && !form.marketplace) errors.marketplace = "Please select a marketplace";
+            break;
           }
-          if (form.phoneNumber && !/^\+?[\d\s-()]+$/.test(form.phoneNumber)) {
-            errors.phoneNumber = "Please enter a valid phone number";
+          case 1:
+            if (!form.customerName.trim()) errors.customerName = "Name is required";
+            if (!form.email.trim()) { errors.email = "Email is required"; } else if (!/\S+@\S+\.\S+/.test(form.email)) { errors.email = "Please enter a valid email"; }
+            if (form.phoneNumber && !/^\+?[\d\s-()]+$/.test(form.phoneNumber)) { errors.phoneNumber = "Please enter a valid phone number"; }
+            break;
+          case 2: {
+            const minLen = campaign?.reviewMinimumLength || 0;
+            if (!form.review.trim()) { errors.review = "Review is required"; } else if (campaign?.category === "review" && minLen > 0 && form.review.length < minLen) { errors.review = `Review must be at least ${minLen} characters`; }
+            break;
           }
-          break;
-        case 2: {
-          const minLen = campaign?.reviewMinimumLength || 0;
-          if (!form.review.trim()) {
-            errors.review = "Review is required";
-          } else if (
-            campaign?.category === "review" &&
-            minLen > 0 &&
-            form.review.length < minLen
-          ) {
-            errors.review = `Review must be at least ${minLen} characters`;
-          }
-          break;
+          default: break;
         }
-        default:
-          break;
       }
+
       setFormErrors(errors);
       return Object.keys(errors).length === 0;
     },
-    [form, campaign, selectedProduct]
+    [form, campaign, selectedProduct, hasCustomFormFields, getStepFields, getFieldValue]
   );
 
   const handleNext = useCallback(() => {
@@ -1536,354 +1820,172 @@ export default function PublicCampaignForm() {
   // --- Rendering Steps ---
 
   const renderStep0 = () => {
+    // DYNAMIC: if formFields are configured, render from config
+    const stepFields = getStepFields(0);
+    if (stepFields) {
+      return (
+        <Stack spacing={3}>
+          {stepFields.map((field) => renderDynamicField(field))}
+        </Stack>
+      );
+    }
+
+    // LEGACY: hardcoded fallback
     const bothAvailable =
       !!selectedProduct?.amazonAsin && !!selectedProduct?.flipkartFsn;
 
     return (
       <Stack spacing={3}>
-        {/* Product Selection */}
-        <FormControl
-          fullWidth
-          error={!!formErrors.selectedProduct}
-          variant="outlined"
-        >
+        <FormControl fullWidth error={!!formErrors.selectedProduct} variant="outlined">
           <InputLabel>Select Product</InputLabel>
           <Select
             name="selectedProduct"
             value={form.selectedProduct}
             onChange={handleChange}
             label="Select Product"
-            // FIX 1: Ensure displayed value when selected is truncated (1 line max)
             renderValue={(selected) => {
-              const p = campaign?.products?.find(
-                (prod) => prod._id === selected
-              );
+              const p = campaign?.products?.find((prod) => prod._id === selected);
               return (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Typography noWrap sx={{ maxWidth: "100%" }}>
-                    {p?.name}
-                  </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden" }}>
+                  <Typography noWrap sx={{ maxWidth: "100%" }}>{p?.name}</Typography>
                 </Box>
               );
             }}
           >
             {campaign?.products?.map((product) => (
               <MenuItem key={product._id} value={product._id}>
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                  sx={{ width: "100%", overflow: "hidden" }}
-                >
-                  <Avatar
-                    src={product.imageurl}
-                    alt={product.name}
-                    variant="rounded"
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      bgcolor: "grey.100",
-                      flexShrink: 0,
-                    }}
-                  >
+                <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%", overflow: "hidden" }}>
+                  <Avatar src={product.imageurl} alt={product.name} variant="rounded" sx={{ width: 40, height: 40, bgcolor: "grey.100", flexShrink: 0 }}>
                     <ShoppingCart fontSize="small" />
                   </Avatar>
                   <Box sx={{ minWidth: 0, flex: 1 }}>
-                    {" "}
-                    {/* minWidth 0 is crucial for flex truncation */}
-                    {/* FIX 1: Truncate items in dropdown too */}
-                    <Typography variant="body2" fontWeight={600} noWrap>
-                      {product.name}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      noWrap
-                      display="block"
-                    >
-                      {product.brand}
-                    </Typography>
+                    <Typography variant="body2" fontWeight={600} noWrap>{product.name}</Typography>
+                    <Typography variant="caption" color="text.secondary" noWrap display="block">{product.brand}</Typography>
                   </Box>
                 </Stack>
               </MenuItem>
             ))}
           </Select>
-          {formErrors.selectedProduct && (
-            <Typography
-              variant="caption"
-              color="error"
-              sx={{ mt: 0.5, ml: 1.5 }}
-            >
-              {formErrors.selectedProduct}
-            </Typography>
-          )}
+          {formErrors.selectedProduct && (<Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{formErrors.selectedProduct}</Typography>)}
         </FormControl>
 
-        {/* Marketplace Selection - Only if both available */}
         {selectedProduct && bothAvailable && (
           <Box>
-            <FormLabel component="legend" sx={{ mb: 1.5, fontSize: "0.9rem" }}>
-              Where did you purchase this item?
-            </FormLabel>
+            <FormLabel component="legend" sx={{ mb: 1.5, fontSize: "0.9rem" }}>Where did you purchase this item?</FormLabel>
             <Stack direction="row" spacing={2}>
-              <MarketplaceButton
-                fullWidth
-                selected={form.marketplace === "Amazon"}
-                brandColor="#FF9500"
-                onClick={() => handleMarketplaceSelect("Amazon")}
-                startIcon={<FaAmazon />}
-              >
-                Amazon
-              </MarketplaceButton>
-              <MarketplaceButton
-                fullWidth
-                selected={form.marketplace === "Flipkart"}
-                brandColor="#2874F0"
-                onClick={() => handleMarketplaceSelect("Flipkart")}
-                startIcon={<SiFlipkart />}
-              >
-                Flipkart
-              </MarketplaceButton>
+              <MarketplaceButton fullWidth selected={form.marketplace === "Amazon"} brandColor="#FF9500" onClick={() => handleMarketplaceSelect("Amazon")} startIcon={<FaAmazon />}>Amazon</MarketplaceButton>
+              <MarketplaceButton fullWidth selected={form.marketplace === "Flipkart"} brandColor="#2874F0" onClick={() => handleMarketplaceSelect("Flipkart")} startIcon={<SiFlipkart />}>Flipkart</MarketplaceButton>
             </Stack>
           </Box>
         )}
 
-        <TextField
-          fullWidth
-          name="orderNumber"
-          label="Order ID"
-          value={form.orderNumber}
-          onChange={handleChange}
-          error={!!formErrors.orderNumber}
-          helperText={formErrors.orderNumber || "Found in your order history"}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <BadgeOutlined color="action" />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <TextField fullWidth name="orderNumber" label="Order ID" value={form.orderNumber} onChange={handleChange} error={!!formErrors.orderNumber} helperText={formErrors.orderNumber || "Found in your order history"} InputProps={{ startAdornment: (<InputAdornment position="start"><BadgeOutlined color="action" /></InputAdornment>) }} />
 
         <Box sx={{ textAlign: "center", py: 1 }}>
-          <Typography component="legend" sx={{ mb: 1, fontWeight: 500 }}>
-            How would you rate your experience?
-          </Typography>
-          <Rating
-            name="satisfaction"
-            value={Number(form.satisfaction)}
-            onChange={handleRatingChange}
-            size="large"
-            icon={<Star fontSize="inherit" color="primary" />}
-            emptyIcon={<StarBorder fontSize="inherit" />}
-            sx={{ fontSize: "3rem" }}
-          />
-          {formErrors.satisfaction && (
-            <Typography variant="caption" color="error" display="block">
-              {formErrors.satisfaction}
-            </Typography>
-          )}
+          <Typography component="legend" sx={{ mb: 1, fontWeight: 500 }}>How would you rate your experience?</Typography>
+          <Rating name="satisfaction" value={Number(form.satisfaction)} onChange={handleRatingChange} size="large" icon={<Star fontSize="inherit" color="primary" />} emptyIcon={<StarBorder fontSize="inherit" />} sx={{ fontSize: "3rem" }} />
+          {formErrors.satisfaction && (<Typography variant="caption" color="error" display="block">{formErrors.satisfaction}</Typography>)}
         </Box>
 
         <Box>
-          <Typography
-            component="legend"
-            gutterBottom
-            sx={{ fontSize: "0.9rem", color: "text.secondary" }}
-          >
-            Have you used this product for more than 7 days?
-          </Typography>
-          <ToggleButtonGroup
-            value={form.usedMoreDays}
-            exclusive
-            onChange={handleToggleChange}
-            fullWidth
-            color="primary"
-            size="small"
-          >
+          <Typography component="legend" gutterBottom sx={{ fontSize: "0.9rem", color: "text.secondary" }}>Have you used this product for more than 7 days?</Typography>
+          <ToggleButtonGroup value={form.usedMoreDays} exclusive onChange={handleToggleChange} fullWidth color="primary" size="small">
             <ToggleButton value="Yes">Yes</ToggleButton>
             <ToggleButton value="No">No</ToggleButton>
           </ToggleButtonGroup>
-          {formErrors.usedMoreDays && (
-            <Typography
-              variant="caption"
-              color="error"
-              sx={{ mt: 0.5, ml: 1.5 }}
-            >
-              {formErrors.usedMoreDays}
-            </Typography>
-          )}
+          {formErrors.usedMoreDays && (<Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{formErrors.usedMoreDays}</Typography>)}
         </Box>
       </Stack>
     );
   };
 
-  const renderStep1 = () => (
-    <Stack spacing={3} sx={{ py: 1 }}>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-        We need these details to send you the warranty/coupon information.
-      </Typography>
-
-      <TextField
-        fullWidth
-        name="customerName"
-        label="Full Name"
-        value={form.customerName}
-        onChange={handleChange}
-        error={!!formErrors.customerName}
-        helperText={formErrors.customerName}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Person color="action" />
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <TextField
-        fullWidth
-        name="email"
-        label="Email Address"
-        type="email"
-        value={form.email}
-        onChange={handleChange}
-        error={!!formErrors.email}
-        helperText={formErrors.email}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <EmailOutlined color="action" />
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <TextField
-        fullWidth
-        name="phoneNumber"
-        label="Phone Number"
-        type="tel"
-        value={form.phoneNumber}
-        onChange={handleChange}
-        error={!!formErrors.phoneNumber}
-        helperText={formErrors.phoneNumber}
-        placeholder="+91"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <PhoneOutlined color="action" />
-            </InputAdornment>
-          ),
-        }}
-      />
-    </Stack>
-  );
-
-  const renderStep2 = () => (
-    <Stack spacing={3} alignItems="center" sx={{ py: 1 }}>
-      {selectedProduct && (
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          sx={{
-            width: "100%",
-            p: 2,
-            bgcolor: "grey.50",
-            borderRadius: 2,
-            overflow: "hidden",
-          }}
-        >
-          <Avatar
-            src={selectedProduct.imageurl}
-            variant="rounded"
-            sx={{ width: 60, height: 60, flexShrink: 0 }}
-          >
-            <ShoppingCart />
-          </Avatar>
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            {/* FIX 1: Truncate Long Product names in review step to 1 line */}
-            <Typography
-              variant="subtitle1"
-              fontWeight="bold"
-              noWrap
-              title={selectedProduct.name}
-            >
-              {selectedProduct.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Tell us what you think
-            </Typography>
-          </Box>
+  const renderStep1 = () => {
+    // DYNAMIC: render from formFields if configured
+    const stepFields = getStepFields(1);
+    if (stepFields) {
+      return (
+        <Stack spacing={3} sx={{ py: 1 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            We need these details to send you the warranty/coupon information.
+          </Typography>
+          {stepFields.map((field) => renderDynamicField(field))}
         </Stack>
-      )}
+      );
+    }
 
-      <TextField
-        fullWidth
-        name="review"
-        label="Write your review"
-        multiline
-        minRows={4}
-        value={form.review}
-        onChange={handleChange}
-        error={!!formErrors.review}
-        helperText={formErrors.review || `${form.review.length} characters`}
-        placeholder="What did you like? What could be improved?"
-      />
+    // LEGACY: hardcoded fallback
+    return (
+      <Stack spacing={3} sx={{ py: 1 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          We need these details to send you the warranty/coupon information.
+        </Typography>
+        <TextField fullWidth name="customerName" label="Full Name" value={form.customerName} onChange={handleChange} error={!!formErrors.customerName} helperText={formErrors.customerName} InputProps={{ startAdornment: (<InputAdornment position="start"><Person color="action" /></InputAdornment>) }} />
+        <TextField fullWidth name="email" label="Email Address" type="email" value={form.email} onChange={handleChange} error={!!formErrors.email} helperText={formErrors.email} InputProps={{ startAdornment: (<InputAdornment position="start"><EmailOutlined color="action" /></InputAdornment>) }} />
+        <TextField fullWidth name="phoneNumber" label="Phone Number" type="tel" value={form.phoneNumber} onChange={handleChange} error={!!formErrors.phoneNumber} helperText={formErrors.phoneNumber} placeholder="+91" InputProps={{ startAdornment: (<InputAdornment position="start"><PhoneOutlined color="action" /></InputAdornment>) }} />
+      </Stack>
+    );
+  };
 
-      {selectedMarketplaceConfig && form.satisfaction >= 4 && (
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 2,
-            width: "100%",
-            bgcolor: alpha(selectedMarketplaceConfig.color, 0.05),
-            borderColor: alpha(selectedMarketplaceConfig.color, 0.2),
-          }}
-        >
-          <Stack spacing={2}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Store sx={{ color: selectedMarketplaceConfig.color }} />
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  color: selectedMarketplaceConfig.color,
-                  fontWeight: "bold",
-                }}
-              >
-                Share on {selectedMarketplaceConfig.name}
-              </Typography>
+  const renderStep2 = () => {
+    // DYNAMIC: render from formFields if configured
+    const stepFields = getStepFields(2);
+    if (stepFields) {
+      return (
+        <Stack spacing={3} alignItems="center" sx={{ py: 1 }}>
+          {selectedProduct && (
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%", p: 2, bgcolor: "grey.50", borderRadius: 2, overflow: "hidden" }}>
+              <Avatar src={selectedProduct.imageurl} variant="rounded" sx={{ width: 60, height: 60, flexShrink: 0 }}><ShoppingCart /></Avatar>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="subtitle1" fontWeight="bold" noWrap title={selectedProduct.name}>{selectedProduct.name}</Typography>
+                <Typography variant="body2" color="text.secondary">Tell us what you think</Typography>
+              </Box>
             </Stack>
-            <Typography variant="caption" color="text.secondary">
-              Copy your review and paste it on {selectedMarketplaceConfig.name}{" "}
-              to help others.
-            </Typography>
-            <MuiButton
-              fullWidth
-              variant="contained"
-              onClick={handleShareReview}
-              startIcon={<ContentCopy />}
-              sx={{
-                bgcolor: selectedMarketplaceConfig.color,
-                "&:hover": {
-                  bgcolor: alpha(selectedMarketplaceConfig.color, 0.9),
-                },
-              }}
-            >
-              Copy Text & Open {selectedMarketplaceConfig.name}
-            </MuiButton>
+          )}
+          {stepFields.map((field) => renderDynamicField(field))}
+          {selectedMarketplaceConfig && form.satisfaction >= 4 && (
+            <Paper variant="outlined" sx={{ p: 2, width: "100%", bgcolor: alpha(selectedMarketplaceConfig.color, 0.05), borderColor: alpha(selectedMarketplaceConfig.color, 0.2) }}>
+              <Stack spacing={2}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Store sx={{ color: selectedMarketplaceConfig.color }} />
+                  <Typography variant="subtitle2" sx={{ color: selectedMarketplaceConfig.color, fontWeight: "bold" }}>Share on {selectedMarketplaceConfig.name}</Typography>
+                </Stack>
+                <Typography variant="caption" color="text.secondary">Copy your review and paste it on {selectedMarketplaceConfig.name} to help others.</Typography>
+                <MuiButton fullWidth variant="contained" onClick={handleShareReview} startIcon={<ContentCopy />} sx={{ bgcolor: selectedMarketplaceConfig.color, "&:hover": { bgcolor: alpha(selectedMarketplaceConfig.color, 0.9) } }}>Copy Text & Open {selectedMarketplaceConfig.name}</MuiButton>
+              </Stack>
+            </Paper>
+          )}
+        </Stack>
+      );
+    }
+
+    // LEGACY: hardcoded fallback
+    return (
+      <Stack spacing={3} alignItems="center" sx={{ py: 1 }}>
+        {selectedProduct && (
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%", p: 2, bgcolor: "grey.50", borderRadius: 2, overflow: "hidden" }}>
+            <Avatar src={selectedProduct.imageurl} variant="rounded" sx={{ width: 60, height: 60, flexShrink: 0 }}><ShoppingCart /></Avatar>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              <Typography variant="subtitle1" fontWeight="bold" noWrap title={selectedProduct.name}>{selectedProduct.name}</Typography>
+              <Typography variant="body2" color="text.secondary">Tell us what you think</Typography>
+            </Box>
           </Stack>
-        </Paper>
-      )}
-    </Stack>
-  );
+        )}
+        <TextField fullWidth name="review" label="Write your review" multiline minRows={4} value={form.review} onChange={handleChange} error={!!formErrors.review} helperText={formErrors.review || `${form.review.length} characters`} placeholder="What did you like? What could be improved?" />
+        {selectedMarketplaceConfig && form.satisfaction >= 4 && (
+          <Paper variant="outlined" sx={{ p: 2, width: "100%", bgcolor: alpha(selectedMarketplaceConfig.color, 0.05), borderColor: alpha(selectedMarketplaceConfig.color, 0.2) }}>
+            <Stack spacing={2}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Store sx={{ color: selectedMarketplaceConfig.color }} />
+                <Typography variant="subtitle2" sx={{ color: selectedMarketplaceConfig.color, fontWeight: "bold" }}>Share on {selectedMarketplaceConfig.name}</Typography>
+              </Stack>
+              <Typography variant="caption" color="text.secondary">Copy your review and paste it on {selectedMarketplaceConfig.name} to help others.</Typography>
+              <MuiButton fullWidth variant="contained" onClick={handleShareReview} startIcon={<ContentCopy />} sx={{ bgcolor: selectedMarketplaceConfig.color, "&:hover": { bgcolor: alpha(selectedMarketplaceConfig.color, 0.9) } }}>Copy Text & Open {selectedMarketplaceConfig.name}</MuiButton>
+            </Stack>
+          </Paper>
+        )}
+      </Stack>
+    );
+  };
 
   const renderStep3 = () => (
     <Stack spacing={3} alignItems="center" textAlign="center" sx={{ py: 4 }}>
