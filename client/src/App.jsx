@@ -13,8 +13,7 @@ import CreatePromotion from "./pages/CreatePromotion";
 import EditPromotion from "./pages/EditPromotion";
 import PromotionDetail from "./pages/PromotionDetail";
 import Campaigns from "./pages/Campaigns";
-import CreateCampaign from "./pages/CreateCampaign";
-import EditCampaign from "./pages/EditCampaign";
+import CampaignForm from "./pages/CampaignForm";
 import CampaignDetail from "./pages/CampaignDetail";
 import PublicCampaignForm from "./pages/PublicCampaignForm";
 import LandingPage from "./pages/LandingPage";
@@ -173,10 +172,10 @@ export default function App() {
             }
           />
           <Route
-            path="/campaigns/create"
+            path="/campaigns/new"
             element={
               <RequireAuth>
-                <CreateCampaign />
+                <CampaignForm />
               </RequireAuth>
             }
           />
@@ -190,10 +189,10 @@ export default function App() {
             }
           />
           <Route
-            path="/campaigns/:id/edit"
+            path="/campaigns/edit/:id"
             element={
               <RequireAuth>
-                <EditCampaign />
+                <CampaignForm />
               </RequireAuth>
             }
           />

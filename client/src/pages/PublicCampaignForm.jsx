@@ -1265,13 +1265,13 @@ function mapRatingToSatisfaction(rating) {
   return "Not satisfied";
 }
 
-export default function PublicCampaignForm() {
+export default function PublicCampaignForm({ previewMode = false, previewData = null }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
   // State management
-  const [campaign, setCampaign] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [campaign, setCampaign] = useState(previewMode ? previewData : null);
+  const [loading, setLoading] = useState(previewMode ? false : true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -1333,8 +1333,13 @@ export default function PublicCampaignForm() {
   }, [selectedProduct, marketplaces, form.marketplace]);
 
   useEffect(() => {
-    if (id) fetchCampaign();
-  }, [id]);
+    if (previewMode) {
+      setCampaign(previewData);
+      setLoading(false);
+    } else if (id) {
+      fetchCampaign();
+    }
+  }, [id, previewMode, previewData]);
 
   useEffect(() => {
     if (campaign?.products?.length === 1 && !form.selectedProduct) {
@@ -1433,6 +1438,13 @@ export default function PublicCampaignForm() {
   }, [form.review, selectedMarketplaceConfig]);
 
   const handleSubmit = useCallback(async () => {
+    // In preview mode, just show thank you page
+    if (previewMode) {
+      setCurrentStep(3);
+      setSuccess("Preview: Form submitted successfully!");
+      return;
+    }
+
     try {
       setSubmitting(true);
       setError("");
@@ -1461,7 +1473,7 @@ export default function PublicCampaignForm() {
     } finally {
       setSubmitting(false);
     }
-  }, [id, form, selectedMarketplaceConfig]);
+  }, [id, form, selectedMarketplaceConfig, previewMode]);
 
   // --- Dynamic Form Fields Helpers ---
   const hasCustomFormFields = campaign?.formFields?.length > 0;
@@ -1987,57 +1999,141 @@ export default function PublicCampaignForm() {
     );
   };
 
-  const renderStep3 = () => (
-    <Stack spacing={3} alignItems="center" textAlign="center" sx={{ py: 4 }}>
-      <Avatar sx={{ width: 80, height: 80, bgcolor: "success.light", mb: 2 }}>
-        <CheckCircleOutline sx={{ fontSize: 50, color: "white" }} />
-      </Avatar>
+  const renderStep3 = () => {
+    // Support both inlinePromotion and promotion
+    const promotion = campaign?.inlinePromotion || campaign?.promotion;
+    const promoType = promotion?.type;
 
-      <Typography variant="h4" fontWeight="800" color="success.main">
-        Success!
-      </Typography>
+    let successMessage = "";
+    if (promoType === "extended warranty") {
+      const period = promotion?.warrantyPeriod || "Extended Warranty";
+      successMessage = `You have successfully registered for the ${period} for ${selectedProduct?.name || "your product"}.`;
+    } else if (promoType === "discount code") {
+      successMessage = `You have unlocked your coupon code! Details have been sent to ${form.email}.`;
+    } else if (promoType === "custom") {
+      const offering = promotion?.offering || "special offer";
+      successMessage = `You have successfully claimed: ${offering}! Details have been sent to ${form.email}.`;
+    } else {
+      successMessage = `Thank you for your submission! Details have been sent to ${form.email}.`;
+    }
 
-      <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
-        {campaign?.promotion?.type === "extended warranty"
-          ? `You have successfully registered for the Extended Warranty for ${selectedProduct?.name || "your product"
-          }.`
-          : `You have unlocked your coupon code! Details have been sent to ${form.email}.`}
-      </Typography>
+    return (
+      <Stack spacing={3} alignItems="center" textAlign="center" sx={{ py: 4 }}>
+        <Avatar sx={{ width: 80, height: 80, bgcolor: "success.light", mb: 2 }}>
+          <CheckCircleOutline sx={{ fontSize: 50, color: "white" }} />
+        </Avatar>
 
-      {campaign?.promotion?.termsAndConditions && (
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            bgcolor: "grey.50",
-            borderRadius: 2,
-            width: "100%",
-            textAlign: "left",
-            border: "1px dashed #ccc",
-            maxHeight: 200,
-            overflowY: "auto",
-          }}
-        >
-          <Typography
-            variant="overline"
-            color="text.secondary"
-            display="block"
-            gutterBottom
+        <Typography variant="h4" fontWeight="800" color="success.main">
+          Success!
+        </Typography>
+
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+          {successMessage}
+        </Typography>
+
+        {/* Display promotion details */}
+        {promotion && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              bgcolor: "grey.50",
+              borderRadius: 2,
+              width: "100%",
+              textAlign: "left",
+              border: "1px solid #e0e0e0",
+            }}
           >
-            Terms & Conditions
-          </Typography>
-          <div className="prose prose-sm max-w-none text-gray-600">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
+            <Typography
+              variant="subtitle2"
+              color="primary"
+              fontWeight="bold"
+              gutterBottom
             >
-              {campaign.promotion.termsAndConditions}
-            </ReactMarkdown>
-          </div>
-        </Paper>
-      )}
-    </Stack>
-  );
+              📋 Promotion Details
+            </Typography>
+            <Stack spacing={1.5}>
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Offer Title
+                </Typography>
+                <Typography variant="body2" fontWeight={600}>
+                  {promotion.offerTitle}
+                </Typography>
+              </Box>
+
+              {promoType === "extended warranty" && promotion.warrantyPeriod && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    Warranty Period
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600}>
+                    {promotion.warrantyPeriod}
+                  </Typography>
+                </Box>
+              )}
+
+              {promoType === "discount code" && promotion.couponCode && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    Discount Code
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600} sx={{ fontFamily: "monospace", bgcolor: "white", p: 1, borderRadius: 1, display: "inline-block" }}>
+                    {promotion.couponCode}
+                  </Typography>
+                </Box>
+              )}
+
+              {promoType === "custom" && promotion.offering && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    Your Offering
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600}>
+                    {promotion.offering}
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+          </Paper>
+        )}
+
+        {/* Terms & Conditions */}
+        {promotion?.termsAndConditions && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              bgcolor: "grey.50",
+              borderRadius: 2,
+              width: "100%",
+              textAlign: "left",
+              border: "1px dashed #ccc",
+              maxHeight: 200,
+              overflowY: "auto",
+            }}
+          >
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              display="block"
+              gutterBottom
+            >
+              Terms & Conditions
+            </Typography>
+            <div className="prose prose-sm max-w-none text-gray-600">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {promotion.termsAndConditions}
+              </ReactMarkdown>
+            </div>
+          </Paper>
+        )}
+      </Stack>
+    );
+  };
 
   // --- Main Render ---
 
@@ -2095,11 +2191,17 @@ export default function PublicCampaignForm() {
             />
           )}
           <Typography
+            variant="overline"
+            sx={{ opacity: 0.9, display: "block", mb: 0.5 }}
+          >
+            {campaign?.name || "Campaign"}
+          </Typography>
+          <Typography
             variant="h5"
             fontWeight="bold"
             sx={{ letterSpacing: 0.5 }}
           >
-            {campaign?.promotion?.offerTitle || "Claim Your Offer"}
+            {campaign?.inlinePromotion?.offerTitle || campaign?.promotion?.offerTitle || "Claim Your Offer"}
           </Typography>
         </GradientHeader>
 

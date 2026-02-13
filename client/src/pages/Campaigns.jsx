@@ -478,7 +478,7 @@ export default function Campaigns() {
           </Typography>
         </Box>
         <Button
-          to="/campaigns/create"
+          to="/campaigns/new"
           icon={<Add />}
           variant="primary"
           className="shadow-lg px-6"
