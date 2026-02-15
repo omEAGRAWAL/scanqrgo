@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import SimpleMDE from "react-simplemde-editor";
@@ -52,6 +52,28 @@ export default function CampaignForm() {
 
     const token = localStorage.getItem("token");
 
+    // Memoize SimpleMDE props to prevent re-renders
+    const handleTCChange = useCallback((value) => {
+        setForm((prev) => ({
+            ...prev,
+            inlinePromotion: {
+                ...prev.inlinePromotion,
+                termsAndConditions: value,
+            },
+        }));
+    }, []);
+
+    const simpleMDEOptions = useMemo(() => ({
+        spellChecker: false,
+        autofocus: false,
+        autosave: { enabled: false },
+        placeholder: "Enter terms and conditions (Markdown supported)...",
+        renderingConfig: { singleLineBreaks: false, codeSyntaxHighlighting: true },
+        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "preview", "guide"],
+        status: false,
+        minHeight: "120px",
+    }), []);
+
     useEffect(() => {
         fetchProducts();
         if (isEditMode) {
@@ -81,6 +103,7 @@ export default function CampaignForm() {
             if (!res.ok) throw new Error(data.message || "Failed to fetch campaign");
 
             // Populate form with existing data
+            const existingPromo = data.inlinePromotion || data.promotion || {};
             setForm({
                 name: data.name || "",
                 category: data.category || "promotion",
@@ -101,16 +124,15 @@ export default function CampaignForm() {
                 formFields: data.formFields?.length
                     ? data.formFields
                     : [...DEFAULT_FORM_FIELDS],
-                // Load inline promotion or convert from referenced promotion
-                inlinePromotion: data.inlinePromotion || {
-                    offerTitle: data.promotion?.offerTitle || "",
-                    type: data.promotion?.type || "extended warranty",
-                    warrantyPeriod: data.promotion?.warrantyPeriod || "3 months",
+                inlinePromotion: {
+                    offerTitle: existingPromo.offerTitle || "",
+                    type: existingPromo.type || "extended warranty",
+                    warrantyPeriod: existingPromo.warrantyPeriod || "3 months",
                     customWarranty: "",
-                    couponCode: data.promotion?.couponCode || "",
-                    offering: data.promotion?.offering || "",
-                    expiryDate: data.promotion?.expiryDate || "",
-                    termsAndConditions: data.promotion?.termsAndConditions || "",
+                    couponCode: existingPromo.couponCode || "",
+                    offering: existingPromo.offering || "",
+                    expiryDate: existingPromo.expiryDate || "",
+                    termsAndConditions: existingPromo.termsAndConditions || "",
                 },
             });
 
@@ -228,7 +250,7 @@ export default function CampaignForm() {
                 name: form.name,
                 category: form.category,
                 products: form.products,
-                inlinePromotion, // Send inline promotion data
+                inlinePromotion,
                 ...(form.category === "review" && {
                     reviewMinimumLength: form.reviewMinimumLength,
                     enableSmartFunnel: form.enableSmartFunnel,
@@ -272,401 +294,341 @@ export default function CampaignForm() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-            <div className="max-w-7xl mx-auto">
-                <Link
-                    to="/campaigns"
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
-                >
-                    <span className="mr-2">←</span>
-                    Back to Campaigns
-                </Link>
+        <div className="min-h-screen bg-gray-50">
+            {/* Top Bar */}
+            <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+                <div className="flex items-center gap-4">
+                    <Link
+                        to="/campaigns"
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </Link>
+                    <div>
+                        <h1 className="text-lg font-semibold text-gray-900">
+                            {isEditMode ? "Edit Campaign" : "New Campaign"}
+                        </h1>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Link
+                        to="/campaigns"
+                        className="px-4 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                        Cancel
+                    </Link>
+                    <Button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={loading || form.products.length === 0}
+                        loading={loading}
+                        variant="primary"
+                        className="px-5 py-1.5 text-sm shadow-sm"
+                    >
+                        {isEditMode ? "Update" : "Create Campaign"}
+                    </Button>
+                </div>
+            </div>
 
-                {/* Two Column Grid Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column - Form (2/3 width) */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white rounded-2xl shadow-xl">
-                            <div className="px-8 py-6 border-b border-gray-100">
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    {isEditMode ? "Edit Campaign" : "Create New Campaign"}
-                                </h1>
-                                <p className="text-gray-600 mt-2">
-                                    {isEditMode
-                                        ? "Update your campaign settings and promotion details"
-                                        : "Set up a campaign with an embedded promotion offer"}
-                                </p>
+            {/* Main Layout */}
+            <div className="flex">
+                {/* Left Column - Scrollable Form */}
+                <div className="flex-1 overflow-y-auto p-6 pb-20" style={{ maxHeight: "calc(100vh - 53px)" }}>
+                    <div className="max-w-2xl mx-auto space-y-5">
+
+                        {/* Error Display */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm flex items-center gap-2">
+                                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+                                {error}
                             </div>
+                        )}
 
-                            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-                                {/* Campaign Name */}
-                                <div className="space-y-3">
-                                    <label className="text-lg font-semibold text-gray-800 block">
-                                        Campaign Name *
-                                    </label>
+                        {/* Section 1: Campaign Basics */}
+                        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+                                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Campaign Basics</h2>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
                                     <input
                                         type="text"
                                         name="name"
                                         required
                                         value={form.name}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                         placeholder="e.g., Summer Sale 2025"
                                     />
                                 </div>
-
-                                {/* Products Selection */}
-                                <div className="space-y-4">
-                                    <label className="text-lg font-semibold text-gray-800 block">
-                                        Select Products *
-                                    </label>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Products</label>
                                     {products.length === 0 ? (
-                                        <div className="text-center py-8 bg-gray-50 rounded-xl">
-                                            <p className="text-gray-500 mb-4">No products found</p>
-                                            <Link
-                                                to="/products/new"
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                Create your first product
+                                        <div className="text-center py-4 bg-gray-50 rounded-lg text-sm">
+                                            <p className="text-gray-500 mb-1">No products found</p>
+                                            <Link to="/products/new" className="text-blue-600 hover:underline text-xs">
+                                                Create your first product →
                                             </Link>
                                         </div>
                                     ) : (
                                         <Select
                                             isMulti
                                             name="products"
-                                            options={products.map((p) => ({
-                                                value: p._id,
-                                                label: `${p.name}`,
-                                            }))}
-                                            value={form.products.map((id) => {
-                                                const product = products.find((p) => p._id === id);
-                                                return product
-                                                    ? {
-                                                        value: product._id,
-                                                        label: `${product.name}`,
-                                                    }
-                                                    : null;
-                                            })}
-                                            onChange={(selected) =>
-                                                setForm({
-                                                    ...form,
-                                                    products: selected.map((s) => s.value),
-                                                })
-                                            }
-                                            className="react-select-container"
+                                            options={products.map((p) => ({ value: p._id, label: p.name }))}
+                                            value={form.products.map((pid) => {
+                                                const product = products.find((p) => p._id === pid);
+                                                return product ? { value: product._id, label: product.name } : null;
+                                            }).filter(Boolean)}
+                                            onChange={(selected) => setForm({ ...form, products: selected.map((s) => s.value) })}
+                                            className="react-select-container text-sm"
                                             classNamePrefix="react-select"
                                             placeholder="Choose products..."
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Inline Promotion Section */}
-                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 space-y-6 border-2 border-purple-200">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-2xl">🎁</span>
-                                        <h2 className="text-2xl font-bold text-gray-900">
-                                            Promotion Details
-                                        </h2>
-                                    </div>
-
-                                    {/* Offer Title */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Offer Title *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="inlinePromotion.offerTitle"
-                                            value={form.inlinePromotion.offerTitle}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            placeholder="e.g., Get 3 Months Extended Warranty"
-                                            required
-                                        />
-                                    </div>
-
-                                    {/* Offer Type */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Offer Type *
-                                        </label>
-                                        <div className="flex space-x-2">
-                                            {[
-                                                { id: "extended-warranty", label: "Extended Warranty" },
-                                                { id: "discount-code", label: "Discount Code" },
-                                                { id: "custom", label: "Custom" },
-                                            ].map((t) => (
-                                                <Button
-                                                    key={t.id}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setOfferType(t.id);
-                                                        setForm({
-                                                            ...form,
-                                                            inlinePromotion: {
-                                                                ...form.inlinePromotion,
-                                                                type:
-                                                                    t.id === "extended-warranty"
-                                                                        ? "extended warranty"
-                                                                        : t.id === "discount-code"
-                                                                            ? "discount code"
-                                                                            : "custom",
-                                                            },
-                                                        });
-                                                    }}
-                                                    variant={offerType === t.id ? "primary" : "secondary"}
-                                                    className="flex-1"
-                                                >
-                                                    {t.label}
-                                                </Button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Conditional Fields */}
-                                    {offerType === "extended-warranty" ? (
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Warranty Duration *
-                                            </label>
-                                            <div className="flex space-x-2">
-                                                {["3 months", "6 months", "Custom"].map((period) => (
-                                                    <Button
-                                                        key={period}
-                                                        type="button"
-                                                        onClick={() => handleWarrantyPeriodChange(period)}
-                                                        variant={
-                                                            form.inlinePromotion.warrantyPeriod === period
-                                                                ? "primary"
-                                                                : "secondary"
-                                                        }
-                                                        className="flex-1"
-                                                    >
-                                                        {period}
-                                                    </Button>
-                                                ))}
-                                            </div>
-                                            {form.inlinePromotion.warrantyPeriod === "Custom" && (
-                                                <input
-                                                    type="text"
-                                                    name="inlinePromotion.customWarranty"
-                                                    value={form.inlinePromotion.customWarranty}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="e.g., 1 year"
-                                                />
-                                            )}
-                                        </div>
-                                    ) : offerType === "discount-code" ? (
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Discount Code *
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="inlinePromotion.couponCode"
-                                                    value={form.inlinePromotion.couponCode}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="e.g., SAVE10"
-                                                    required={offerType === "discount-code"}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Expiry Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    name="inlinePromotion.expiryDate"
-                                                    value={form.inlinePromotion.expiryDate}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Offering *
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="inlinePromotion.offering"
-                                                    value={form.inlinePromotion.offering}
-                                                    onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="e.g., Free consultation, Gift voucher, etc."
-                                                    required={offerType === "custom"}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Terms and Conditions */}
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Terms and Conditions *
-                                        </label>
-                                        <SimpleMDE
-                                            value={form.inlinePromotion.termsAndConditions}
-                                            onChange={(value) =>
-                                                setForm((prev) => ({
-                                                    ...prev,
-                                                    inlinePromotion: {
-                                                        ...prev.inlinePromotion,
-                                                        termsAndConditions: value,
-                                                    },
-                                                }))
-                                            }
-                                            options={{
-                                                spellChecker: false,
-                                                autofocus: false,
-                                                autosave: { enabled: false },
-                                                placeholder:
-                                                    offerType === "extended-warranty"
-                                                        ? "Enter your extended warranty terms and conditions..."
-                                                        : "Enter your coupon code terms and conditions...",
-                                                renderingConfig: {
-                                                    singleLineBreaks: false,
-                                                    codeSyntaxHighlighting: true,
-                                                },
-                                                toolbar: [
-                                                    "bold",
-                                                    "italic",
-                                                    "heading",
-                                                    "|",
-                                                    "quote",
-                                                    "unordered-list",
-                                                    "ordered-list",
-                                                    "|",
-                                                    "link",
-                                                    "code",
-                                                    "preview",
-                                                    "guide",
-                                                ],
-                                                status: false,
-                                                minHeight: "200px",
+                                            styles={{
+                                                control: (base) => ({ ...base, minHeight: '36px' }),
+                                                valueContainer: (base) => ({ ...base, padding: '0 8px' }),
+                                                input: (base) => ({ ...base, margin: 0, padding: 0 }),
                                             }}
                                         />
-                                        <div className="text-xs text-gray-500">
-                                            Press Shift+Enter to get a new line
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
+                            </div>
+                        </section>
 
-                                {/* Form Builder */}
-                                <div className="space-y-3">
-                                    <label className="text-lg font-semibold text-gray-800 block">
-                                        Form Fields
-                                    </label>
-                                    <p className="text-gray-500 text-sm">
-                                        Customize the fields customers see when filling out the
-                                        campaign form. Drag to reorder, add or remove fields.
-                                    </p>
-                                    <FormBuilder
-                                        fields={form.formFields}
-                                        onChange={(newFields) =>
-                                            setForm({ ...form, formFields: newFields })
-                                        }
+                        {/* Section 2: Promotion */}
+                        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+                                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                                    <span>🎁</span> Promotion Details
+                                </h2>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Offer Title</label>
+                                    <input
+                                        type="text"
+                                        name="inlinePromotion.offerTitle"
+                                        value={form.inlinePromotion.offerTitle}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="e.g., Get 3 Months Extended Warranty"
+                                        required
                                     />
                                 </div>
 
-                                {/* Customization */}
-                                <div className="space-y-4">
-                                    <label className="text-lg font-semibold text-gray-800 block">
-                                        Customization
-                                    </label>
-                                    <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Primary Color
-                                                </label>
-                                                <input
-                                                    type="color"
-                                                    name="customization.primaryColor"
-                                                    value={form.customization.primaryColor}
-                                                    onChange={handleChange}
-                                                    className="w-full h-10 border border-gray-300 rounded-lg"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Background Style
-                                                </label>
-                                                <select
-                                                    name="customization.backgroundStyle"
-                                                    value={form.customization.backgroundStyle}
-                                                    onChange={handleChange}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                {/* Offer Type Tabs */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Offer Type</label>
+                                    <div className="inline-flex bg-gray-100 rounded-lg p-0.5 gap-0.5">
+                                        {[
+                                            { id: "extended-warranty", label: "Warranty", icon: "🛡️" },
+                                            { id: "discount-code", label: "Discount", icon: "🏷️" },
+                                            { id: "custom", label: "Custom", icon: "✨" },
+                                        ].map((t) => (
+                                            <button
+                                                key={t.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setOfferType(t.id);
+                                                    setForm({
+                                                        ...form,
+                                                        inlinePromotion: {
+                                                            ...form.inlinePromotion,
+                                                            type: t.id === "extended-warranty" ? "extended warranty" : t.id === "discount-code" ? "discount code" : "custom",
+                                                        },
+                                                    });
+                                                }}
+                                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${offerType === t.id
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                                    }`}
+                                            >
+                                                {t.icon} {t.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Conditional Fields */}
+                                {offerType === "extended-warranty" ? (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Warranty Duration</label>
+                                        <div className="flex gap-2">
+                                            {["3 months", "6 months", "Custom"].map((period) => (
+                                                <button
+                                                    key={period}
+                                                    type="button"
+                                                    onClick={() => handleWarrantyPeriodChange(period)}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${form.inlinePromotion.warrantyPeriod === period
+                                                        ? "bg-blue-50 border-blue-300 text-blue-700"
+                                                        : "border-gray-200 text-gray-600 hover:border-gray-300"
+                                                        }`}
                                                 >
-                                                    <option value="solid">Solid Color</option>
-                                                    <option value="gradient">Gradient</option>
-                                                </select>
-                                            </div>
+                                                    {period}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {form.inlinePromotion.warrantyPeriod === "Custom" && (
+                                            <input
+                                                type="text"
+                                                name="inlinePromotion.customWarranty"
+                                                value={form.inlinePromotion.customWarranty}
+                                                onChange={handleChange}
+                                                className="w-full mt-2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="e.g., 1 year"
+                                            />
+                                        )}
+                                    </div>
+                                ) : offerType === "discount-code" ? (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Discount Code</label>
+                                            <input
+                                                type="text"
+                                                name="inlinePromotion.couponCode"
+                                                value={form.inlinePromotion.couponCode}
+                                                onChange={handleChange}
+                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                                                placeholder="e.g., SAVE10"
+                                                required
+                                            />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Custom Message
-                                            </label>
-                                            <textarea
-                                                name="customization.customMessage"
-                                                value={form.customization.customMessage}
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                                            <input
+                                                type="date"
+                                                name="inlinePromotion.expiryDate"
+                                                value={form.inlinePromotion.expiryDate}
                                                 onChange={handleChange}
-                                                rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                                placeholder="Add a custom message for your customers..."
+                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Error Display */}
-                                {error && (
-                                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl">
-                                        <div className="flex">
-                                            <span className="text-red-600 mr-3">⚠️</span>
-                                            <p className="text-red-700">{error}</p>
-                                        </div>
+                                ) : (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Offering</label>
+                                        <input
+                                            type="text"
+                                            name="inlinePromotion.offering"
+                                            value={form.inlinePromotion.offering}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="e.g., Free consultation, Gift voucher, etc."
+                                            required
+                                        />
                                     </div>
                                 )}
 
-                                {/* Submit Button */}
-                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
-                                    <Link
-                                        to="/campaigns"
-                                        className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-                                    >
-                                        Cancel
-                                    </Link>
-                                    <Button
-                                        type="submit"
-                                        disabled={loading || form.products.length === 0}
-                                        loading={loading}
-                                        variant="primary"
-                                        className="px-8 shadow-lg"
-                                    >
-                                        {isEditMode ? "Update Campaign" : "Create Campaign"}
-                                    </Button>
+                                {/* Terms and Conditions */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Terms & Conditions</label>
+                                    <SimpleMDE
+                                        value={form.inlinePromotion.termsAndConditions}
+                                        onChange={handleTCChange}
+                                        options={simpleMDEOptions}
+                                    />
                                 </div>
-                            </form>
-                        </div>
-                    </div>
+                            </div>
+                        </section>
 
-                    {/* Right Column - Live Preview (1/3 width) */}
-                    <div className="lg:col-span-1 hidden lg:block">
-                        <div className="transform scale-75 origin-top">
-                            <PublicCampaignForm
-                                previewMode={true}
-                                previewData={{
-                                    ...form,
-                                    products: products.filter(p => form.products.includes(p._id)),
-                                    seller: { logoUrl: "" },
-                                }}
-                            />
+                        {/* Section 3: Form Fields */}
+                        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+                                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                                    <span>📋</span> Form Fields
+                                </h2>
+                                <p className="text-xs text-gray-500 mt-0.5">Customize what customers fill out</p>
+                            </div>
+                            <div className="p-5">
+                                <FormBuilder
+                                    fields={form.formFields}
+                                    onChange={(newFields) => setForm({ ...form, formFields: newFields })}
+                                />
+                            </div>
+                        </section>
+
+                        {/* Section 4: Customization */}
+                        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+                                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                                    <span>🎨</span> Customization
+                                </h2>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                name="customization.primaryColor"
+                                                value={form.customization.primaryColor}
+                                                onChange={handleChange}
+                                                className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={form.customization.primaryColor}
+                                                onChange={(e) => setForm({ ...form, customization: { ...form.customization, primaryColor: e.target.value } })}
+                                                className="flex-1 px-3 py-1.5 text-xs font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Background</label>
+                                        <select
+                                            name="customization.backgroundStyle"
+                                            value={form.customization.backgroundStyle}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        >
+                                            <option value="solid">Solid Color</option>
+                                            <option value="gradient">Gradient</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Custom Message</label>
+                                    <textarea
+                                        name="customization.customMessage"
+                                        value={form.customization.customMessage}
+                                        onChange={handleChange}
+                                        rows={2}
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Add a custom message for your customers..."
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+
+                {/* Right Column - Fixed Preview */}
+                <div
+                    className="hidden lg:block border-l border-gray-200 bg-gray-100/50"
+                    style={{ width: "420px", height: "calc(100vh - 53px)", position: "sticky", top: "53px" }}
+                >
+                    <div className="h-full overflow-y-auto">
+                        <div className="p-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>👁</span> Live Preview
+                                </h3>
+                                <span className="text-[10px] text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">Updates in real-time</span>
+                            </div>
+                            <div className="transform scale-[0.82] origin-top">
+                                <PublicCampaignForm
+                                    previewMode={true}
+                                    previewData={{
+                                        ...form,
+                                        products: products.filter(p => form.products.includes(p._id)),
+                                        seller: { logoUrl: "" },
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

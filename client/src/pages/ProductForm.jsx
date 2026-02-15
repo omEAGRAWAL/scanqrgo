@@ -6,12 +6,8 @@ import Button from "../components/base/Button";
 import { XCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 
 const PREDEFINED_MARKETPLACES = [
-    "Amazon India",
-    "Flipkart",
-    "Meesho",
-    "Snapdeal",
-    "Myntra",
-    "Ajio",
+    "Amazon",
+
     "Other"
 ];
 
@@ -349,7 +345,7 @@ export default function ProductForm() {
                     </Link>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-lg p-8 mb-10">
+                <div className="bg-white rounded-lg border border-gray-200 p-8 mb-10">
                     <h1 className="text-3xl font-bold text-gray-900 mb-6">
                         {isEditMode ? "Edit Product" : "Create New Product"}
                     </h1>
@@ -358,7 +354,7 @@ export default function ProductForm() {
                     {!isEditMode && (
                         <div className="border border-gray-200 rounded-lg p-6 mb-8 bg-gray-50">
                             <h2 className="text-xl font-semibold mb-2">
-                                📦 Bulk Product Upload
+                                Bulk Product Upload
                             </h2>
                             <p className="text-sm text-gray-600 mb-4">
                                 Excel headers must be:{" "}
@@ -370,14 +366,14 @@ export default function ProductForm() {
                                     type="file"
                                     accept=".xlsx,.xls"
                                     onChange={handleFileUpload}
-                                    className="w-full sm:w-auto border border-gray-300 rounded-md p-2 text-sm"
+                                    className="w-full sm:w-auto border border-gray-300 rounded-lg p-2 text-sm"
                                     disabled={uploading}
                                 />
 
                                 <Button
                                     onClick={handleDownloadSample}
                                     type="button"
-                                    variant="success"
+                                    variant="primary"
                                     size="sm"
                                     className="whitespace-nowrap"
                                 >
@@ -564,7 +560,7 @@ export default function ProductForm() {
                             </Button>
                             <Link
                                 to="/products"
-                                className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-400 text-center transition font-semibold flex items-center justify-center"
+                                className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 text-center transition font-semibold flex items-center justify-center"
                             >
                                 Cancel
                             </Link>

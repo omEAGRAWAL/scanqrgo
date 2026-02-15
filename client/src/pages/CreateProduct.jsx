@@ -203,7 +203,7 @@ export default function CreateProduct() {
           {/* Bulk Upload Section */}
           <div className="border border-gray-200 rounded-lg p-6 mb-8 bg-gray-50">
             <h2 className="text-xl font-semibold mb-2">
-              📦 Bulk Product Upload
+              Bulk Product Upload
             </h2>
             <p className="text-sm text-gray-600 mb-4">
               Excel headers must be:{" "}
@@ -222,9 +222,9 @@ export default function CreateProduct() {
               <Button
                 onClick={handleDownloadSample}
                 type="button"
-                variant="success"
                 size="sm"
                 className="whitespace-nowrap"
+                variant="primary"
               >
                 ⬇ Download Sample Excel
               </Button>
@@ -232,7 +232,7 @@ export default function CreateProduct() {
 
             {fileName && (
               <p className="my-2 text-gray-700 text-sm">
-                📂 Selected: {fileName}
+                Selected: {fileName}
               </p>
             )}
             {error && <div className="text-red-600 mt-2 text-sm">{error}</div>}

@@ -229,7 +229,7 @@ export default function Products() {
                     bgcolor: "grey.100",
                     px: 0.5,
                     py: 0.25,
-                    borderRadius: 0.5,
+                    borderRadius: "8px",
                   }}
                 >
                   {source.productId}
@@ -292,7 +292,7 @@ export default function Products() {
           mb: 3,
           border: "1px solid",
           borderColor: "divider",
-          borderRadius: 2,
+          borderRadius: "8px",
           display: "flex",
           alignItems: "center",
         }}
@@ -305,7 +305,15 @@ export default function Products() {
             setSearchTerm(e.target.value);
             setPage(0);
           }}
-          sx={{ maxWidth: 500, flex: 1 }}
+          sx={{
+            maxWidth: 500,
+            flex: 1,
+            borderRadius: "8px",
+            "& .MuiOutlinedInput-root": {
+              height: 40,
+              borderRadius: "8px"
+            }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -322,9 +330,10 @@ export default function Products() {
         sx={{
           border: "1px solid",
           borderColor: "divider",
-          borderRadius: 3,
+          borderRadius: "8px",
           overflow: "hidden",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+          boxShadow: "0",
+          border: "1px solid",
         }}
       >
         <TableContainer>
@@ -580,7 +589,7 @@ export default function Products() {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => !deleting && setDeleteDialogOpen(false)}
-        PaperProps={{ sx: { borderRadius: 2, minWidth: 400 } }}
+        PaperProps={{ sx: { borderRadius: "8px", minWidth: 400 } }}
       >
         <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <WarningAmberRounded color="error" />
