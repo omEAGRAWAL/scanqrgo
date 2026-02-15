@@ -221,11 +221,11 @@ export default function LandingPage() {
 
 
         <div className="text-center max-w-5xl mx-auto px-6 relative z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
             QR Code Review Software for Amazon & Shopify Sellers
           </h1>
 
-          <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             Collect honest customer feedback and product reviews using compliant QR codes.<br className="hidden md:block" />
             Fully Compliant with <span className="font-bold text-gray-900">Amazon</span> and <span className="font-bold text-gray-900">Shopify</span>.
           </p>
@@ -269,10 +269,10 @@ export default function LandingPage() {
       <section id="platforms" className="py-12 md:py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <p className="text-blue-500 font-medium mb-4 uppercase tracking-wider">Platforms</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Works with your favourite platforms
           </h2>
-          <p className="text-gray-500 mb-12 max-w-xl mx-auto">
+          <p className="text-gray-500 mb-12 max-w-xl mx-auto text-lg">
             Reviu works across leading ecommerce and marketplace platforms
           </p>
 
@@ -299,42 +299,51 @@ export default function LandingPage() {
       {/* --- HOW IT WORKS SECTION --- */}
       <section id="how-it-works" className="py-12 md:py-24 bg-blue-50">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-blue-500 font-semibold mb-3 uppercase tracking-wider">How it Works?</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
-          <p className="text-gray-500 mb-16 text-lg">Get started in minutes with our intuitive platform</p>
+          <p className="text-blue-500 font-semibold mb-3 uppercase tracking-wider text-lg">How it Works?</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
+          <p className="text-gray-500 mb-16 text-xl">Get started in minutes with our intuitive platform</p>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="space-y-16 mb-16">
             {/* Step 1 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+            <div className="grid md:grid-cols-5 gap-12 items-center">
+              <div className="text-left md:col-span-3">
+                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 1</span>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Create a feedback flow</h3>
+                <p className="text-gray-500 leading-relaxed text-lg">
+                  Create a QR-based post-purchase review flow for your product.
+                </p>
+              </div>
+              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
                 <img src={Image1} alt="Create a feedback flow" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Create a feedback flow</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Create a QR-based post-purchase review flow for your product.
-              </p>
             </div>
 
             {/* Step 2 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+            <div className="grid md:grid-cols-5 gap-12 items-center">
+              <div className="text-left md:col-span-3">
+                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 2</span>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Collect verified feedback</h3>
+                <p className="text-gray-500 leading-relaxed text-lg">
+                  Customers scan the QR code to share feedback or leave a marketplace review through smart funnel.
+                </p>
+              </div>
+              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
                 <img src={Image2} alt="Collect verified feedback" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Collect verified feedback</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Customers scan the QR code to share feedback or leave a marketplace review through smart funnel.
-              </p>
             </div>
 
             {/* Step 3 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
+            <div className="grid md:grid-cols-5 gap-12 items-center">
+              <div className="text-left md:col-span-3">
+                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 3</span>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Analyse & automate</h3>
+                <p className="text-gray-500 leading-relaxed text-lg">
+                  Track customer reviews and insights to improve listings and buyer experience.
+                </p>
+              </div>
+              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
                 <img src={Image3} alt="Analyse & automate" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Analyse & automate</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Track customer reviews and insights to improve listings and buyer experience.
-              </p>
             </div>
           </div>
 
@@ -350,10 +359,10 @@ export default function LandingPage() {
       {/* --- COMPLIANCE SECTION --- */}
       <section id="compliance" className="py-12 md:py-24 bg-gradient-to-b from-blue-50 to-white text-center">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Built for platform compliance
           </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto mb-16 text-lg">
+          <p className="text-gray-500 max-w-2xl mx-auto mb-16 text-xl">
             Reviu is designed to follow marketplace guidelines. Customers are encouraged to share honest feedback—positive or negative—without pressure or bias.
           </p>
           <p className="text-gray-600 mb-8 font-medium">Designed to comply with Amazon review and marketplace feedback policies.</p>
@@ -404,8 +413,8 @@ export default function LandingPage() {
       <section id="pricing" className="py-12 md:py-24 bg-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <p className="text-blue-500 font-medium mb-3 uppercase tracking-wider">Pricing</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">High-quality reviews without high costs</h2>
-          <p className="text-gray-500 text-lg mb-16 max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">High-quality reviews without high costs</h2>
+          <p className="text-gray-500 text-xl mb-16 max-w-2xl mx-auto">
             Plan designed to help brands collect meaningful feedback at a cost that scales with growth.
           </p>
 
@@ -459,15 +468,28 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <div className="text-left">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Loved By Brands</h2>
-            <p className="text-gray-500 text-lg mb-12 max-w-lg">
-              See what our customers have to say about their experience with Reviu
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Trusted by fast-growing brands worldwide</h2>
+            <p className="text-gray-500 text-xl mb-12 max-w-lg">
+              Used by D2C and marketplace sellers across Amazon & Shopify
+            </p>
+            <p className=" text-lg  max-w-lg">
+              ⭐ 4.7/5 average rating
+            </p>
+            <p className=" text-lg  max-w-lg">
+              📈 3× increase in review rate
             </p>
 
-            <div className="flex items-center gap-8">
+            <p className=" text-lg  max-w-lg">
+              🌍 Customers in 7+ countries( India, USA, Germany, Ireland & more)
+            </p>
+            <p className=" text-lg  max-w-lg">
+              🔁 10,000+ reviews collected
+            </p>
+
+            {/* <div className="flex items-center gap-8">
               <img src={LogoDevPunya} alt="DevPunya" className="h-10 object-contain" />
               <img src={LogoOoge} alt="OOGE" className="h-10 object-contain" />
-            </div>
+            </div> */}
           </div>
 
           {/* Right Image Composition */}
@@ -493,10 +515,10 @@ export default function LandingPage() {
       <section id="faq" className="py-12 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Frequently asked questions
             </h2>
-            <p className="text-gray-500 text-lg">
+            <p className="text-gray-500 text-xl">
               Everything you need to know about the product
             </p>
           </div>
@@ -546,8 +568,8 @@ export default function LandingPage() {
 
           {/* Right Form */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Get in touch</h2>
-            <p className="text-gray-500 mb-8">Our friendly team would love to hear from you.</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Get in touch</h2>
+            <p className="text-gray-500 mb-8 text-lg">Our friendly team would love to hear from you.</p>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">

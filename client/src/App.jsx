@@ -6,16 +6,14 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
-import CreateProduct from "./pages/CreateProduct";
-import EditProduct from "./pages/EditProduct";
+import ProductForm from "./pages/ProductForm";
 import ProductDetail from "./pages/ProductDetail";
 import Promotions from "./pages/Promotions";
 import CreatePromotion from "./pages/CreatePromotion";
 import EditPromotion from "./pages/EditPromotion";
 import PromotionDetail from "./pages/PromotionDetail";
 import Campaigns from "./pages/Campaigns";
-import CreateCampaign from "./pages/CreateCampaign";
-import EditCampaign from "./pages/EditCampaign";
+import CampaignForm from "./pages/CampaignForm";
 import CampaignDetail from "./pages/CampaignDetail";
 import PublicCampaignForm from "./pages/PublicCampaignForm";
 import LandingPage from "./pages/LandingPage";
@@ -99,10 +97,10 @@ export default function App() {
             }
           />
           <Route
-            path="/products/create"
+            path="/products/new"
             element={
               <RequireAuth>
-                <CreateProduct />
+                <ProductForm />
               </RequireAuth>
             }
           />
@@ -124,10 +122,10 @@ export default function App() {
             }
           />
           <Route
-            path="/products/:id/edit"
+            path="/products/edit/:id"
             element={
               <RequireAuth>
-                <EditProduct />
+                <ProductForm />
               </RequireAuth>
             }
           />
@@ -174,10 +172,10 @@ export default function App() {
             }
           />
           <Route
-            path="/campaigns/create"
+            path="/campaigns/new"
             element={
               <RequireAuth>
-                <CreateCampaign />
+                <CampaignForm />
               </RequireAuth>
             }
           />
@@ -191,10 +189,10 @@ export default function App() {
             }
           />
           <Route
-            path="/campaigns/:id/edit"
+            path="/campaigns/edit/:id"
             element={
               <RequireAuth>
-                <EditCampaign />
+                <CampaignForm />
               </RequireAuth>
             }
           />

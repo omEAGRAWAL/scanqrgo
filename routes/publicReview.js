@@ -113,7 +113,7 @@ router.get("/campaign/:id", async (req, res) => {
       _id: id,
       status: "active",
     }).populate([
-      { path: "products", select: "name amazonAsin flipkartFsn imageurl" },
+      { path: "products", select: "name amazonAsin flipkartFsn marketplaceSources imageurl" },
       {
         path: "promotion",
         select:
@@ -138,8 +138,10 @@ router.get("/campaign/:id", async (req, res) => {
         category: campaign.category,
         products: campaign.products,
         promotion: campaign.promotion,
+        inlinePromotion: campaign.inlinePromotion,
         reviewMinimumLength: campaign.reviewMinimumLength,
         customization: campaign.customization,
+        formFields: campaign.formFields || [],
       },
     });
   } catch (error) {
@@ -307,25 +309,18 @@ router.post("/campaign/:id/submit", async (req, res) => {
       rating,
       clickedMarketplaceButton,
       marketplace,
+      customFields,
     } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid campaign ID" });
     }
 
-    // validate required fields
-    if (
-      !selectedProduct ||
-      !orderNumber ||
-      !satisfaction ||
-      !customerName ||
-      !email ||
-      !review ||
-      rating === undefined
-    ) {
+    // validate only essential fields - accept any other input
+    if (!selectedProduct) {
       return res
         .status(400)
-        .json({ message: "Please fill all required fields" });
+        .json({ message: "Please select a product" });
     }
 
     const campaign = await Campaign.findOne({
@@ -377,6 +372,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
         clickedMarketplaceButton: clickedMarketplaceButton || false,
         shouldRequestReview,
       },
+      customFields: customFields || {},
     });
     await funnelVisit.save();
 
@@ -420,7 +416,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
         satisfaction === "Somewhat satisfied")
     ) {
       shouldShowReward = true;
-      reward = campaign.promotion;
+      reward = campaign.promotion || campaign.inlinePromotion;
       successMessage = "Thank you! Here is your reward:";
       campaign.analytics.totalRedemptions += 1;
       await campaign.save();
@@ -459,6 +455,34 @@ router.get("/reviews", auth, async (req, res) => {
     res.json(funnelVisits);
   } catch (error) {
     console.error("Get all reviews error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET reviews for a specific campaign (requires auth)
+router.get("/campaign/:id/reviews", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Validate campaign ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid campaign ID" });
+    }
+
+    // Find funnel visits for this campaign and seller
+    const funnelVisits = await FunnelVisit.find({
+      campaign: id,
+      seller: userId
+    })
+      .populate("campaign", "name")
+      .populate("product", "name amazonAsin flipkartFsn imageurl")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json(funnelVisits);
+  } catch (error) {
+    console.error("Get campaign reviews error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
