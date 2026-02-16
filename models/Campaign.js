@@ -110,6 +110,22 @@ const CampaignSchema = new mongoose.Schema({
     },
   ],
 
+  // Callback URLs - post-submission API call chain
+  callbackUrls: [
+    {
+      name: { type: String, default: "" },
+      url: { type: String, required: true },
+      method: {
+        type: String,
+        enum: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        default: "POST",
+      },
+      headers: { type: mongoose.Schema.Types.Mixed, default: {} },
+      body: { type: String, default: "" }, // JSON string with {{variable}} placeholders
+      order: { type: Number, default: 0 },
+    },
+  ],
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
