@@ -658,12 +658,19 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
               label={field.label}
               type="tel"
               value={value}
-              onChange={(e) => setFieldValue(field, e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                setFieldValue(field, val);
+              }}
               error={!!error}
               helperText={error}
-              placeholder={field.placeholder || "+91"}
+              placeholder={field.placeholder || "9876543210"}
               InputProps={{
-                startAdornment: <InputAdornment position="start"><PhoneOutlined color="action" /></InputAdornment>,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneOutlined color="action" />
+                  </InputAdornment>
+                ),
               }}
             />
           );
@@ -738,8 +745,8 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
             if (value && field.type === "email" && !/\S+@\S+\.\S+/.test(value)) {
               errors[field.id] = "Please enter a valid email";
             }
-            if (value && field.type === "tel" && !/^\+?[\d\s-()]+$/.test(value)) {
-              errors[field.id] = "Please enter a valid phone number";
+            if (value && field.type === "tel" && !/^\d{10}$/.test(value)) {
+              errors[field.id] = "Please enter a valid 10-digit phone number";
             }
             if (field.id === "review" && field.required) {
               const minLen = campaign?.reviewMinimumLength || 0;
@@ -763,7 +770,7 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
           case 1:
             if (!form.customerName.trim()) errors.customerName = "Name is required";
             if (!form.email.trim()) { errors.email = "Email is required"; } else if (!/\S+@\S+\.\S+/.test(form.email)) { errors.email = "Please enter a valid email"; }
-            if (form.phoneNumber && !/^\+?[\d\s-()]+$/.test(form.phoneNumber)) { errors.phoneNumber = "Please enter a valid phone number"; }
+            if (form.phoneNumber && !/^\d{10}$/.test(form.phoneNumber)) { errors.phoneNumber = "Please enter a valid 10-digit phone number"; }
             break;
           case 2: {
             const minLen = campaign?.reviewMinimumLength || 0;
@@ -898,7 +905,28 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
 
         <TextField fullWidth name="customerName" label="Full Name" value={form.customerName} onChange={handleChange} error={!!formErrors.customerName} helperText={formErrors.customerName || ""} InputProps={{ startAdornment: (<InputAdornment position="start"><Person color="action" /></InputAdornment>) }} />
         <TextField fullWidth name="email" label="Email Address" type="email" value={form.email} onChange={handleChange} error={!!formErrors.email} helperText={formErrors.email} InputProps={{ startAdornment: (<InputAdornment position="start"><EmailOutlined color="action" /></InputAdornment>) }} />
-        <TextField fullWidth name="phoneNumber" label="Phone Number" type="tel" value={form.phoneNumber} onChange={handleChange} error={!!formErrors.phoneNumber} helperText={formErrors.phoneNumber} placeholder="+91" InputProps={{ startAdornment: (<InputAdornment position="start"><PhoneOutlined color="action" /></InputAdornment>) }} />
+        <TextField
+          fullWidth
+          name="phoneNumber"
+          label="Phone Number"
+          type="tel"
+          value={form.phoneNumber}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+            setForm((prev) => ({ ...prev, phoneNumber: val }));
+            if (formErrors.phoneNumber) setFormErrors((prev) => ({ ...prev, phoneNumber: "" }));
+          }}
+          error={!!formErrors.phoneNumber}
+          helperText={formErrors.phoneNumber}
+          placeholder="9876543210"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PhoneOutlined color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
       </Stack>
     );
   };
@@ -970,16 +998,21 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
     const promoType = promotion?.type;
 
     let successMessage = "";
+    let emailMessage = "";
+
     if (promoType === "extended warranty") {
       const period = promotion?.warrantyPeriod || "Extended Warranty";
       successMessage = `You have successfully registered for the ${period} for ${selectedProduct?.name || "your product"}.`;
     } else if (promoType === "discount code") {
-      successMessage = `You have unlocked your coupon code! Details have been sent to ${form.email}.`;
+      successMessage = `You have unlocked your coupon code!`;
+      emailMessage = `Details have been sent to ${form.email}.`;
     } else if (promoType === "custom") {
       const offering = promotion?.offering || "special offer";
-      successMessage = `You have successfully claimed: ${offering}! Details have been sent to ${form.email}.`;
+      successMessage = `You have successfully claimed: ${offering}!`;
+      emailMessage = `Details have been sent to ${form.email}.`;
     } else {
-      successMessage = `Thank you for your submission! Details have been sent to ${form.email}.`;
+      successMessage = `Thank you for your submission!`;
+      emailMessage = `Details have been sent to ${form.email}.`;
     }
 
     return (
@@ -1024,9 +1057,14 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
           {successMessage}
         </Typography>
+        {emailMessage && (
+          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400, mt: 1 }}>
+            {emailMessage}
+          </Typography>
+        )}
 
         {/* Display promotion details */}
-        {promotion && (
+        {/* {promotion && (
           <Paper
             elevation={0}
             sx={{
@@ -1083,7 +1121,7 @@ export default function PublicCampaignForm({ previewMode = false, previewData = 
               )}
             </Stack>
           </Paper>
-        )}
+        )} */}
 
         {/* Terms & Conditions */}
         {promotion?.termsAndConditions && (
