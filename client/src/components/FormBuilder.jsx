@@ -90,7 +90,7 @@ export const DEFAULT_FORM_FIELDS = [
         id: "phoneNumber",
         type: "tel",
         label: "Phone Number",
-        placeholder: "+91",
+        placeholder: "1234567890",
         required: false,
         options: [],
         step: 1,
