@@ -48,6 +48,7 @@ export default function CampaignForm() {
             expiryDate: "",
             termsAndConditions: "",
         },
+        callbackUrls: [],
     });
 
     const token = localStorage.getItem("token");
@@ -134,6 +135,14 @@ export default function CampaignForm() {
                     expiryDate: existingPromo.expiryDate || "",
                     termsAndConditions: existingPromo.termsAndConditions || "",
                 },
+                callbackUrls: (data.callbackUrls || []).map((cb, i) => ({
+                    name: cb.name || "",
+                    url: cb.url || "",
+                    method: cb.method || "POST",
+                    headers: cb.headers || {},
+                    body: cb.body || "",
+                    order: cb.order ?? i,
+                })),
             });
 
             // Set offer type based on promotion type
@@ -257,6 +266,7 @@ export default function CampaignForm() {
                 }),
                 customization: form.customization,
                 formFields: form.formFields,
+                callbackUrls: form.callbackUrls,
             };
 
             const method = isEditMode ? "PUT" : "POST";
@@ -600,6 +610,217 @@ export default function CampaignForm() {
                                         placeholder="Add a custom message for your customers..."
                                     />
                                 </div>
+                            </div>
+                        </section>
+
+                        {/* Section 5: Callback URLs */}
+                        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+                                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                                    <span>🔗</span> Callback URLs
+                                </h2>
+                                <p className="text-xs text-gray-500 mt-0.5">Execute API calls after form submission</p>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                {/* Available Variables Helper */}
+                                {form.callbackUrls.length > 0 && (
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                        <p className="text-xs font-semibold text-blue-700 mb-1.5">Available Template Variables</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {form.formFields.map((f) => (
+                                                <span key={f.id} className="inline-flex items-center px-2 py-0.5 bg-white border border-blue-200 rounded text-xs font-mono text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors" title={`Click to copy {{${f.id}}}`} onClick={() => navigator.clipboard.writeText(`{{${f.id}}}`)}>{'{{' + f.id + '}}'}</span>
+                                            ))}
+                                            {form.callbackUrls.length > 1 && (
+                                                <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 border border-amber-200 rounded text-xs font-mono text-amber-700">{'{{'}<span className="text-amber-500">$response[0].path</span>{'}}'}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Callback List */}
+                                {form.callbackUrls.map((cb, idx) => (
+                                    <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
+                                        {/* Callback Header */}
+                                        <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
+                                            <span className="text-xs text-gray-400 font-bold w-5">#{idx + 1}</span>
+                                            <input
+                                                type="text"
+                                                value={cb.name}
+                                                onChange={(e) => {
+                                                    const updated = [...form.callbackUrls];
+                                                    updated[idx] = { ...updated[idx], name: e.target.value };
+                                                    setForm({ ...form, callbackUrls: updated });
+                                                }}
+                                                className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                                                placeholder="Callback name (e.g., Create User)"
+                                            />
+                                            <div className="flex items-center gap-1">
+                                                {idx > 0 && (
+                                                    <button type="button" onClick={() => {
+                                                        const updated = [...form.callbackUrls];
+                                                        [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                        updated.forEach((c, i) => c.order = i);
+                                                        setForm({ ...form, callbackUrls: updated });
+                                                    }} className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100" title="Move up">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                                                    </button>
+                                                )}
+                                                {idx < form.callbackUrls.length - 1 && (
+                                                    <button type="button" onClick={() => {
+                                                        const updated = [...form.callbackUrls];
+                                                        [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
+                                                        updated.forEach((c, i) => c.order = i);
+                                                        setForm({ ...form, callbackUrls: updated });
+                                                    }} className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100" title="Move down">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                                    </button>
+                                                )}
+                                                <button type="button" onClick={() => {
+                                                    const updated = form.callbackUrls.filter((_, i) => i !== idx);
+                                                    updated.forEach((c, i) => c.order = i);
+                                                    setForm({ ...form, callbackUrls: updated });
+                                                }} className="p-1 text-gray-400 hover:text-red-600 rounded hover:bg-red-50" title="Remove">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Callback Body */}
+                                        <div className="p-4 space-y-3">
+                                            {/* Method + URL row */}
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={cb.method}
+                                                    onChange={(e) => {
+                                                        const updated = [...form.callbackUrls];
+                                                        updated[idx] = { ...updated[idx], method: e.target.value };
+                                                        setForm({ ...form, callbackUrls: updated });
+                                                    }}
+                                                    className="w-28 px-2 py-2 text-sm border border-gray-300 rounded-lg font-mono bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                >
+                                                    {["GET", "POST", "PUT", "PATCH", "DELETE"].map((m) => (
+                                                        <option key={m} value={m}>{m}</option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    type="text"
+                                                    value={cb.url}
+                                                    onChange={(e) => {
+                                                        const updated = [...form.callbackUrls];
+                                                        updated[idx] = { ...updated[idx], url: e.target.value };
+                                                        setForm({ ...form, callbackUrls: updated });
+                                                    }}
+                                                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg font-mono focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    placeholder="https://api.example.com/endpoint"
+                                                />
+                                            </div>
+
+                                            {/* Headers */}
+                                            <div>
+                                                <div className="flex items-center justify-between mb-1.5">
+                                                    <label className="text-xs font-medium text-gray-500">Headers</label>
+                                                    <button type="button" onClick={() => {
+                                                        const updated = [...form.callbackUrls];
+                                                        const newHeaders = { ...updated[idx].headers, "": "" };
+                                                        // Use a unique key for empty header
+                                                        const emptyCount = Object.keys(newHeaders).filter(k => k.startsWith("header")).length;
+                                                        const key = `header${emptyCount}`;
+                                                        newHeaders[key] = "";
+                                                        delete newHeaders[""];
+                                                        updated[idx] = { ...updated[idx], headers: newHeaders };
+                                                        setForm({ ...form, callbackUrls: updated });
+                                                    }} className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                                        + Add Header
+                                                    </button>
+                                                </div>
+                                                {Object.entries(cb.headers || {}).map(([hKey, hVal], hIdx) => (
+                                                    <div key={hIdx} className="flex gap-2 mb-1.5">
+                                                        <input
+                                                            type="text"
+                                                            value={hKey}
+                                                            onChange={(e) => {
+                                                                const updated = [...form.callbackUrls];
+                                                                const entries = Object.entries(updated[idx].headers);
+                                                                entries[hIdx] = [e.target.value, entries[hIdx][1]];
+                                                                updated[idx] = { ...updated[idx], headers: Object.fromEntries(entries) };
+                                                                setForm({ ...form, callbackUrls: updated });
+                                                            }}
+                                                            className="w-2/5 px-2 py-1.5 text-xs font-mono border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            placeholder="Header name"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={hVal}
+                                                            onChange={(e) => {
+                                                                const updated = [...form.callbackUrls];
+                                                                const entries = Object.entries(updated[idx].headers);
+                                                                entries[hIdx] = [entries[hIdx][0], e.target.value];
+                                                                updated[idx] = { ...updated[idx], headers: Object.fromEntries(entries) };
+                                                                setForm({ ...form, callbackUrls: updated });
+                                                            }}
+                                                            className="flex-1 px-2 py-1.5 text-xs font-mono border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            placeholder="Header value (supports {{variables}})"
+                                                        />
+                                                        <button type="button" onClick={() => {
+                                                            const updated = [...form.callbackUrls];
+                                                            const entries = Object.entries(updated[idx].headers);
+                                                            entries.splice(hIdx, 1);
+                                                            updated[idx] = { ...updated[idx], headers: Object.fromEntries(entries) };
+                                                            setForm({ ...form, callbackUrls: updated });
+                                                        }} className="p-1 text-gray-400 hover:text-red-500 rounded">
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Body */}
+                                            {cb.method !== "GET" && (
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-500 mb-1">Request Body (JSON)</label>
+                                                    <textarea
+                                                        value={cb.body}
+                                                        onChange={(e) => {
+                                                            const updated = [...form.callbackUrls];
+                                                            updated[idx] = { ...updated[idx], body: e.target.value };
+                                                            setForm({ ...form, callbackUrls: updated });
+                                                        }}
+                                                        rows={4}
+                                                        className="w-full px-3 py-2 text-xs font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                                                        placeholder={'{\n  "name": "{{customerName}}",\n  "email": "{{email}}"\n}'}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* Add Callback Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setForm({
+                                            ...form,
+                                            callbackUrls: [
+                                                ...form.callbackUrls,
+                                                {
+                                                    name: "",
+                                                    url: "",
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: "",
+                                                    order: form.callbackUrls.length,
+                                                },
+                                            ],
+                                        });
+                                    }}
+                                    className="w-full border-2 border-dashed border-gray-300 rounded-xl py-3 text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/50 transition-all font-medium text-sm flex items-center justify-center gap-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Add Callback
+                                </button>
                             </div>
                         </section>
 

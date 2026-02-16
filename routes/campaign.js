@@ -26,7 +26,8 @@ router.post("/", auth, async (req, res) => {
       promotionSettings,
       customization,
       formFields,
-      inlinePromotion, // NEW: Accept inline promotion data
+      inlinePromotion,
+      callbackUrls,
     } = req.body;
 
     // Basic validation
@@ -77,7 +78,8 @@ router.post("/", auth, async (req, res) => {
         category === "promotion" ? promotionSettings : undefined,
       customization: customization || {},
       formFields: formFields || [],
-      inlinePromotion: inlinePromotion || undefined, // NEW: Store inline promotion
+      inlinePromotion: inlinePromotion || undefined,
+      callbackUrls: callbackUrls || [],
     });
 
     await campaign.save();
@@ -186,7 +188,8 @@ router.put("/:id", auth, async (req, res) => {
       promotionSettings,
       customization,
       formFields,
-      inlinePromotion, // NEW: Accept inline promotion updates
+      inlinePromotion,
+      callbackUrls,
     } = req.body;
 
     const campaign = await Campaign.findOne({
@@ -234,7 +237,8 @@ router.put("/:id", auth, async (req, res) => {
     if (customization)
       campaign.customization = { ...campaign.customization, ...customization };
     if (formFields !== undefined) campaign.formFields = formFields;
-    if (inlinePromotion !== undefined) campaign.inlinePromotion = inlinePromotion; // NEW: Update inline promotion
+    if (inlinePromotion !== undefined) campaign.inlinePromotion = inlinePromotion;
+    if (callbackUrls !== undefined) campaign.callbackUrls = callbackUrls;
 
     await campaign.save();
 
