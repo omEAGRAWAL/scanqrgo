@@ -297,62 +297,70 @@ export default function LandingPage() {
       </section>
 
       {/* --- HOW IT WORKS SECTION --- */}
-      <section id="how-it-works" className="py-12 md:py-24 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-blue-500 font-semibold mb-3 uppercase tracking-wider text-lg">How it Works?</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
-          <p className="text-gray-500 mb-16 text-xl">Get started in minutes with our intuitive platform</p>
+      <section id="how-it-works" className="py-16 md:py-28" style={{ background: "#eef2ff" }}>
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <p className="text-blue-500 font-semibold mb-3 uppercase tracking-widest text-sm">How it Works?</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
+            <p className="text-gray-400 text-lg">Get started in minutes with our intuitive platform</p>
+          </div>
 
-          <div className="space-y-16 mb-16">
+          <div className="space-y-20 mb-20">
             {/* Step 1 */}
-            <div className="grid md:grid-cols-5 gap-12 items-center">
-              <div className="text-left md:col-span-3">
-                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 1</span>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">Create a feedback flow</h3>
-                <p className="text-gray-500 leading-relaxed text-lg">
-                  Create a QR-based post-purchase review flow for your product.
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="text-left">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                  1. Create a QR based feedback form
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  Build a branded survey using Reviu's no-code editor. Share it via QR code or link.
                 </p>
               </div>
-              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image1} alt="Create a feedback flow" className="w-full h-full object-contain mix-blend-multiply" />
+              <div className=" border border-gray-200 rounded-2xl p-6 shadow-sm flex items-center justify-center" style={{ minHeight: 220 }}>
+                <img src={Image1} alt="Create a QR based feedback form" className="w-full object-contain" style={{ maxHeight: 180, mixBlendMode: "multiply" }} />
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="grid md:grid-cols-5 gap-12 items-center">
-              <div className="text-left md:col-span-3">
-                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 2</span>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">Collect verified feedback</h3>
-                <p className="text-gray-500 leading-relaxed text-lg">
-                  Customers scan the QR code to share feedback or leave a marketplace review through smart funnel.
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="text-left">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                  2. Collect verified feedback
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  Customers submit honest reviews after validating their purchase.
                 </p>
               </div>
-              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image2} alt="Collect verified feedback" className="w-full h-full object-contain mix-blend-multiply" />
+              <div className=" border border-gray-200 rounded-2xl p-6 shadow-sm flex items-center justify-center" style={{ minHeight: 220 }}>
+                <img src={Image2} alt="Collect verified feedback" className="w-full object-contain" style={{ maxHeight: 180, mixBlendMode: "multiply" }} />
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="grid md:grid-cols-5 gap-12 items-center">
-              <div className="text-left md:col-span-3">
-                <span className="text-blue-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Step 3</span>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">Analyse & automate</h3>
-                <p className="text-gray-500 leading-relaxed text-lg">
-                  Track customer reviews and insights to improve listings and buyer experience.
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="text-left">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                  3. Analyse & automate
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  Route feedback to your tools, track insights, and scale review collection effortlessly.
                 </p>
               </div>
-              <div className="md:col-span-2 bg-blue-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image3} alt="Analyse & automate" className="w-full h-full object-contain mix-blend-multiply" />
+              <div className=" border border-gray-200 rounded-2xl p-6 shadow-sm flex items-center justify-center" style={{ minHeight: 220 }}>
+                <img src={Image3} alt="Analyse and automate" className="w-full object-contain" style={{ maxHeight: 180, mixBlendMode: "multiply" }} />
               </div>
             </div>
           </div>
 
-          <Button
-            to="/register"
-            className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-          >
-            Start Free Now
-          </Button>
+
+          <div className="text-center">
+            <Button
+              to="/register"
+              className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
+            >
+              Start Free Now
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -464,49 +472,68 @@ export default function LandingPage() {
       </section>
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="p-8 pb-24 bg-[#F4F8FF] overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
+      <section className="py-16 md:py-28 overflow-hidden relative" style={{ background: "#eef2ff" }}>
+        {/* Star decorations */}
+        <div style={{ position: "absolute", bottom: 40, left: 60, opacity: 0.18, fontSize: 80, color: "#6366f1", pointerEvents: "none", userSelect: "none" }}>★</div>
+        <div style={{ position: "absolute", top: 60, left: 20, opacity: 0.10, fontSize: 60, color: "#6366f1", pointerEvents: "none", userSelect: "none" }}>★</div>
+
+        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+          {/* ── Left: headline + bullet stats ── */}
           <div className="text-left">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Trusted by fast-growing brands worldwide</h2>
-            <p className="text-gray-500 text-xl mb-12 max-w-lg">
-              Used by D2C and marketplace sellers across Amazon & Shopify
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-5 leading-tight">
+              Trusted by fast-growing<br />brands worldwide
+            </h2>
+            <p className="text-gray-500 text-lg mb-8 max-w-sm">
+              Used by D2C and marketplace sellers across Amazon &amp; Shopify
             </p>
-            <p className=" text-lg  max-w-lg">
-              ⭐ 4.7/5 average rating
-            </p>
-            <p className=" text-lg  max-w-lg">
-              📈 3× increase in review rate
-            </p>
-
-            <p className=" text-lg  max-w-lg">
-              🌍 Customers in 7+ countries( India, USA, Germany, Ireland & more)
-            </p>
-            <p className=" text-lg  max-w-lg">
-              🔁 10,000+ reviews collected
-            </p>
-
-            {/* <div className="flex items-center gap-8">
-              <img src={LogoDevPunya} alt="DevPunya" className="h-10 object-contain" />
-              <img src={LogoOoge} alt="OOGE" className="h-10 object-contain" />
-            </div> */}
+            <ul className="space-y-3">
+              {[
+                "⭐ 4.7/5 average rating",
+                "📈 3× increase in review rate",
+                "🌍 Customers in 7+ countries( India, USA, Germany, Ireland & more)",
+                "🔁 10,000+ reviews collected",
+              ].map((stat, i) => (
+                <li key={i} className="flex items-start gap-2 text-gray-800 font-semibold text-base">
+                  <span className="mt-0.5">•</span>
+                  <span>{stat}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Right Image Composition */}
-          <div className="relative flex justify-center lg:justify-end">
-            {/* Background Decorative */}
+          {/* ── Right: customer list panel + floating cards ── */}
+          <div className="relative" style={{ minHeight: 420 }}>
+
+            {/* Background image */}
             <img
               src={TestimonialBg}
               alt=""
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-none opacity-80 pointer-events-none"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "60%",
+                borderRadius: 16,
+                opacity: 0.85,
+                pointerEvents: "none",
+              }}
             />
 
-            {/* Front Card */}
+            {/* Floating testimonial card image */}
             <img
               src={TestimonialImg}
               alt="Customer Testimonials"
-              className="relative z-10 w-80 max-w-md mt-40 shadow-2xl rounded-2xl"
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 0,
+                width: "70%",
+                borderRadius: 16,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                zIndex: 10,
+              }}
             />
+
           </div>
         </div>
       </section>

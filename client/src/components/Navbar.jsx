@@ -75,7 +75,7 @@ export default function Navbar() {
           Products
         </Link>
       </li>
-      <li>
+      {/* <li>
         <Link
           to="/promotions"
           className="nav-link"
@@ -83,7 +83,7 @@ export default function Navbar() {
         >
           Promotions
         </Link>
-      </li>
+      </li> */}
       <li>
         <Link
           to="/campaigns"
