@@ -1,732 +1,854 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import AmazonLogo from "../assets/Amazon logo.png";
-import ShopifyLogo from "../assets/shopify.png";
-import ReviuLogo from "../assets/Reviu_Logo.png";
-import Button from "../components/base/Button";
-import ReviewCard1 from "../assets/Review Card1.png";
-import ReviewCard2 from "../assets/Review Card2.png";
-import Image1 from "../assets/image1.png";
-import Image2 from "../assets/image2.png";
-import Image3 from "../assets/image3.png";
-import { FiShield, FiMessageSquare, FiStar, FiMinusCircle, FiPlusCircle, FiCheck, FiTwitter, FiFacebook, FiInstagram, FiGithub } from "react-icons/fi";
-import LogoDevPunya from "../assets/logo_devpunya.png";
-import LogoOoge from "../assets/logo_ooge.png";
-import TestimonialBg from "../assets/testimonia_background.png";
-import TestimonialImg from "../assets/testimonail.png";
-import GetInTouchImg from "../assets/get_in_touch.png";
-import AmazonLogostraight from "../assets/amazon_straight.png";
-import ShopifyLogostraight from "../assets/shopyfy_straight.png";
+import React, { useState, useEffect, useRef } from "react";
 
-import { API_URL } from "../config/api";
-import axios from "axios";
+/* ──────────────────────────────────────────────
+   Inline styles as a design system (no Tailwind)
+────────────────────────────────────────────── */
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-// --- Components ---
+  :root {
+    --primary:        #232F3E;
+    --primary-light:  #37475A;
+    --orange:         #FF9900;
+    --orange-dark:    #E68A00;
+    --orange-glow:    rgba(255,153,0,0.25);
+    --accent:         #146EB4;
+    --success:        #1AAD72;
+    --danger:         #C7511F;
+    --text:           #0F1111;
+    --text-muted:     #5A6270;
+    --bg:             #FFFFFF;
+    --bg-light:       #F4F6FA;
+    --border:         #D5D9E0;
+    --glass:          rgba(255,255,255,0.06);
+    --radius-sm:      6px;
+    --radius-md:      12px;
+    --radius-lg:      20px;
+    --shadow-sm:      0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md:      0 8px 32px rgba(0,0,0,0.12);
+    --shadow-lg:      0 20px 60px rgba(0,0,0,0.18);
+    --transition:     0.3s cubic-bezier(0.4,0,0.2,1);
+  }
 
-const NavBar = () => {
-  const navLinks = [
-    "Platforms",
-    "How it works",
-    "Integration",
-    "Compliance",
-    "Pricing",
-    "FAQ",
-    "Contact us",
-  ];
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-light); }
+  ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 99px; }
+
+  /* ── Header ── */
+  .lp-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(35,47,62,0.96);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 14px 0;
+    transition: var(--transition);
+  }
+  .lp-header.scrolled {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    padding: 10px 0;
+  }
+  .lp-nav { max-width:1180px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:space-between; }
+  .lp-logo { font-size:26px; font-weight:900; color:#fff; letter-spacing:-1px; }
+  .lp-logo span { color:var(--orange); }
+  .lp-nav-links { display:flex; gap:8px; align-items:center; }
+  .lp-nav-link {
+    color:rgba(255,255,255,0.75); font-size:14px; font-weight:500;
+    text-decoration:none; padding:8px 14px; border-radius:var(--radius-sm);
+    transition:var(--transition);
+  }
+  .lp-nav-link:hover { color:#fff; background:rgba(255,255,255,0.08); }
+  .lp-nav-cta {
+    background:var(--orange); color:var(--primary); font-weight:700;
+    font-size:14px; padding:10px 22px; border-radius:var(--radius-sm);
+    text-decoration:none; transition:var(--transition);
+    box-shadow: 0 4px 12px var(--orange-glow);
+  }
+  .lp-nav-cta:hover { background:var(--orange-dark); transform:translateY(-1px); box-shadow:0 6px 18px var(--orange-glow); }
+
+  /* ── Hero ── */
+  .lp-hero {
+    position:relative; overflow:hidden;
+    background: linear-gradient(135deg, #1a2535 0%, #2f4563 50%, #1f3350 100%);
+    padding: 110px 24px 100px;
+    text-align:center;
+  }
+  .lp-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,153,0,0.15) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .lp-hero-orb {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); pointer-events:none;
+  }
+  .lp-hero-orb-1 { width:500px; height:500px; background:rgba(255,153,0,0.08); top:-100px; left:-100px; }
+  .lp-hero-orb-2 { width:400px; height:400px; background:rgba(20,110,180,0.1); bottom:-80px; right:-60px; }
+
+  .lp-hero-inner { position:relative; z-index:2; max-width:820px; margin:0 auto; }
+  .lp-hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,153,0,0.15); border:1px solid rgba(255,153,0,0.35);
+    color:#FFB830; font-size:13px; font-weight:600;
+    padding:6px 16px; border-radius:99px; margin-bottom:28px;
+    animation: fadeInDown 0.6s ease both;
+  }
+  .lp-hero-badge-dot { width:7px; height:7px; background:var(--orange); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.5; transform:scale(1.4); } }
+  @keyframes fadeInDown { from{ opacity:0; transform:translateY(-20px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes fadeInUp   { from{ opacity:0; transform:translateY(30px);  } to{ opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn     { from{ opacity:0; } to{ opacity:1; } }
+
+  .lp-h1 {
+    font-size:clamp(36px,6vw,62px); font-weight:900; color:#fff;
+    line-height:1.12; letter-spacing:-2px; margin-bottom:24px;
+    animation: fadeInUp 0.7s 0.1s ease both;
+  }
+  .lp-h1 .hl { color:var(--orange); }
+
+  .lp-hero-sub {
+    font-size:clamp(16px,2vw,20px); color:rgba(255,255,255,0.75);
+    max-width:620px; margin:0 auto 40px; font-weight:400;
+    animation: fadeInUp 0.7s 0.2s ease both;
+  }
+
+  .lp-trust-badges {
+    display:flex; justify-content:center; align-items:center; gap:32px;
+    flex-wrap:wrap; margin-bottom:44px;
+    animation: fadeInUp 0.7s 0.3s ease both;
+  }
+  .lp-badge {
+    display:flex; align-items:center; gap:8px;
+    color:rgba(255,255,255,0.85); font-size:13px; font-weight:500;
+  }
+  .lp-badge svg { color:var(--orange); flex-shrink:0; }
+
+  .lp-cta-group { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; animation: fadeInUp 0.7s 0.4s ease both; }
+  .lp-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:15px 34px; border-radius:var(--radius-sm);
+    font-weight:700; font-size:16px; text-decoration:none;
+    transition:var(--transition); cursor:pointer; border:none; font-family:inherit;
+  }
+  .lp-btn-primary {
+    background:var(--orange); color:var(--primary);
+    box-shadow:0 6px 20px var(--orange-glow);
+  }
+  .lp-btn-primary:hover { background:var(--orange-dark); transform:translateY(-2px); box-shadow:0 10px 28px var(--orange-glow); }
+  .lp-btn-secondary {
+    background:rgba(255,255,255,0.08); color:#fff;
+    border:1.5px solid rgba(255,255,255,0.25);
+    backdrop-filter:blur(8px);
+  }
+  .lp-btn-secondary:hover { background:rgba(255,255,255,0.14); transform:translateY(-2px); }
+
+  /* ── Stats row ── */
+  .lp-stats-row {
+    background:var(--primary); padding:0;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .lp-stats-inner {
+    max-width:1180px; margin:0 auto; padding:0 24px;
+    display:grid; grid-template-columns:repeat(4,1fr);
+  }
+  .lp-stat {
+    padding:36px 24px; text-align:center;
+    border-right:1px solid rgba(255,255,255,0.08);
+  }
+  .lp-stat:last-child { border-right:none; }
+  .lp-stat-num { font-size:36px; font-weight:900; color:var(--orange); letter-spacing:-1px; }
+  .lp-stat-label { font-size:13px; color:rgba(255,255,255,0.6); margin-top:4px; font-weight:500; }
+
+  /* ── Section base ── */
+  .lp-section { padding:100px 24px; }
+  .lp-container { max-width:1180px; margin:0 auto; }
+  .lp-section-tag {
+    display:inline-block; background:rgba(255,153,0,0.12); color:var(--orange);
+    font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    padding:5px 14px; border-radius:99px; margin-bottom:16px;
+    border:1px solid rgba(255,153,0,0.25);
+  }
+  .lp-section-title { font-size:clamp(28px,4vw,42px); font-weight:800; letter-spacing:-1px; margin-bottom:16px; line-height:1.2; }
+  .lp-section-sub { color:var(--text-muted); font-size:18px; max-width:620px; }
+  .lp-section-header { margin-bottom:64px; }
+  .lp-section-header.center { text-align:center; }
+  .lp-section-header.center .lp-section-sub { margin:0 auto; }
+
+  /* ── Problem section ── */
+  .lp-problem { background: var(--bg-light); }
+  .lp-problem-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  }
+  .lp-problem-card {
+    background:#fff; border:1.5px solid var(--border);
+    border-radius:var(--radius-md); padding:32px;
+    transition:var(--transition); position:relative; overflow:hidden;
+  }
+  .lp-problem-card::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(255,153,0,0.04), transparent);
+    opacity:0; transition:var(--transition);
+  }
+  .lp-problem-card:hover { border-color:var(--orange); box-shadow: 0 8px 32px rgba(255,153,0,0.12); transform:translateY(-4px); }
+  .lp-problem-card:hover::before { opacity:1; }
+  .lp-problem-icon { font-size:36px; margin-bottom:18px; }
+  .lp-problem-card h3 { font-size:18px; font-weight:700; margin-bottom:10px; }
+  .lp-problem-card p { font-size:14px; color:var(--text-muted); line-height:1.7; }
+
+  /* ── Talk CTA strip ── */
+  .lp-talk-strip {
+    background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    padding:60px 24px; text-align:center;
+  }
+  .lp-talk-strip h3 { font-size:28px; font-weight:800; margin-bottom:10px; letter-spacing:-0.5px; }
+  .lp-talk-strip p { color:var(--text-muted); font-size:16px; margin-bottom:28px; }
+  .lp-btn-outline {
+    background:transparent; color:var(--primary); border:2px solid var(--primary);
+    padding:14px 32px; font-weight:700; font-size:15px; border-radius:var(--radius-sm);
+    cursor:pointer; transition:var(--transition); text-decoration:none; display:inline-flex; align-items:center; gap:8px; font-family:inherit;
+  }
+  .lp-btn-outline:hover { background:var(--primary); color:#fff; transform:translateY(-2px); }
+
+  /* ── How it works ── */
+  .lp-how { background:#fff; }
+  .lp-how-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0; position:relative; }
+  .lp-how-grid::before {
+    content:''; position:absolute; top:36px; left:10%; right:10%; height:2px;
+    background: linear-gradient(90deg, var(--orange), rgba(255,153,0,0.2));
+    z-index:0;
+  }
+  .lp-how-step { text-align:center; position:relative; z-index:1; padding:0 16px; }
+  .lp-step-num {
+    width:72px; height:72px; border-radius:50%;
+    background: linear-gradient(135deg, var(--orange), #FFBA50);
+    color:#fff; font-size:26px; font-weight:900;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 24px;
+    box-shadow:0 8px 24px var(--orange-glow);
+    transition:var(--transition);
+  }
+  .lp-how-step:hover .lp-step-num { transform:scale(1.1); box-shadow:0 12px 32px var(--orange-glow); }
+  .lp-how-step h4 { font-size:16px; font-weight:700; margin-bottom:10px; }
+  .lp-how-step p { font-size:13px; color:var(--text-muted); line-height:1.7; }
+
+  /* QR visual */
+  .lp-qr-visual {
+    margin-top:72px; background:var(--bg-light); border-radius:var(--radius-lg);
+    padding:52px; display:flex; gap:60px; align-items:center; justify-content:center;
+    flex-wrap:wrap; border:1px solid var(--border);
+  }
+  .lp-qr-box {
+    width:160px; height:160px; background:#fff; border-radius:var(--radius-md);
+    border:2px solid var(--border); display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:8px; color:var(--text-muted); font-size:13px; text-align:center;
+    font-weight:500; box-shadow:var(--shadow-md);
+  }
+  .lp-qr-box svg { color:var(--orange); }
+  .lp-qr-flow { }
+  .lp-qr-flow h4 { font-size:20px; font-weight:800; margin-bottom:20px; letter-spacing:-0.5px; }
+  .lp-qr-flow-step {
+    display:flex; align-items:center; gap:14px;
+    font-size:15px; margin-bottom:14px; color:var(--text);
+  }
+  .lp-qr-arrow {
+    width:28px; height:28px; border-radius:50%; background:var(--orange);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0;
+  }
+
+  /* ── Social proof ── */
+  .lp-proof { background:var(--bg-light); }
+  .lp-testimonial-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+  .lp-testimonial {
+    background:#fff; border:1.5px solid var(--border); border-radius:var(--radius-md);
+    padding:32px; transition:var(--transition);
+  }
+  .lp-testimonial:hover { border-color:var(--orange); box-shadow:var(--shadow-md); transform:translateY(-4px); }
+  .lp-stars { color:var(--orange); font-size:18px; margin-bottom:14px; letter-spacing:2px; }
+  .lp-testimonial-text { font-size:14px; line-height:1.8; color:var(--text); margin-bottom:24px; font-style:italic; }
+  .lp-author { display:flex; align-items:center; gap:14px; }
+  .lp-avatar {
+    width:48px; height:48px; border-radius:50%;
+    background: linear-gradient(135deg, var(--orange), #FFBA50);
+    color:#fff; font-weight:800; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .lp-author-name { font-weight:700; font-size:15px; margin-bottom:2px; }
+  .lp-author-role { font-size:13px; color:var(--text-muted); }
+
+  /* ── Compliance ── */
+  .lp-compliance { background:#fff; }
+  .lp-compliance-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; }
+  .lp-compliance-item { text-align:center; padding:32px 20px; border-radius:var(--radius-md); transition:var(--transition); }
+  .lp-compliance-item:hover { background:var(--bg-light); }
+  .lp-compliance-icon { font-size:48px; margin-bottom:16px; }
+  .lp-compliance-item h5 { font-size:16px; font-weight:700; margin-bottom:10px; }
+  .lp-compliance-item p { font-size:13px; color:var(--text-muted); line-height:1.7; }
+
+  /* ── Contact form ── */
+  .lp-contact { background: linear-gradient(160deg, #f4f6fa 0%, #eef2f9 100%); }
+  .lp-form-card {
+    max-width:580px; margin:0 auto;
+    background:#fff; border-radius:var(--radius-lg);
+    padding:48px; box-shadow:var(--shadow-lg);
+    border:1px solid var(--border);
+  }
+  .lp-form-group { margin-bottom:22px; }
+  .lp-form-label { display:block; font-weight:600; font-size:13px; margin-bottom:8px; color:var(--text); }
+  .lp-form-input, .lp-form-textarea {
+    width:100%; padding:13px 16px; border:1.5px solid var(--border);
+    border-radius:var(--radius-sm); font-size:15px; font-family:inherit;
+    color:var(--text); background:#fff; transition:var(--transition); outline:none;
+  }
+  .lp-form-input:focus, .lp-form-textarea:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,153,0,0.12); }
+  .lp-form-textarea { resize:vertical; min-height:110px; }
+  .lp-form-submit {
+    width:100%; padding:16px; background:var(--orange); color:var(--primary);
+    font-weight:800; font-size:16px; border:none; border-radius:var(--radius-sm);
+    cursor:pointer; transition:var(--transition); display:flex; align-items:center; justify-content:center; gap:10px;
+    font-family:inherit; box-shadow:0 6px 20px var(--orange-glow);
+  }
+  .lp-form-submit:hover:not(:disabled) { background:var(--orange-dark); transform:translateY(-2px); box-shadow:0 10px 28px var(--orange-glow); }
+  .lp-form-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+  .lp-form-msg {
+    padding:14px 16px; border-radius:var(--radius-sm); margin-bottom:20px;
+    font-weight:600; font-size:14px; display:none;
+  }
+  .lp-form-msg.success { background:#DCFCE7; color:#15803D; border:1px solid #BBF7D0; display:block; }
+  .lp-form-msg.error   { background:#FEE2E2; color:#991B1B; border:1px solid #FECACA; display:block; }
+
+  /* ── Final CTA ── */
+  .lp-final-cta {
+    padding:110px 24px; text-align:center;
+    background: linear-gradient(135deg, var(--primary) 0%, #2d4a6e 100%);
+    position:relative; overflow:hidden;
+  }
+  .lp-final-cta::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,153,0,0.12), transparent);
+    pointer-events:none;
+  }
+  .lp-final-cta-inner { position:relative; z-index:2; }
+  .lp-final-cta h2 { font-size:clamp(28px,5vw,48px); font-weight:900; color:#fff; margin-bottom:16px; letter-spacing:-1.5px; }
+  .lp-final-cta p { font-size:18px; color:rgba(255,255,255,0.75); margin-bottom:44px; }
+
+  /* ── Footer ── */
+  .lp-footer { background:var(--primary); padding:48px 24px; text-align:center; border-top:1px solid rgba(255,255,255,0.06); }
+  .lp-footer-links { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+  .lp-footer-link {
+    color:rgba(255,255,255,0.55); font-size:13px; font-weight:500;
+    text-decoration:none; padding:6px 12px; border-radius:var(--radius-sm);
+    transition:var(--transition);
+  }
+  .lp-footer-link:hover { color:#fff; background:rgba(255,255,255,0.08); }
+  .lp-footer-disclaimer { font-size:12px; color:rgba(255,255,255,0.35); line-height:1.8; max-width:600px; margin:0 auto; }
+
+  /* ── Loading spinner ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .lp-spinner {
+    width:18px; height:18px; border:2.5px solid rgba(35,47,62,0.3);
+    border-top-color:var(--primary); border-radius:50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  /* ── Reveal animation ── */
+  .lp-reveal { opacity:0; transform:translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .lp-reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .lp-problem-grid { grid-template-columns: repeat(2,1fr); }
+    .lp-how-grid { grid-template-columns: repeat(3,1fr); gap:32px; }
+    .lp-how-grid::before { display:none; }
+    .lp-compliance-grid { grid-template-columns: repeat(2,1fr); }
+    .lp-stats-inner { grid-template-columns: repeat(2,1fr); }
+    .lp-stat { border-right:none; border-bottom:1px solid rgba(255,255,255,0.08); }
+    .lp-stat:nth-child(odd) { border-right:1px solid rgba(255,255,255,0.08); }
+    .lp-stat:last-child,:nth-child(3) { border-bottom:none; }
+  }
+  @media (max-width: 768px) {
+    .lp-nav-links .lp-nav-link { display:none; }
+    .lp-problem-grid, .lp-how-grid, .lp-testimonial-grid, .lp-compliance-grid { grid-template-columns:1fr; }
+    .lp-stats-inner { grid-template-columns:repeat(2,1fr); }
+    .lp-qr-visual { flex-direction:column; padding:32px; gap:32px; }
+    .lp-form-card { padding:28px 20px; }
+    .lp-section { padding:72px 24px; }
+  }
+  @media (max-width: 480px) {
+    .lp-stats-inner { grid-template-columns:1fr; }
+    .lp-btn { padding:13px 22px; font-size:15px; }
+  }
+`;
+
+/* ─────────────────────────────────────────── */
+
+function useReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+function RevealSection({ children, className = "", style = {}, tag = "div", delay = 0 }) {
+  const ref = useReveal();
+  const Tag = tag;
+  return (
+    <Tag ref={ref} className={`lp-reveal ${className}`} style={{ transitionDelay: `${delay}ms`, ...style }}>
+      {children}
+    </Tag>
+  );
+}
+
+/* ─────────────── Sub-components ─────────────── */
+
+function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-      <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-        {/* Logo */}
-        <div className="flex items-center">
-          <Link to="/">
-            <img src={ReviuLogo} alt="Reviu" className="h-8 md:h-10" />
-          </Link>
+    <header className={`lp-header${scrolled ? " scrolled" : ""}`}>
+      <nav className="lp-nav">
+        <div className="lp-logo">reviu<span>.store</span></div>
+        <div className="lp-nav-links">
+          <a href="#how-it-works" className="lp-nav-link">How It Works</a>
+          <a href="#testimonials" className="lp-nav-link">Reviews</a>
+          <a href="#compliance" className="lp-nav-link">Compliance</a>
+          <a href="#contact" className="lp-nav-cta">Start Free Trial</a>
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="lp-hero">
+      <div className="lp-hero-orb lp-hero-orb-1" />
+      <div className="lp-hero-orb lp-hero-orb-2" />
+      <div className="lp-hero-inner">
+        <div className="lp-hero-badge">
+          <span className="lp-hero-badge-dot" />
+          100% Amazon TOS Compliant
         </div>
 
-        {/* Links (Hidden on mobile for simplicity, or we can make a mobile menu later) */}
-        <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-600">
-          {navLinks.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase().replace(/\s/g, "-")}`}
-              className="hover:text-blue-600 transition-colors"
-            >
-              {link}
-            </a>
+        <h1 className="lp-h1">
+          Stop Losing Money to<br />
+          Competitors With Better <span className="hl">Reviews</span>
+        </h1>
+
+        <p className="lp-hero-sub">
+          Smart QR-based review system for Amazon &amp; Shopify sellers. Build trust,
+          increase conversions, protect your ratings.
+        </p>
+
+        <div className="lp-trust-badges">
+          {[
+            { icon: "✅", label: "Amazon TOS Compliant" },
+            { icon: "🔒", label: "Data Secure" },
+            { icon: "🇮🇳", label: "Built for India" },
+            { icon: "⚡", label: "Setup in Minutes" },
+          ].map((b) => (
+            <div key={b.label} className="lp-badge">
+              <span>{b.icon}</span>
+              <span>{b.label}</span>
+            </div>
           ))}
         </div>
 
-        {/* Auth Buttons */}
-        <div className="flex items-center space-x-3">
-          <Link
-            to="/login"
-            className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-          >
-            Start Free
-          </Link>
+        <div className="lp-cta-group">
+          <a href="#contact" className="lp-btn lp-btn-primary">
+            Start Free Trial →
+          </a>
+          <a href="#how-it-works" className="lp-btn lp-btn-secondary">
+            See How It Works
+          </a>
         </div>
       </div>
-    </nav>
+    </section>
   );
-};
+}
 
+function StatsRow() {
+  const stats = [
+    { num: "500+", label: "Active Sellers" },
+    { num: "12K+", label: "Reviews Collected" },
+    { num: "4.8★", label: "Avg Rating Improved" },
+    { num: "100%", label: "TOS Compliant" },
+  ];
+  return (
+    <div className="lp-stats-row">
+      <div className="lp-stats-inner">
+        {stats.map((s) => (
+          <div key={s.label} className="lp-stat">
+            <div className="lp-stat-num">{s.num}</div>
+            <div className="lp-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+function ProblemSection() {
+  const problems = [
+    { icon: "📉", title: "No Reviews = No Trust", desc: "New products without reviews struggle to gain buyer confidence. Customers choose competitors with proven track records." },
+    { icon: "⚠️", title: "Bad Reviews Kill Rankings", desc: "A single negative review can damage your product's visibility and conversion rate. Prevention is better than recovery." },
+    { icon: "💸", title: "Low Ratings = Lower Sales", desc: "Every rating point matters. Products with higher ratings consistently outperform competitors in conversions and revenue." },
+    { icon: "📊", title: "Missing Customer Insights", desc: "Without systematic feedback collection, you're guessing what customers want. Data-driven improvements drive growth." },
+    { icon: "🎯", title: "High Ad Costs", desc: "Lower ratings mean higher acquisition costs. Better reviews naturally improve your organic ranking and reduce ACOS." },
+    { icon: "🚫", title: "Listing Vulnerability", desc: "Low ratings risk suppression. Protect your hard-earned rankings with consistent positive review flow." },
+  ];
+  return (
+    <section className="lp-section lp-problem">
+      <div className="lp-container">
+        <RevealSection className="lp-section-header center">
+          <span className="lp-section-tag">The Problem</span>
+          <h2 className="lp-section-title">Every Day Without Action Is Costing You</h2>
+          <p className="lp-section-sub">
+            Reviews aren't just social proof — they're the foundation of Amazon success.
+          </p>
+        </RevealSection>
+        <div className="lp-problem-grid">
+          {problems.map((p, i) => (
+            <RevealSection key={p.title} delay={i * 60}>
+              <div className="lp-problem-card">
+                <div className="lp-problem-icon">{p.icon}</div>
+                <h3>{p.title}</h3>
+                <p>{p.desc}</p>
+              </div>
+            </RevealSection>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-export default function LandingPage() {
-  const [openFaq, setOpenFaq] = React.useState(0);
-  const [formData, setFormData] = React.useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    countryCode: "+1",
-    phone: "",
-    message: "",
-  });
-  const [status, setStatus] = React.useState("idle"); // idle, loading, success, error
+function TalkCTAStrip() {
+  return (
+    <div className="lp-talk-strip">
+      <div className="lp-container">
+        <RevealSection>
+          <h3>Want to Discuss Your Specific Situation?</h3>
+          <p>Every seller's review challenge is unique. Let's talk about yours.</p>
+          <a href="#contact" className="lp-btn lp-btn-primary">Talk to Us &rarr;</a>
+        </RevealSection>
+      </div>
+    </div>
+  );
+}
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+function HowItWorks() {
+  const steps = [
+    { n: 1, title: "Build Custom Forms", desc: "Create branded feedback forms with your messaging. Add warranty extensions, free offers, or exclusive benefits." },
+    { n: 2, title: "Generate QR Codes", desc: "Each product gets a unique QR code. Print on business cards, inserts, or packaging. Professional and trackable." },
+    { n: 3, title: "Place in Product Box", desc: "Include QR business card with custom messaging — extend warranty, claim free gift, or share feedback." },
+    { n: 4, title: "Collect Smart Data", desc: "Track every scan. Capture customer sentiment, product feedback, and improvement suggestions automatically." },
+    { n: 5, title: "Route Reviews Intelligently", desc: "Happy → Amazon review page. Unhappy → Private feedback to you. Protect your rating automatically." },
+  ];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus("loading");
+  return (
+    <section className="lp-section lp-how" id="how-it-works">
+      <div className="lp-container">
+        <RevealSection className="lp-section-header center">
+          <span className="lp-section-tag">How It Works</span>
+          <h2 className="lp-section-title">Simple. Compliant. Effective.</h2>
+          <p className="lp-section-sub">Smart QR-based review collection designed for Indian sellers.</p>
+        </RevealSection>
 
-    try {
-      const payload = {
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.email,
-        number: `${formData.countryCode} ${formData.phone}`,
-        message: formData.message,
-      };
+        <div className="lp-how-grid">
+          {steps.map((s, i) => (
+            <RevealSection key={s.n} className="lp-how-step" delay={i * 80}>
+              <div className="lp-step-num">{s.n}</div>
+              <h4>{s.title}</h4>
+              <p>{s.desc}</p>
+            </RevealSection>
+          ))}
+        </div>
 
-      await axios.post(`${API_URL}/connect`, payload);
-      setStatus("success");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        countryCode: "+1",
-        phone: "",
-        message: "",
-      });
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setStatus("error");
-    }
-  };
+        <RevealSection>
+          <div className="lp-qr-visual">
+            <div className="lp-qr-box">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <path d="M14 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM14 17h1v1h-1zM17 17h1v1h-1zM20 17h1v1h-1zM14 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1z"/>
+              </svg>
+              <span>Your QR</span>
+            </div>
+            <div className="lp-qr-flow">
+              <h4>The Review Journey</h4>
+              {[
+                "Customer scans QR code",
+                "Opens custom feedback form",
+                "Rates their experience (1–5 ★)",
+                "Positive → Amazon review page",
+                "Negative → Private feedback to you",
+              ].map((step, i) => (
+                <div key={i} className="lp-qr-flow-step">
+                  <div className="lp-qr-arrow">{i + 1}</div>
+                  <span>{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </RevealSection>
+      </div>
+    </section>
+  );
+}
 
-  const faqs = [
+function Testimonials() {
+  const items = [
     {
-      q: "Is this compliant with Amazon's terms of service?",
-      a: "Yes. Reviu.Store is fully compliant including Amazon and Shopify. Every campaign follows platform rules and best practices.",
+      text: "\"The QR code approach works perfectly for Indian sellers. We include it in every package with a warranty extension offer. Our review rate increased significantly without violating Amazon TOS.\"",
+      initials: "RK", name: "Rahul K.", role: "Electronics Seller, Mumbai",
     },
     {
-      q: "How does the system collect feedback from customers?",
-      a: "Customers are guided through an automated post-purchase flow that makes sharing genuine feedback effortless and fully compliant.",
+      text: "\"We prevented 12 negative reviews in 2 months by catching unhappy customers early. The private feedback feature is gold. Our rating stayed protected while we improved our product.\"",
+      initials: "PM", name: "Priya M.", role: "Home & Kitchen Seller, Bangalore",
     },
     {
-      q: "Can I customize the review funnel?",
-      a: "Absolutely! Add your branding, tweak templates, and create funnels for different products or campaigns.",
-    },
-    {
-      q: "Are QR codes allowed for Amazon reviews?",
-      a: "Yes, using QR codes on product inserts is allowed as long as you do not incentivize reviews or specifically ask only for positive feedback.",
-    },
-    {
-      q: "How does Reviu stay compliant with Amazon review policies?",
-      a: "Reviu is built to be neutral and objective, ensuring that the review request flow complies with Amazon's selling policies regarding customer communication.",
-    },
-    {
-      q: "Can QR codes be included inside product packaging?",
-      a: "Yes, placing QR codes inside product packaging is a standard practice for directing customers to warranty registration, instructions, or neutral review flows.",
+      text: "\"Simple to set up, professional QR cards, and the data insights help us improve our products. The support team understands Amazon India sellers' challenges like no one else.\"",
+      initials: "AJ", name: "Arjun J.", role: "Fashion Accessories, Delhi",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F4F8FF] font-sans relative overflow-x-hidden">
-      <Helmet>
-        <title>Amazon Review QR Code Software for Sellers</title>
-        <meta
-          name="description"
-          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
-        />
-        <meta
-          name="keywords"
-          content="reviews, amazon reviews, shopify reviews, qr code reviews, ecommerce, trust, sales"
-        />
-        <link rel="canonical" href="https://reviu.store" />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://reviu.store/" />
-        <meta
-          property="og:title"
-          content="Amazon Review QR Code Software for Sellers"
-        />
-        <meta
-          property="og:description"
-          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
-        />
-        <meta property="og:image" content="https://reviu.store/og-image.jpg" />
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://reviu.store/" />
-        <meta
-          property="twitter:title"
-          content="Amazon Review QR Code Software for Sellers"
-        />
-        <meta
-          property="twitter:description"
-          content="Collect honest Amazon and Shopify product reviews using QR codes built for marketplace compliance."
-        />
-        <meta
-          property="twitter:image"
-          content="https://reviu.store/twitter-image.jpg"
-        />
-      </Helmet>
-
-      {/* --- HEADER --- */}
-      {!localStorage.getItem("token") && <NavBar />}
-
-      {/* --- HERO SECTION --- */}
-      <section className="relative pt-24 md:pt-32 overflow-hidden z-10">
-
-        {/* Amazon Logo Floating Left */}
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
-          <div className="transform -rotate-12">
-            <div className="">
-              <img src={AmazonLogo} alt="Amazon" className="w-40 opacity-60" />
-            </div>
-          </div>
-        </div>
-
-        {/* Shopify Logo Floating Right */}
-        <div className="absolute top-2/3 right-0 -translate-y-1/2 hidden lg:block z-20 pointer-events-none">
-          <div className="transform rotate-12">
-            <div className="">
-              <img src={ShopifyLogo} alt="Shopify" className="w-40 opacity-60" />
-            </div>
-          </div>
-        </div>
-
-
-        <div className="text-center max-w-5xl mx-auto px-6 relative z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
-            QR Code Review Software for Amazon & Shopify Sellers
-          </h1>
-
-          <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Collect honest customer feedback and product reviews using compliant QR codes.<br className="hidden md:block" />
-            Fully Compliant with <span className="font-bold text-gray-900">Amazon</span> and <span className="font-bold text-gray-900">Shopify</span>.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-            <button
-              to="/register"
-              className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white border-2 border-blue-600 font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-            >
-              Start Free
-            </button>
-
-            <a
-              href="#contact-us"
-              className="w-full sm:w-auto px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all"
-            >
-              Schedule a call
-            </a>
-          </div>
-
-
-          {/* --- REVIEW CARDS (Images) --- */}
-          <div className="relative mx-auto  mt-26">
-            <div className="grid md:grid-cols-2 gap-8 items-center justify-items-center">
-              {/* Left Card - Review Text */}
-              <div className="">
-                <img src={ReviewCard2} alt="Review Card" className="w-full max-w-lg opacity-80" />
-              </div>
-
-              {/* Right Card - Rating Stats */}
-              <div className="mt-12">
-                <img src={ReviewCard1} alt="Rating Summary" className="w-full max-w-lg opacity-80" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      {/* --- PLATFORMS SECTION --- */}
-      <section id="platforms" className="py-12 md:py-24 bg-white text-center">
-        <div className="max-w-4xl mx-auto px-6">
-          <p className="text-blue-500 font-medium mb-4 uppercase tracking-wider">Platforms</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Works with your favourite platforms
-          </h2>
-          <p className="text-gray-500 mb-12 max-w-xl mx-auto">
-            Reviu works across leading ecommerce and marketplace platforms
-          </p>
-
-          <div className="flex flex-wrap justify-center items-center gap-12 sm:gap-20 mb-8">
-            <img src={AmazonLogostraight} alt="Amazon" className="h-10  sm:h-12 object-contain " />
-            <div className="flex items-center gap-2">
-              <img src={ShopifyLogostraight} alt="Shopify" className="h-10 mb-2 sm:h-12 object-contain " />
-            </div>
-          </div>
-
-          {/* <p className="text-gray-600 mb-10 font-medium">Works with Amazon, Shopify and leading ecommerce platforms.</p> */}
-
-          <p className="text-gray-400 text-sm mb-10">more coming soon...</p>
-
-          <Button
-            to="/register"
-            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-          >
-            Start Free Now
-          </Button>
-        </div>
-      </section>
-
-      {/* --- HOW IT WORKS SECTION --- */}
-      <section id="how-it-works" className="py-12 md:py-24 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-blue-500 font-semibold mb-3 uppercase tracking-wider">How it Works?</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Three simple steps to better reviews</h2>
-          <p className="text-gray-500 mb-16 text-lg">Get started in minutes with our intuitive platform</p>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image1} alt="Create a feedback flow" className="w-full h-full object-contain mix-blend-multiply" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Create a feedback flow</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Create a QR-based post-purchase review flow for your product.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image2} alt="Collect verified feedback" className="w-full h-full object-contain mix-blend-multiply" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Collect verified feedback</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Customers scan the QR code to share feedback or leave a marketplace review through smart funnel.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center">
-              <div className="bg-blue-100 rounded-2xl p-6 mb-8 w-full aspect-[4/3] flex items-center justify-center overflow-hidden">
-                <img src={Image3} alt="Analyse & automate" className="w-full h-full object-contain mix-blend-multiply" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Analyse & automate</h3>
-              <p className="text-gray-500 leading-relaxed max-w-sm">
-                Track customer reviews and insights to improve listings and buyer experience.
-              </p>
-            </div>
-          </div>
-
-          <Button
-            to="/register"
-            className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-          >
-            Start Free Now
-          </Button>
-        </div>
-      </section>
-
-      {/* --- COMPLIANCE SECTION --- */}
-      <section id="compliance" className="py-12 md:py-24 bg-gradient-to-b from-blue-50 to-white text-center">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-            Built for platform compliance
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto mb-16 text-lg">
-            Reviu is designed to follow marketplace guidelines. Customers are encouraged to share honest feedback—positive or negative—without pressure or bias.
-          </p>
-          <p className="text-gray-600 mb-8 font-medium">Designed to comply with Amazon review and marketplace feedback policies.</p>
-
-          <div className="grid md:grid-cols-3 gap-12 text-center">
-            {/* Feature 1 */}
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
-                <FiShield size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Platform Compliant</h3>
-              <p className="text-gray-500">Follows all marketplace guidelines</p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
-                <FiMessageSquare size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Unbiased Feedback</h3>
-              <p className="text-gray-500">No pressure or sentiment-tied incentives</p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
-                <FiStar size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Honest Reviews</h3>
-              <p className="text-gray-500">Positive or negative—we encourage authenticity</p>
-            </div>
-          </div>
-
-          <div className="mt-16">
-            <Button
-              to="/register"
-              className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-            >
-              Start Free Now
-            </Button>
-          </div>
-        </div>
-      </section>
-
-
-
-      {/* --- PRICING SECTION --- */}
-      <section id="pricing" className="py-12 md:py-24 bg-white text-center">
-        <div className="max-w-4xl mx-auto px-6">
-          <p className="text-blue-500 font-medium mb-3 uppercase tracking-wider">Pricing</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">High-quality reviews without high costs</h2>
-          <p className="text-gray-500 text-lg mb-16 max-w-2xl mx-auto">
-            Plan designed to help brands collect meaningful feedback at a cost that scales with growth.
-          </p>
-
-          <div className="bg-blue-600 text-white rounded-3xl p-8 max-w-sm mx-auto shadow-xl relative overflow-hidden transition-transform hover:scale-[1.02] duration-300">
-            <div className="text-left relative z-10">
-              <h3 className="text-2xl font-bold mb-1">All in one</h3>
-              <p className="text-blue-100 text-sm mb-8">Single pricing for all customers</p>
-
-              <div className="flex items-baseline mb-8">
-                <span className="text-5xl font-bold">$25</span>
-                <span className="text-blue-100 ml-2 font-medium">/ Month</span>
-              </div>
-
-              <div className="w-full bg-white text-blue-600 font-bold py-3 rounded-lg mb-8 hover:bg-gray-50 transition-colors text-center cursor-pointer">
-                Get Started Now
-              </div>
-
-              <div className="space-y-4 text-left">
-                {[
-                  "Unlimited QR Campaigns",
-                  "Amazon & Shopify Integration",
-                  "Verified Review Collection",
-                  "Custom Branding & Templates",
-                  "Analytics Dashboard",
-                  "24/7 Email Support"
-                ].map((feature, i) => (
-                  <div key={i} className="flex items-start">
-                    <div className="bg-white rounded-full p-0.5 mt-0.5 mr-3 flex-shrink-0">
-                      <FiCheck className="text-blue-600 w-3 h-3" />
-                    </div>
-                    <span className="text-blue-50 text-sm font-medium">{feature}</span>
+    <section className="lp-section lp-proof" id="testimonials">
+      <div className="lp-container">
+        <RevealSection className="lp-section-header center">
+          <span className="lp-section-tag">Testimonials</span>
+          <h2 className="lp-section-title">Trusted by Growing Amazon Sellers</h2>
+          <p className="lp-section-sub">Real sellers building sustainable review systems.</p>
+        </RevealSection>
+        <div className="lp-testimonial-grid">
+          {items.map((t, i) => (
+            <RevealSection key={t.name} delay={i * 80}>
+              <div className="lp-testimonial">
+                <div className="lp-stars">★★★★★</div>
+                <p className="lp-testimonial-text">{t.text}</p>
+                <div className="lp-author">
+                  <div className="lp-avatar">{t.initials}</div>
+                  <div>
+                    <div className="lp-author-name">{t.name}</div>
+                    <div className="lp-author-role">{t.role}</div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-16">
-            <Button
-              to="/register"
-              className="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all"
-            >
-              Start Free Now
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* --- TESTIMONIALS SECTION --- */}
-      <section className="p-8 pb-24 bg-[#F4F8FF] overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
-          <div className="text-left">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Loved By Brands</h2>
-            <p className="text-gray-500 text-lg mb-12 max-w-lg">
-              See what our customers have to say about their experience with Reviu
-            </p>
-
-            <div className="flex items-center gap-8">
-              <img src={LogoDevPunya} alt="DevPunya" className="h-10 object-contain" />
-              <img src={LogoOoge} alt="OOGE" className="h-10 object-contain" />
-            </div>
-          </div>
-
-          {/* Right Image Composition */}
-          <div className="relative flex justify-center lg:justify-end">
-            {/* Background Decorative */}
-            <img
-              src={TestimonialBg}
-              alt=""
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-none opacity-80 pointer-events-none"
-            />
-
-            {/* Front Card */}
-            <img
-              src={TestimonialImg}
-              alt="Customer Testimonials"
-              className="relative z-10 w-80 max-w-md mt-40 shadow-2xl rounded-2xl"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* --- FAQ SECTION --- */}
-      <section id="faq" className="py-12 md:py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Frequently asked questions
-            </h2>
-            <p className="text-gray-500 text-lg">
-              Everything you need to know about the product
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {faqs.map((item, i) => (
-              <div
-                key={i}
-                className="border-b border-gray-100 pb-6"
-              >
-                <button
-                  className="w-full flex justify-between items-start text-left focus:outline-none group"
-                  onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
-                >
-                  <h4 className="text-lg font-semibold text-gray-900 pr-8">
-                    {item.q}
-                  </h4>
-                  <span className="text-blue-500 text-2xl flex-shrink-0">
-                    {openFaq === i ? (
-                      <FiMinusCircle />
-                    ) : (
-                      <FiPlusCircle className="text-gray-300 group-hover:text-blue-500 transition-colors" />
-                    )}
-                  </span>
-                </button>
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === i ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0"
-                    }`}
-                >
-                  <p className="text-gray-500 leading-relaxed">
-                    {item.a}
-                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+            </RevealSection>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* --- CONTACT SECTION --- */}
-      <section id="contact-us" className="py-12 md:py-24 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Image */}
-          <div className="relative">
-            <img src={GetInTouchImg} alt="Get in touch" className="rounded-3xl shadow-2xl w-full object-cover" />
-          </div>
+function Compliance() {
+  const items = [
+    { icon: "✅", title: "Amazon TOS Compliant", desc: "No incentivized reviews. No manipulation. Only honest feedback from verified purchases following Amazon guidelines." },
+    { icon: "🔒", title: "Data Privacy", desc: "Your customer data is encrypted and secure. We never share or sell information. GDPR and Indian privacy laws compliant." },
+    { icon: "🛡️", title: "Transparent Process", desc: "Every step is traceable. No black-box tactics. You control all messaging and customer interactions." },
+    { icon: "🇮🇳", title: "Built for India", desc: "Designed specifically for Indian Amazon & Shopify sellers. Local support, Indian payment options, regional language coming soon." },
+  ];
 
-          {/* Right Form */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Get in touch</h2>
-            <p className="text-gray-500 mb-8">Our friendly team would love to hear from you.</p>
+  return (
+    <section className="lp-section lp-compliance" id="compliance">
+      <div className="lp-container">
+        <RevealSection className="lp-section-header center">
+          <span className="lp-section-tag">Trust & Safety</span>
+          <h2 className="lp-section-title">100% Compliant. Built for Trust.</h2>
+          <p className="lp-section-sub">We follow Amazon's guidelines strictly. Your account safety is our priority.</p>
+        </RevealSection>
+        <div className="lp-compliance-grid">
+          {items.map((item, i) => (
+            <RevealSection key={item.title} delay={i * 80}>
+              <div className="lp-compliance-item">
+                <div className="lp-compliance-icon">{item.icon}</div>
+                <h5>{item.title}</h5>
+                <p>{item.desc}</p>
+              </div>
+            </RevealSection>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
+function ContactForm() {
+  const [form, setForm] = useState({ name: "", email: "", number: "", message: "" });
+  const [status, setStatus] = useState(null); // null | 'loading' | 'success' | 'error'
+  const [msg, setMsg] = useState("");
+
+  const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.number) {
+      setStatus("error"); setMsg("Please fill in all required fields."); return;
+    }
+    setStatus("loading");
+    try {
+      const res = await fetch("https://scanqrgo.onrender.com/api/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setMsg("Thank you! We'll contact you within 24 hours to set up your account. 🎉");
+        setForm({ name: "", email: "", number: "", message: "" });
+        setTimeout(() => setStatus(null), 6000);
+      } else throw new Error();
+    } catch {
+      setStatus("error");
+      setMsg("Something went wrong. Please try again or WhatsApp us directly.");
+    }
+  };
+
+  return (
+    <section className="lp-section lp-contact" id="contact">
+      <div className="lp-container">
+        <RevealSection className="lp-section-header center">
+          <span className="lp-section-tag">Get Started</span>
+          <h2 className="lp-section-title">Ready to Build Your Review System?</h2>
+          <p className="lp-section-sub">Start protecting your ratings and growing your business today.</p>
+        </RevealSection>
+
+        <RevealSection delay={100}>
+          <div className="lp-form-card">
+            {status === "success" && <div className="lp-form-msg success">{msg}</div>}
+            {status === "error"   && <div className="lp-form-msg error">{msg}</div>}
+
+            <form onSubmit={handleSubmit} noValidate>
+              {[
+                { id: "name",    label: "Full Name *",         type: "text",  placeholder: "Your full name" },
+                { id: "email",   label: "Email Address *",     type: "email", placeholder: "you@example.com" },
+                { id: "number",  label: "WhatsApp Number *",   type: "tel",   placeholder: "+91 98765 43210" },
+              ].map((f) => (
+                <div key={f.id} className="lp-form-group">
+                  <label className="lp-form-label" htmlFor={f.id}>{f.label}</label>
                   <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    id={f.id} name={f.id} type={f.type}
+                    placeholder={f.placeholder}
+                    value={form[f.id]}
                     onChange={handleChange}
-                    placeholder="First name"
-                    className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
+                    className="lp-form-input"
+                    required={f.label.includes("*")}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Last name"
-                    className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
+              ))}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+              <div className="lp-form-group">
+                <label className="lp-form-label" htmlFor="message">Tell us about your business</label>
+                <textarea
+                  id="message" name="message"
+                  placeholder="What products do you sell? How many orders per month? Any specific challenges with reviews?"
+                  value={form.message}
                   onChange={handleChange}
-                  placeholder="you@company.com"
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
+                  className="lp-form-textarea"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
-                <div className="flex">
-                  <select
-                    name="countryCode"
-                    value={formData.countryCode}
-                    onChange={handleChange}
-                    className="px-3 py-3 rounded-l-lg border border-gray-400 border-r-0 border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-[120px]"
-                  >
-                    {[
-                      { code: "+1", label: "US (+1)" },
-                      { code: "+1", label: "CA (+1)" },
-                      { code: "+44", label: "UK (+44)" },
-                      { code: "+61", label: "AU (+61)" },
-                      { code: "+49", label: "DE (+49)" },
-                      { code: "+33", label: "FR (+33)" },
-                      { code: "+91", label: "IN (+91)" },
-                      { code: "+81", label: "JP (+81)" },
-                      { code: "+86", label: "CN (+86)" },
-                      { code: "+55", label: "BR (+55)" },
-                      { code: "+971", label: "UAE (+971)" },
-                      { code: "+65", label: "SG (+65)" },
-                      { code: "+966", label: "SA (+966)" },
-                    ].map((country, idx) => (
-                      <option key={idx} value={country.code}>
-                        {country.label}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full px-4 py-3 rounded-r-lg bg-white border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg border bg-white border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="flex items-center">
-                {/* <input type="checkbox" id="privacy" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required />
-                <label htmlFor="privacy" className="ml-2 text-sm text-gray-500">
-                  You agree to our friendly <a href="#" className="underline">privacy policy</a>.
-                </label> */}
-              </div>
-
-              <Button
+              <button
                 type="submit"
+                className="lp-form-submit"
                 disabled={status === "loading"}
-                className="w-full py-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all disabled:opacity-70"
+                id="lp-submit-btn"
               >
-                {status === "loading" ? "Sending..." : "Send message"}
-              </Button>
-
-              {status === "success" && (
-                <p className="text-green-600 text-center font-medium">Message sent successfully!</p>
-              )}
-              {status === "error" && (
-                <p className="text-red-600 text-center font-medium">Failed to send message. Please try again.</p>
-              )}
+                {status === "loading" ? (
+                  <><div className="lp-spinner" /> Submitting…</>
+                ) : (
+                  <>Start Free Trial →</>
+                )}
+              </button>
             </form>
           </div>
-        </div>
-      </section>
+        </RevealSection>
+      </div>
+    </section>
+  );
+}
 
-      {/* --- Footer --- */}
-      <footer className="bg-white border-t border-gray-100 pt-10 md:pt-16 pb-12 mt-12 md:mt-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <img src={ReviuLogo} alt="Reviu" className="h-8" />
-              </div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
-                More Reviews . More Trust . More Sales
-              </h2>
-            </div>
-
-            <Button
-              to="/register"
-              className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all whitespace-nowrap"
-            >
-              Start Free Now
-            </Button>
+function FinalCTA() {
+  return (
+    <section className="lp-final-cta">
+      <div className="lp-final-cta-inner lp-container">
+        <RevealSection>
+          <h2>Stop Losing to Better-Reviewed Competitors</h2>
+          <p>Join Indian sellers building sustainable review systems. 100% Amazon TOS compliant.</p>
+          <div className="lp-cta-group">
+            <a href="#contact" className="lp-btn lp-btn-primary">Start Free Trial →</a>
+            <a href="#how-it-works" className="lp-btn lp-btn-secondary">Learn More</a>
           </div>
+        </RevealSection>
+      </div>
+    </section>
+  );
+}
 
-          <div className="grid md:grid-cols-4 gap-12 border-t border-gray-100 pt-16">
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">About Reviu.store</h3>
-              <p className="text-gray-500 mb-8 max-w-sm leading-relaxed">
-                Reviu helps brands collect honest, verified customer feedback through compliant surveys and automation—turning real customer voices into trust and growth.
-              </p>
-              <div className="flex gap-6">
-                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiTwitter size={24} /></a>
-                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiFacebook size={24} /></a>
-                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiInstagram size={24} /></a>
-                <a href="#" className="text-blue-500 hover:text-blue-700 transition-colors"><FiGithub size={24} /></a>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Company</h3>
-              <ul className="space-y-4 text-gray-500 font-medium">
-                <li><a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it works</a></li>
-                <li><a href="#integration" className="hover:text-blue-600 transition-colors">Integration</a></li>
-                <li><a href="#compliance" className="hover:text-blue-600 transition-colors">Compliance</a></li>
-                <li><a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a></li>
-                <li><a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Help</h3>
-              <ul className="space-y-4 text-gray-500 font-medium">
-                <li><a href="#contact-us" className="hover:text-blue-600 transition-colors">Contact us</a></li>
-                <li><a href="#" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
-                <li><a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a></li>
-              </ul>
-            </div>
-          </div>
+function Footer() {
+  return (
+    <footer className="lp-footer">
+      <div className="lp-container">
+        <div className="lp-footer-links">
+          {["Privacy Policy", "Terms of Service", "Amazon TOS Compliance", "Contact"].map((l) => (
+            <a key={l} href="#" className="lp-footer-link">{l}</a>
+          ))}
         </div>
-      </footer>
+        <div className="lp-footer-disclaimer">
+          © 2026 Reviu.store. All rights reserved.<br />
+          Built in India for Amazon &amp; Shopify sellers. Results vary by product, category, and execution.<br />
+          We help collect honest feedback — review outcomes depend on product quality and customer experience.
+        </div>
+      </div>
+    </footer>
+  );
+}
 
-    </div >
+/* ─────────────── Main Export ─────────────── */
+
+export default function LandingPage() {
+  return (
+    <>
+      <style>{CSS}</style>
+      <Header />
+      <Hero />
+      <StatsRow />
+      <ProblemSection />
+      <TalkCTAStrip />
+      <HowItWorks />
+      <Testimonials />
+      <Compliance />
+      <ContactForm />
+      <FinalCTA />
+      <Footer />
+    </>
   );
 }

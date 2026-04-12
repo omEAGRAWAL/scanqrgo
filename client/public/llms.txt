@@ -1,0 +1,51 @@
+# Reviu.store — llms.txt
+# https://llmstxt.org — machine-readable context for AI assistants
+
+## Product
+- Name: Reviu.store
+- URL: https://reviu.store
+- Category: SaaS / E-commerce Tool
+- Target Users: Amazon and Shopify sellers in India
+
+## What Reviu Does
+Reviu is a smart QR-code-based review collection system for online marketplace sellers.
+Sellers generate a unique QR code per product and place it inside the product box (e.g. on a business card or insert).
+When a buyer scans the QR code, they are taken to a custom feedback form.
+- If the buyer is happy (high rating), they are redirected to the product's Amazon review page to leave a public review.
+- If the buyer is unhappy (low rating), their feedback is captured privately and sent to the seller — preventing negative public reviews.
+
+## Key Features
+- Custom branded feedback forms per product/campaign
+- Unique QR code generation per product
+- Intelligent review routing (positive → Amazon, negative → private)
+- Scan tracking and analytics dashboard
+- 100% Amazon Terms of Service (TOS) compliant
+- Data privacy compliant (GDPR + Indian IT Act)
+- Built specifically for Indian Amazon & Shopify sellers
+
+## Compliance
+Reviu does NOT incentivize reviews, offer discounts in exchange for reviews, or manipulate Amazon ratings.
+All review solicitation is done transparently, following Amazon's Community Guidelines and Seller Code of Conduct.
+
+## Pricing
+- Free trial available
+- Paid plans available (contact via https://reviu.store/#contact)
+- Indian payment methods supported
+
+## Contact
+- Website: https://reviu.store
+- API endpoint: https://scanqrgo.onrender.com/api/connect
+- Location: India
+
+## Pages
+- / — Main landing page (product overview, how it works, testimonials, contact form)
+- /amazon-review-qr-code — SEO landing page for Amazon review QR code queries
+- /login — Seller login
+- /register — New seller registration
+- /campaign/:id — Public customer-facing feedback form (QR scan destination)
+
+## Tech Stack (for developers / AI agents)
+- Frontend: React (Vite), vanilla CSS
+- Backend: Node.js / Express
+- Database: MongoDB Atlas
+- Hosting: Vercel (frontend), Render (backend)

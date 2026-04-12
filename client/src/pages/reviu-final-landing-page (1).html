@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviu - Stop Losing Money to Competitors With Better Reviews | 100% Amazon TOS Compliant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #232F3E;
+            --amazon-orange: #FF9900;
+            --accent: #146EB4;
+            --success: #067D62;
+            --danger: #C7511F;
+            --text: #0F1111;
+            --text-secondary: #565959;
+            --bg: #FFFFFF;
+            --bg-light: #F7F8F8;
+            --border: #D5D9D9;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--amazon-orange);
+        }
+
+        .nav-cta {
+            background: var(--amazon-orange);
+            color: var(--primary);
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: #F08804;
+            transform: translateY(-1px);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #232F3E 0%, #37475A 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .highlight {
+            color: var(--amazon-orange);
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
+        }
+
+        .amazon-logo {
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--amazon-orange);
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #F08804;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 153, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 80px 20px;
+            background: var(--bg-light);
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .problem-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 28px;
+            transition: all 0.3s;
+        }
+
+        .problem-card:hover {
+            border-color: var(--amazon-orange);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .problem-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .problem-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .problem-card p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Talk to Us CTA */
+        .talk-cta-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .talk-cta-section h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .talk-cta-section p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .how-step {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--amazon-orange);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .how-step h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .how-step p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .qr-visual {
+            margin-top: 60px;
+            text-align: center;
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 12px;
+        }
+
+        .qr-visual h4 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .qr-example {
+            display: inline-flex;
+            align-items: center;
+            gap: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border: 2px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .qr-flow {
+            text-align: left;
+        }
+
+        .qr-flow-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .qr-flow-step .arrow {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        /* Social Proof */
+        .social-proof {
+            padding: 80px 20px;
+            background: var(--bg-light);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .testimonial {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 28px;
+        }
+
+        .stars {
+            color: var(--amazon-orange);
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .testimonial-text {
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--amazon-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .author-info h5 {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .author-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Compliance */
+        .compliance {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .compliance-item {
+            text-align: center;
+        }
+
+        .compliance-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .compliance-item h5 {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .compliance-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Contact Form */
+        .contact-form-section {
+            padding: 80px 20px;
+            background: var(--bg-light);
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 60px auto 0;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--amazon-orange);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .form-message.success {
+            background: #D1F4E0;
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .form-message.error {
+            background: #FFE8E3;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #37475A 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .final-cta p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.7);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-disclaimer {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .final-cta h2 {
+                font-size: 28px;
+            }
+
+            .problem-grid,
+            .how-grid,
+            .testimonial-grid,
+            .compliance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-example {
+                flex-direction: column;
+            }
+
+            .trust-badges {
+                gap: 20px;
+            }
+        }
+
+        /* Loading State */
+        .btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">reviu<span>.store</span></div>
+            <a href="#contact" class="nav-cta">Start Free Trial</a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>Stop Losing Money to Competitors<br>With Better <span class="highlight">Reviews</span></h1>
+            <p class="hero-subtitle">
+                Smart QR-based review system for Amazon & Shopify sellers. Build trust, increase conversions, protect your ratings. 100% TOS Compliant.
+            </p>
+
+            <div class="trust-badges">
+                <div class="badge-item">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    100% Amazon TOS Compliant
+                </div>
+                <div class="badge-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'%3E%3Cpath fill='white' d='M50.5,15.8c-7.5,5.5-18.3,8.4-27.7,8.4c-13.1,0-24.9-4.8-33.8-12.9c-0.7-0.6-0.1-1.5,0.8-1 c9.6,5.6,21.5,9,33.8,9c8.3,0,17.4-1.7,25.8-5.3C50.6,13.5,51.7,14.8,50.5,15.8z'/%3E%3Cpath fill='white' d='M53.3,12.5c-1-1.2-6.4-0.6-8.8-0.3c-0.7,0.1-0.8-0.5-0.2-1c4.3-3,11.4-2.2,12.2-1.1c0.8,1.1-0.2,8.7-4.6,12.3 c-0.6,0.5-1.2,0.2-0.9-0.4C52,19.3,54.3,13.8,53.3,12.5z'/%3E%3C/svg%3E" alt="Amazon" class="amazon-logo">
+                    Verified for Amazon
+                </div>
+                <div class="badge-item">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    Data Secure
+                </div>
+            </div>
+
+            <div class="cta-group">
+                <a href="#contact" class="btn btn-primary">Start Free Trial</a>
+                <a href="#how-it-works" class="btn btn-secondary">See How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <h2 class="section-title">Every Day Without Action Is Costing You</h2>
+            <p class="section-subtitle">Reviews aren't just social proof—they're the foundation of Amazon success</p>
+
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">📉</div>
+                    <h3>No Reviews = No Trust</h3>
+                    <p>New products without reviews struggle to gain buyer confidence. Customers choose competitors with proven track records.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">⚠️</div>
+                    <h3>Bad Reviews Kill Rankings</h3>
+                    <p>A single negative review can damage your product's visibility and conversion rate. Prevention is better than recovery.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">💸</div>
+                    <h3>Low Ratings = Lower Sales</h3>
+                    <p>Every rating point matters. Products with higher ratings consistently outperform competitors in conversions and revenue.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">📊</div>
+                    <h3>Missing Customer Insights</h3>
+                    <p>Without systematic feedback collection, you're guessing what customers want. Data-driven improvements drive growth.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">🎯</div>
+                    <h3>High Ad Costs</h3>
+                    <p>Lower ratings mean higher acquisition costs. Better reviews naturally improve your organic ranking and reduce ACOS.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">🚫</div>
+                    <h3>Listing Vulnerability</h3>
+                    <p>Low ratings risk suppression. Protect your hard-earned rankings with consistent positive review flow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Talk to Us CTA -->
+    <section class="talk-cta-section">
+        <div class="container">
+            <h3>Want to Discuss Your Specific Situation?</h3>
+            <p>Every seller's review challenge is unique. Let's talk about yours.</p>
+            <a href="#contact" class="btn btn-primary">Talk to Us</a>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Reviu Works</h2>
+            <p class="section-subtitle">Smart QR-based review collection system designed for Indian sellers</p>
+
+            <div class="how-grid">
+                <div class="how-step">
+                    <div class="step-number">1</div>
+                    <h4>Build Custom Forms</h4>
+                    <p>Create branded feedback forms with your messaging. Add warranty extensions, free offers, or exclusive benefits.</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">2</div>
+                    <h4>Generate QR Codes</h4>
+                    <p>Each product gets a unique QR code. Print on business cards, inserts, or packaging. Professional and trackable.</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">3</div>
+                    <h4>Place in Product Box</h4>
+                    <p>Include QR business card with custom messaging. "Extend warranty", "Claim free gift", or "Share feedback".</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">4</div>
+                    <h4>Collect Smart Data</h4>
+                    <p>Track every scan. Capture customer sentiment, product feedback, and improvement suggestions automatically.</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">5</div>
+                    <h4>Route Reviews Intelligently</h4>
+                    <p>Happy customers → Amazon review page. Unhappy customers → Private feedback to you. Protect your rating.</p>
+                </div>
+
+
+            </div>
+
+            <div class="qr-visual">
+                <h4>Simple. Compliant. Effective.</h4>
+                <div class="qr-example">
+                    <div class="qr-placeholder">
+                        [Generate<br>Custom QR]
+                    </div>
+                    <div class="qr-flow">
+                        <div class="qr-flow-step">
+                            <span class="arrow">→</span> Customer scans QR code
+                        </div>
+                        <div class="qr-flow-step">
+                            <span class="arrow">→</span> Opens custom feedback form
+                        </div>
+                        <div class="qr-flow-step">
+                            <span class="arrow">→</span> Rates their experience
+                        </div>
+                        <div class="qr-flow-step">
+                            <span class="arrow">→</span> Positive: Amazon review link
+                        </div>
+                        <div class="qr-flow-step">
+                            <span class="arrow">→</span> Negative: Private feedback to you
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="container">
+            <h2 class="section-title">Trusted by Growing Amazon Sellers</h2>
+            <p class="section-subtitle">Real sellers building sustainable review systems</p>
+
+            <div class="testimonial-grid">
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "The QR code approach works perfectly for Indian sellers. We include it in every package with a warranty extension offer. Our review rate increased significantly without violating Amazon TOS."
+                    </p>
+                    <div class="author">
+                        <div class="author-avatar">RK</div>
+                        <div class="author-info">
+                            <h5>Rahul K.</h5>
+                            <p>Electronics Seller, Mumbai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "We prevented 12 negative reviews in 2 months by catching unhappy customers early. The private feedback feature is gold. Our rating stayed protected while we improved our product."
+                    </p>
+                    <div class="author">
+                        <div class="author-avatar">PM</div>
+                        <div class="author-info">
+                            <h5>Priya M.</h5>
+                            <p>Home & Kitchen Seller, Bangalore</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "Simple to set up, professional looking QR cards, and the data insights help us improve our products. The customer support team understands Amazon India sellers' challenges."
+                    </p>
+                    <div class="author">
+                        <div class="author-avatar">AJ</div>
+                        <div class="author-info">
+                            <h5>Arjun J.</h5>
+                            <p>Fashion Accessories, Delhi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance -->
+    <section class="compliance">
+        <div class="container">
+            <h2 class="section-title">100% Compliant. Built for Trust.</h2>
+            <p class="section-subtitle">We follow Amazon's guidelines strictly. Your account safety is our priority.</p>
+
+            <div class="compliance-grid">
+                <div class="compliance-item">
+                    <div class="compliance-icon">✅</div>
+                    <h5>Amazon TOS Compliant</h5>
+                    <p>No incentivized reviews. No manipulation. Only honest feedback from verified purchases. All communications follow Amazon guidelines.</p>
+                </div>
+
+                <div class="compliance-item">
+                    <div class="compliance-icon">🔒</div>
+                    <h5>Data Privacy</h5>
+                    <p>Your customer data is encrypted and secure. We never share or sell information. GDPR and Indian privacy laws compliant.</p>
+                </div>
+
+                <div class="compliance-item">
+                    <div class="compliance-icon">🛡️</div>
+                    <h5>Transparent Process</h5>
+                    <p>Every step is traceable. No black-box tactics. You control all messaging and customer interactions.</p>
+                </div>
+
+                <div class="compliance-item">
+                    <div class="compliance-icon">🇮🇳</div>
+                    <h5>Built for India</h5>
+                    <p>Designed specifically for Indian Amazon & Shopify sellers. Local support, Indian payment options, regional language support coming soon.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section class="contact-form-section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Ready to Build Your Review System?</h2>
+            <p class="section-subtitle">Start protecting your ratings and growing your business today</p>
+
+            <div class="form-container">
+                <div id="formMessage" class="form-message"></div>
+                
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="number">WhatsApp Number *</label>
+                        <input type="tel" id="number" name="number" placeholder="+91" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Tell us about your business</label>
+                        <textarea id="message" name="message" placeholder="What products do you sell? How many orders per month? Any specific challenges with reviews?"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Start Free Trial</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>Stop Losing to Better-Reviewed Competitors</h2>
+            <p>Join Indian sellers building sustainable review systems. 100% Amazon TOS compliant.</p>
+            <a href="#contact" class="btn btn-primary">Start Free Trial</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Amazon TOS Compliance</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-disclaimer">
+                © 2026 Reviu.store. All rights reserved.<br>
+                Built in India for Amazon & Shopify sellers. Results vary by product, category, and execution.<br>
+                We help collect honest feedback - review outcomes depend on product quality and customer experience.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form submission handler
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('button[type="submit"]');
+            const messageDiv = document.getElementById('formMessage');
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                number: document.getElementById('number').value.trim(),
+                message: document.getElementById('message').value.trim()
+            };
+
+            // Validate
+            if (!formData.name || !formData.email || !formData.number) {
+                showMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Show loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
+            messageDiv.className = 'form-message';
+            messageDiv.textContent = '';
+
+            try {
+                const response = await fetch('https://scanqrgo.onrender.com/api/connect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('Thank you! We\'ll contact you within 24 hours to set up your account.', 'success');
+                    document.getElementById('contactForm').reset();
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Something went wrong. Please try again or WhatsApp us directly.', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('formMessage');
+            messageDiv.textContent = text;
+            messageDiv.className = `form-message ${type} show`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.className = 'form-message';
+                }, 5000);
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
