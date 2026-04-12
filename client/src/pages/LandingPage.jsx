@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ──────────────────────────────────────────────
    Inline styles as a design system (no Tailwind)
@@ -77,6 +78,13 @@ const CSS = `
     box-shadow: 0 4px 12px var(--orange-glow);
   }
   .lp-nav-cta:hover { background:var(--orange-dark); transform:translateY(-1px); box-shadow:0 6px 18px var(--orange-glow); }
+  .lp-nav-signup {
+    background:transparent; color:#fff; font-weight:600;
+    font-size:14px; padding:9px 20px; border-radius:var(--radius-sm);
+    text-decoration:none; transition:var(--transition);
+    border:1.5px solid rgba(255,255,255,0.35);
+  }
+  .lp-nav-signup:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.6); transform:translateY(-1px); }
 
   /* ── Hero ── */
   .lp-hero {
@@ -381,11 +389,19 @@ const CSS = `
   }
   @media (max-width: 768px) {
     .lp-nav-links .lp-nav-link { display:none; }
+    .lp-nav-links { gap:6px; }
+    .lp-nav-cta, .lp-nav-signup {
+      font-size:12px; padding:7px 12px; letter-spacing:-0.2px;
+    }
     .lp-problem-grid, .lp-how-grid, .lp-testimonial-grid, .lp-compliance-grid { grid-template-columns:1fr; }
     .lp-stats-inner { grid-template-columns:repeat(2,1fr); }
     .lp-qr-visual { flex-direction:column; padding:32px; gap:32px; }
     .lp-form-card { padding:28px 20px; }
     .lp-section { padding:72px 24px; }
+  }
+  @media (max-width: 380px) {
+    .lp-nav-cta, .lp-nav-signup { font-size:11px; padding:6px 10px; }
+    .lp-logo { font-size:20px; }
   }
   @media (max-width: 480px) {
     .lp-stats-inner { grid-template-columns:1fr; }
@@ -438,6 +454,7 @@ function Header() {
           <a href="#how-it-works" className="lp-nav-link">How It Works</a>
           <a href="#testimonials" className="lp-nav-link">Reviews</a>
           <a href="#compliance" className="lp-nav-link">Compliance</a>
+          <a href="/register" className="lp-nav-signup">Sign Up</a>
           <a href="#contact" className="lp-nav-cta">Start Free Trial</a>
         </div>
       </nav>
@@ -702,29 +719,49 @@ function Compliance() {
 }
 
 function ContactForm() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", number: "", message: "" });
   const [status, setStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [msg, setMsg] = useState("");
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  // Normalize & validate Indian mobile number → "+91 XXXXXXXXXX"
+  const normalizeNumber = (raw) => {
+    const digits = raw.replace(/\D/g, ""); // strip everything except digits
+    // Accept: 10-digit, or 91+10-digit, or 0+10-digit
+    if (digits.length === 10) return `+91 ${digits}`;
+    if (digits.length === 12 && digits.startsWith("91")) return `+91 ${digits.slice(2)}`;
+    if (digits.length === 11 && digits.startsWith("0")) return `+91 ${digits.slice(1)}`;
+    return null; // invalid
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.number) {
+    if (!form.name || !form.email || !form.number || !form.message) {
       setStatus("error"); setMsg("Please fill in all required fields."); return;
     }
+
+    const normalizedNumber = normalizeNumber(form.number);
+    if (!normalizedNumber) {
+      setStatus("error");
+      setMsg("Please enter a valid 10-digit Indian mobile number (e.g. +91 98765 43210).");
+      return;
+    }
+
     setStatus("loading");
     try {
+      const payload = { ...form, number: normalizedNumber };
       const res = await fetch("https://scanqrgo.onrender.com/api/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         setStatus("success");
-        setMsg("Thank you! We'll contact you within 24 hours to set up your account. 🎉");
+        setMsg("Success! Redirecting to sign up… 🎉");
         setForm({ name: "", email: "", number: "", message: "" });
-        setTimeout(() => setStatus(null), 6000);
+        setTimeout(() => navigate("/register"), 1500);
       } else throw new Error();
     } catch {
       setStatus("error");
@@ -766,13 +803,14 @@ function ContactForm() {
               ))}
 
               <div className="lp-form-group">
-                <label className="lp-form-label" htmlFor="message">Tell us about your business</label>
-                <textarea
-                  id="message" name="message"
-                  placeholder="What products do you sell? How many orders per month? Any specific challenges with reviews?"
+                <label className="lp-form-label" htmlFor="message">Business Name *</label>
+                <input
+                  id="message" name="message" type="text"
+                  placeholder="Your Amazon store or brand name"
                   value={form.message}
                   onChange={handleChange}
-                  className="lp-form-textarea"
+                  className="lp-form-input"
+                  required
                 />
               </div>
 
