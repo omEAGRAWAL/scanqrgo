@@ -1,18 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Connect = require("../models/Connect");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-// Reusable transporter
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT, 10),
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
+// Initialize Resend with API key from environment
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // @route   POST /api/connect
 // @desc    Submit a request + notify via email
@@ -31,9 +23,9 @@ router.post("/", async (req, res) => {
         // Respond immediately — don't wait for email
         res.status(201).json({ message: "Request submitted successfully" });
 
-        // Send email notification async (non-blocking)
-        transporter.sendMail({
-            from: `"Reviu Leads" <${process.env.EMAIL_USER}>`,
+        // Send email notification async (non-blocking) using Resend
+        resend.emails.send({
+            from: "onboarding@resend.dev",
             to: "storereviu@gmail.com",
             subject: `New Lead: ${name} — ${message}`,
             html: `
@@ -70,6 +62,10 @@ router.post("/", async (req, res) => {
                     </div>
                 </div>
             `,
+        }).then(response => {
+            if (response.error) {
+                console.error("Resend API returned an error:", response.error);
+            }
         }).catch((err) => console.error("Lead email failed:", err));
 
     } catch (err) {
