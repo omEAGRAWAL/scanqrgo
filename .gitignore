@@ -21,7 +21,7 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
-
+.env
 .vercel
 vouchflow
 
