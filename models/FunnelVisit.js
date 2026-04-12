@@ -10,7 +10,7 @@ const FunnelVisitSchema = new mongoose.Schema({
   // step data holds flexible funnel inputs
   stepData: {
     orderNumber: String,
-    
+
     satisfaction: String,
 
     usedMoreDays: String,
@@ -24,6 +24,9 @@ const FunnelVisitSchema = new mongoose.Schema({
     clickedMarketplaceButton: { type: Boolean, default: false },
     shouldRequestReview: { type: Boolean, default: false },
   },
+
+  // Store arbitrary custom field data from dynamic form builder
+  customFields: { type: mongoose.Schema.Types.Mixed, default: {} },
 });
 
 module.exports = mongoose.model("FunnelVisit", FunnelVisitSchema);

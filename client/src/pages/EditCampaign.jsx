@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { API_URL } from "../config/api";
 import Button from "../components/base/Button";
+import FormBuilder, { DEFAULT_FORM_FIELDS } from "../components/FormBuilder";
 export default function EditCampaign() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -30,6 +31,7 @@ export default function EditCampaign() {
       customMessage: "",
       backgroundStyle: "solid",
     },
+    formFields: [...DEFAULT_FORM_FIELDS],
   });
 
   const token = localStorage.getItem("token");
@@ -68,6 +70,7 @@ export default function EditCampaign() {
           customMessage: data.customization?.customMessage || "",
           backgroundStyle: data.customization?.backgroundStyle || "solid",
         },
+        formFields: data.formFields?.length ? data.formFields : [...DEFAULT_FORM_FIELDS],
       });
     } catch (err) {
       setError(err.message);
@@ -152,6 +155,7 @@ export default function EditCampaign() {
           enableSmartFunnel: form.enableSmartFunnel,
         }),
         customization: form.customization,
+        formFields: form.formFields,
       };
 
       const res = await fetch(`${API_URL}/campaigns/${id}`, {
@@ -184,7 +188,7 @@ export default function EditCampaign() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <Link
             to="/campaigns"
@@ -420,6 +424,22 @@ export default function EditCampaign() {
                   </div>
                 </div>
               )}
+
+              {/* Form Builder */}
+              <div className="space-y-3">
+                <label className="text-lg font-semibold text-gray-800 block">
+                  Form Fields
+                </label>
+                <p className="text-gray-500 text-sm">
+                  Customize the fields customers see when filling out the campaign form. Drag to reorder, add or remove fields.
+                </p>
+                <FormBuilder
+                  fields={form.formFields}
+                  onChange={(newFields) =>
+                    setForm({ ...form, formFields: newFields })
+                  }
+                />
+              </div>
 
               {/* Submit Button */}
               <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">

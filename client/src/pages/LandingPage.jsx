@@ -595,9 +595,9 @@ function HowItWorks() {
           <div className="lp-qr-visual">
             <div className="lp-qr-box">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <path d="M14 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM14 17h1v1h-1zM17 17h1v1h-1zM20 17h1v1h-1zM14 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1z"/>
+                <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <path d="M14 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM14 17h1v1h-1zM17 17h1v1h-1zM20 17h1v1h-1zM14 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1z" />
               </svg>
               <span>Your QR</span>
             </div>
@@ -744,13 +744,13 @@ function ContactForm() {
         <RevealSection delay={100}>
           <div className="lp-form-card">
             {status === "success" && <div className="lp-form-msg success">{msg}</div>}
-            {status === "error"   && <div className="lp-form-msg error">{msg}</div>}
+            {status === "error" && <div className="lp-form-msg error">{msg}</div>}
 
             <form onSubmit={handleSubmit} noValidate>
               {[
-                { id: "name",    label: "Full Name *",         type: "text",  placeholder: "Your full name" },
-                { id: "email",   label: "Email Address *",     type: "email", placeholder: "you@example.com" },
-                { id: "number",  label: "WhatsApp Number *",   type: "tel",   placeholder: "+91 98765 43210" },
+                { id: "name", label: "Full Name *", type: "text", placeholder: "Your full name" },
+                { id: "email", label: "Email Address *", type: "email", placeholder: "you@example.com" },
+                { id: "number", label: "WhatsApp Number *", type: "tel", placeholder: "+91 98765 43210" },
               ].map((f) => (
                 <div key={f.id} className="lp-form-group">
                   <label className="lp-form-label" htmlFor={f.id}>{f.label}</label>

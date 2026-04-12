@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select"; // ✅ react-select
 import { API_URL } from "../config/api";
 import Button from "../components/base/Button";
+import FormBuilder, { DEFAULT_FORM_FIELDS } from "../components/FormBuilder";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function CreateCampaign() {
       customMessage: "",
       backgroundStyle: "solid",
     },
+    formFields: [...DEFAULT_FORM_FIELDS],
   });
 
   const token = localStorage.getItem("token");
@@ -104,6 +106,7 @@ export default function CreateCampaign() {
           enableSmartFunnel: form.enableSmartFunnel,
         }),
         customization: form.customization,
+        formFields: form.formFields,
       };
 
       const res = await fetch(`${API_URL}/campaigns`, {
@@ -128,7 +131,7 @@ export default function CreateCampaign() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <Link
             to="/campaigns"
@@ -243,6 +246,22 @@ export default function CreateCampaign() {
                   )}
                 </div>
               )}
+
+              {/* Form Builder */}
+              <div className="space-y-3">
+                <label className="text-lg font-semibold text-gray-800 block">
+                  Form Fields
+                </label>
+                <p className="text-gray-500 text-sm">
+                  Customize the fields customers see when filling out the campaign form. Drag to reorder, add or remove fields.
+                </p>
+                <FormBuilder
+                  fields={form.formFields}
+                  onChange={(newFields) =>
+                    setForm({ ...form, formFields: newFields })
+                  }
+                />
+              </div>
 
               {/* Error Display */}
               {error && (

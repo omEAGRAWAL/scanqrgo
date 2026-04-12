@@ -1,373 +1,4 @@
-// import React, { useEffect, useMemo, useState } from "react";
-// import { Link as RouterLink } from "react-router-dom";
-// import {
-//   Box,
-//   Typography,
-//   Button,
-//   Paper,
-//   Snackbar,
-//   Alert,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableRow,
-//   TableContainer,
-//   Avatar,
-//   Stack,
-//   IconButton,
-//   Chip,
-//   CircularProgress,
-//   Skeleton,
-//   Tooltip,
-// } from "@mui/material";
-// import { Add, Edit, Delete, ShoppingBag } from "@mui/icons-material";
-// import { API_URL } from "../config/api";
 
-// export default function Products() {
-//   const [products, setProducts] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-//   const [success, setSuccess] = useState("");
-//   const [deletingId, setDeletingId] = useState(null);
-
-//   useEffect(() => {
-//     fetchProducts();
-//   }, []);
-
-//   useEffect(() => {
-//     if (!success) return;
-//     const t = setTimeout(() => setSuccess(""), 3000);
-//     return () => clearTimeout(t);
-//   }, [success]);
-
-//   async function fetchProducts() {
-//     try {
-//       setLoading(true);
-//       const token = localStorage.getItem("token");
-//       const url = `${API_URL}/products`;
-//       const res = await fetch(url, {
-//         headers: {
-//           Authorization: `${token}` || "",
-//         },
-//       });
-//       const data = await res.json();
-
-//       if (!res.ok) throw new Error(data.message || "Failed to fetch products");
-
-//       // Go backend returns { count, products }
-//       setProducts(data.products || []);
-//       setError("");
-//     } catch (err) {
-//       setError(err.message || "Failed to fetch products");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   async function handleDelete(productId) {
-//     if (!window.confirm("Are you sure you want to delete this product?"))
-//       return;
-
-//     setError("");
-//     setSuccess("");
-//     setDeletingId(productId);
-
-//     try {
-//       const token = localStorage.getItem("token");
-//       const res = await fetch(`${API_URL}/products/${productId}`, {
-//         method: "DELETE",
-//         headers: {
-//           Authorization: `${token}` || "",
-//         },
-//       });
-//       const data = await res.json();
-
-//       if (!res.ok) throw new Error(data.message || "Failed to delete product");
-
-//       // Remove from state
-//       setProducts((prev) => prev.filter((p) => p.id !== productId));
-//       setSuccess(data.message || "Product deleted successfully.");
-//     } catch (err) {
-//       setError(err.message || "Failed to delete product");
-//     } finally {
-//       setDeletingId(null);
-//     }
-//   }
-
-//   // Helper to render marketplace badges
-//   const renderMarketplaces = (product) => {
-//     const marketplaces = product?.availableMarketplaces || [];
-
-//     if (marketplaces.length === 0) {
-//       return (
-//         <Typography variant="body2" color="text.disabled">
-//           No marketplaces
-//         </Typography>
-//       );
-//     }
-
-//     return (
-//       <Stack direction="row" spacing={0.5}>
-//         {marketplaces.map((marketplace) => (
-//           <Chip
-//             key={marketplace}
-//             label={marketplace}
-//             size="small"
-//             variant="outlined"
-//             color={marketplace === "Amazon" ? "primary" : "secondary"}
-//           />
-//         ))}
-//       </Stack>
-//     );
-//   };
-
-//   const rowsSkeleton = useMemo(
-//     () =>
-//       Array.from({ length: 6 }).map((_, i) => (
-//         <TableRow key={`sk-${i}`}>
-//           <TableCell>
-//             <Skeleton variant="circular" width={40} height={40} />
-//           </TableCell>
-//           <TableCell>
-//             <Skeleton variant="text" width={160} />
-//           </TableCell>
-//           <TableCell>
-//             <Skeleton variant="text" width={120} />
-//           </TableCell>
-//           <TableCell>
-//             <Skeleton variant="text" width={120} />
-//           </TableCell>
-//           <TableCell>
-//             <Skeleton variant="text" width={100} />
-//           </TableCell>
-//           <TableCell align="right">
-//             <Skeleton variant="text" width={120} />
-//           </TableCell>
-//         </TableRow>
-//       )),
-//     []
-//   );
-
-//   const emptyState = (
-//     <Box textAlign="center" py={6}>
-//       <ShoppingBag sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
-//       <Typography variant="h6" gutterBottom>
-//         No products found
-//       </Typography>
-//       <Typography color="text.secondary" mb={2}>
-//         Add a new product to get started managing your catalog.
-//       </Typography>
-//       <Button
-//         variant="contained"
-//         startIcon={<Add />}
-//         component={RouterLink}
-//         to="/products/create"
-//       >
-//         Create Product
-//       </Button>
-//     </Box>
-//   );
-
-//   return (
-//     <Box p={3}>
-//       {/* Header + Primary Action */}
-//       <Stack
-//         direction="row"
-//         alignItems="center"
-//         justifyContent="space-between"
-//         mb={3}
-//       >
-//         <Box>
-//           <Typography variant="h4" fontWeight={600} gutterBottom>
-//             Products
-//           </Typography>
-//           <Typography color="text.secondary">
-//             Manage your product catalog and marketplace listings
-//           </Typography>
-//         </Box>
-//         <Button
-//           variant="contained"
-//           startIcon={<Add />}
-//           component={RouterLink}
-//           to="/products/create"
-//           size="large"
-//         >
-//           New Product
-//         </Button>
-//       </Stack>
-
-//       {/* Alerts via Snackbar */}
-//       <Snackbar
-//         open={!!error}
-//         autoHideDuration={4000}
-//         onClose={() => setError("")}
-//         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-//       >
-//         <Alert onClose={() => setError("")} severity="error" variant="filled">
-//           {error}
-//         </Alert>
-//       </Snackbar>
-//       <Snackbar
-//         open={!!success}
-//         autoHideDuration={3000}
-//         onClose={() => setSuccess("")}
-//         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-//       >
-//         <Alert
-//           onClose={() => setSuccess("")}
-//           severity="success"
-//           variant="filled"
-//         >
-//           {success}
-//         </Alert>
-//       </Snackbar>
-
-//       {/* Table */}
-//       <Paper variant="outlined">
-//         <TableContainer>
-//           <Table>
-//             <TableHead>
-//               <TableRow>
-//                 <TableCell>Image</TableCell>
-//                 <TableCell>Product Name</TableCell>
-//                 <TableCell>Amazon ASIN</TableCell>
-//                 <TableCell>Flipkart FSN</TableCell>
-//                 <TableCell>Marketplaces</TableCell>
-//                 <TableCell>Added On</TableCell>
-//                 <TableCell align="right">Actions</TableCell>
-//               </TableRow>
-//             </TableHead>
-
-//             <TableBody>
-//               {loading && rowsSkeleton}
-
-//               {!loading && products.length === 0 && (
-//                 <TableRow>
-//                   <TableCell colSpan={7}>{emptyState}</TableCell>
-//                 </TableRow>
-//               )}
-
-//               {!loading &&
-//                 products.length > 0 &&
-//                 products.map((product) => {
-//                   // Go backend uses 'id' not '_id'
-//                   const productId = product.id || product._id;
-//                   const initial =
-//                     product?.name?.trim()?.charAt(0)?.toUpperCase() || "P";
-//                   const created = product?.createdAt
-//                     ? new Date(product.createdAt).toLocaleDateString()
-//                     : "-";
-//                   const asin = product?.amazonAsin || "–";
-//                   const fsn = product?.flipkartFsn || "–";
-//                   const name = product?.name || "-";
-//                   const imageUrl = product?.imageurl || product?.imageUrl;
-
-//                   return (
-//                     <TableRow key={productId} hover>
-//                       <TableCell>
-//                         {imageUrl ? (
-//                           <Avatar
-//                             src={imageUrl}
-//                             alt={name}
-//                             variant="rounded"
-//                             sx={{ width: 48, height: 48 }}
-//                           />
-//                         ) : (
-//                           <Avatar
-//                             variant="rounded"
-//                             sx={{
-//                               width: 48,
-//                               height: 48,
-//                               bgcolor: "primary.light",
-//                               color: "primary.contrastText",
-//                               fontWeight: 600,
-//                             }}
-//                           >
-//                             {initial}
-//                           </Avatar>
-//                         )}
-//                       </TableCell>
-//                       <TableCell>
-//                         <Typography fontWeight={500}>{name}</Typography>
-//                       </TableCell>
-//                       <TableCell>
-//                         <Typography
-//                           variant="body2"
-//                           fontFamily="monospace"
-//                           color={
-//                             asin === "–" ? "text.disabled" : "text.primary"
-//                           }
-//                         >
-//                           {asin}
-//                         </Typography>
-//                       </TableCell>
-//                       <TableCell>
-//                         <Typography
-//                           variant="body2"
-//                           fontFamily="monospace"
-//                           color={fsn === "–" ? "text.disabled" : "text.primary"}
-//                         >
-//                           {fsn}
-//                         </Typography>
-//                       </TableCell>
-//                       <TableCell>{renderMarketplaces(product)}</TableCell>
-//                       <TableCell>
-//                         <Typography variant="body2" color="text.secondary">
-//                           {created}
-//                         </Typography>
-//                       </TableCell>
-//                       <TableCell align="right">
-//                         <Stack
-//                           direction="row"
-//                           spacing={1}
-//                           justifyContent="flex-end"
-//                         >
-//                           <Tooltip title="Edit Product">
-//                             <IconButton
-//                               component={RouterLink}
-//                               to={`/products/${productId}/edit`}
-//                               size="small"
-//                               color="primary"
-//                             >
-//                               <Edit fontSize="small" />
-//                             </IconButton>
-//                           </Tooltip>
-//                           <Tooltip title="Delete Product">
-//                             <IconButton
-//                               onClick={() => handleDelete(productId)}
-//                               size="small"
-//                               color="error"
-//                               disabled={deletingId === productId}
-//                             >
-//                               {deletingId === productId ? (
-//                                 <CircularProgress size={16} />
-//                               ) : (
-//                                 <Delete fontSize="small" />
-//                               )}
-//                             </IconButton>
-//                           </Tooltip>
-//                         </Stack>
-//                       </TableCell>
-//                     </TableRow>
-//                   );
-//                 })}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-
-//         {!loading && products.length > 0 && (
-//           <Box px={3} py={2} borderTop={1} borderColor="divider">
-//             <Typography variant="body2" color="text.secondary">
-//               Showing {products.length} product
-//               {products.length !== 1 ? "s" : ""}
-//             </Typography>
-//           </Box>
-//         )}
-//       </Paper>
-//     </Box>
-//   );
-// }
 import React, { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -514,47 +145,111 @@ export default function Products() {
 
   // --- Rendering Helpers ---
   const renderMarketplaces = (product) => {
-    const marketplaces = product?.availableMarketplaces || [];
-    if (marketplaces.length === 0)
+    const sources = [];
+
+    // Add legacy sources
+    if (product?.amazonAsin) {
+      sources.push({
+        marketplace: "Amazon India",
+        productId: product.amazonAsin,
+        isPrimary: !product?.flipkartFsn // Primary if it's the only one
+      });
+    }
+    if (product?.flipkartFsn) {
+      sources.push({
+        marketplace: "Flipkart",
+        productId: product.flipkartFsn,
+        isPrimary: !product?.amazonAsin // Primary if it's the only one
+      });
+    }
+
+    // Add new marketplace sources (override legacy if present)
+    if (product?.marketplaceSources && product.marketplaceSources.length > 0) {
+      // Clear legacy sources if new format exists
+      sources.length = 0;
+      sources.push(...product.marketplaceSources);
+    }
+
+    if (sources.length === 0) {
       return (
         <Typography variant="caption" color="text.disabled">
           None
         </Typography>
       );
+    }
 
     return (
-      <Stack direction="row" spacing={1}>
-        {marketplaces.map((mp) => {
+      <Stack direction="column" spacing={0.5}>
+        {sources.map((source, idx) => {
+          const mp = source.marketplace || source;
           const isAmazon = mp.toLowerCase().includes("amazon");
           const isFlipkart = mp.toLowerCase().includes("flipkart");
+          const isMeesho = mp.toLowerCase().includes("meesho");
 
           return (
-            <Chip
-              key={mp}
-              label={mp}
-              size="small"
-              sx={{
-                fontWeight: 600,
-                fontSize: "0.75rem",
-                height: 24,
-                bgcolor: isAmazon
-                  ? "#fff7ed"
-                  : isFlipkart
-                    ? "#eff6ff"
-                    : "default",
-                color: isAmazon
-                  ? "#c2410c"
-                  : isFlipkart
-                    ? "#1d4ed8"
-                    : "text.primary",
-                border: "1px solid",
-                borderColor: isAmazon
-                  ? "#fdba74"
-                  : isFlipkart
-                    ? "#93c5fd"
-                    : "divider",
-              }}
-            />
+            <Stack key={idx} direction="row" spacing={0.5} alignItems="center">
+              <Chip
+                label={mp}
+                size="small"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  height: 22,
+                  bgcolor: isAmazon
+                    ? "#fff7ed"
+                    : isFlipkart
+                      ? "#eff6ff"
+                      : isMeesho
+                        ? "#fef3c7"
+                        : "#f3f4f6",
+                  color: isAmazon
+                    ? "#c2410c"
+                    : isFlipkart
+                      ? "#1d4ed8"
+                      : isMeesho
+                        ? "#92400e"
+                        : "#374151",
+                  border: "1px solid",
+                  borderColor: isAmazon
+                    ? "#fdba74"
+                    : isFlipkart
+                      ? "#93c5fd"
+                      : isMeesho
+                        ? "#fde68a"
+                        : "#e5e7eb",
+                }}
+              />
+              {source.productId && (
+                <Typography
+                  variant="caption"
+                  fontFamily="monospace"
+                  sx={{
+                    fontSize: "0.7rem",
+                    color: "text.secondary",
+                    bgcolor: "grey.100",
+                    px: 0.5,
+                    py: 0.25,
+                    borderRadius: "8px",
+                  }}
+                >
+                  {source.productId}
+                </Typography>
+              )}
+              {source.isPrimary && (
+                <Chip
+                  label="Primary"
+                  size="small"
+                  sx={{
+                    height: 18,
+                    fontSize: "0.65rem",
+                    bgcolor: "#dcfce7",
+                    color: "#166534",
+                    fontWeight: 600,
+                    "& .MuiChip-label": { px: 0.75 }
+                  }}
+                />
+              )}
+            </Stack>
           );
         })}
       </Stack>
@@ -580,7 +275,7 @@ export default function Products() {
           </Typography>
         </Box>
         <Button
-          to="/products/create"
+          to="/products/new"
           icon={<Add />}
           variant="primary"
           className="shadow-lg px-6"
@@ -597,7 +292,7 @@ export default function Products() {
           mb: 3,
           border: "1px solid",
           borderColor: "divider",
-          borderRadius: 2,
+          borderRadius: "8px",
           display: "flex",
           alignItems: "center",
         }}
@@ -610,7 +305,15 @@ export default function Products() {
             setSearchTerm(e.target.value);
             setPage(0);
           }}
-          sx={{ maxWidth: 500, flex: 1 }}
+          sx={{
+            maxWidth: 500,
+            flex: 1,
+            borderRadius: "8px",
+            "& .MuiOutlinedInput-root": {
+              height: 40,
+              borderRadius: "8px"
+            }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -627,9 +330,10 @@ export default function Products() {
         sx={{
           border: "1px solid",
           borderColor: "divider",
-          borderRadius: 3,
+          borderRadius: "8px",
           overflow: "hidden",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+          boxShadow: "0",
+          border: "1px solid",
         }}
       >
         <TableContainer>
@@ -827,7 +531,7 @@ export default function Products() {
                           <Tooltip title="Edit">
                             <IconButton
                               component={RouterLink}
-                              to={`/products/${productId}/edit`}
+                              to={`/products/edit/${productId}`}
                               size="small"
                               sx={{
                                 color: "text.secondary",
@@ -885,7 +589,7 @@ export default function Products() {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => !deleting && setDeleteDialogOpen(false)}
-        PaperProps={{ sx: { borderRadius: 2, minWidth: 400 } }}
+        PaperProps={{ sx: { borderRadius: "8px", minWidth: 400 } }}
       >
         <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <WarningAmberRounded color="error" />

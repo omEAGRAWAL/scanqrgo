@@ -60,13 +60,16 @@ export default function DashboardLayout({ user }) {
       {/* Top AppBar */}
       <AppBar
         position="fixed"
-        elevation={1}
+
         sx={{
           backdropFilter: "blur(8px)",
           backgroundColor: "rgba(255,255,255,0.8)",
           color: "text.primary",
+          borderBottom: "1px solid #e0e0e0",
           ml: { md: `${drawerWidth}px` }, // push AppBar right when drawer is permanent
           width: { md: `calc(100% - ${drawerWidth}px)` },
+          elevation: 0,
+          boxShadow: "none",
         }}
       >
         <Toolbar>
@@ -130,7 +133,7 @@ export default function DashboardLayout({ user }) {
           pb: 3,
           pl: { md: `${drawerWidth}px` }, // reserve space for left drawer
           minHeight: "100vh",
-          background: "linear-gradient(135deg, #eef2ff 0%, #f3e8ff 100%)",
+          background: "linear-gradient(135deg, #f8f9fa 0%, #f8f9fa 100%)",
         }}
       >
         <Box sx={{ p: { xs: 2, md: 3 } }}>

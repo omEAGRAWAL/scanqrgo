@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Button from "../components/base/Button";
+import reviuLogo from "../assets/reviu_svg.svg";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -58,6 +59,9 @@ export default function Login() {
       }}
     >
       <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <img src={reviuLogo} alt="Reviu" style={{ height: 40 }} />
+        </Box>
         <Typography
           variant="h5"
           fontWeight="bold"
@@ -97,7 +101,7 @@ export default function Login() {
 
           <Button
             type="submit"
-            variant="success"
+            variant="primary"
             fullWidth
             className="mt-4"
             disabled={loading}
@@ -111,7 +115,7 @@ export default function Login() {
           Don’t have an account?{" "}
           <Link
             to="/register"
-            style={{ color: "#2e7d32", textDecoration: "none" }}
+            style={{ color: "#005baaff", textDecoration: "none" }}
           >
             Register
           </Link>

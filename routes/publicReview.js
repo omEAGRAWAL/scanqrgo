@@ -8,8 +8,156 @@ const FunnelVisit = require("../models/FunnelVisit");
 const Review = require("../models/Review");
 const auth = require("../middleware/auth");
 const router = express.Router();
-const nodemailer = require("nodemailer"); // Import Nodemailer
+const nodemailer = require("nodemailer");
 require("dotenv").config();
+
+// ─── Callback Chain Helpers ────────────────────────────────────────────
+
+/**
+ * Resolve a dot-path like "data.token" on an object.
+ * e.g. getNestedValue({ data: { token: "abc" } }, "data.token") => "abc"
+ */
+function getNestedValue(obj, path) {
+  return path.split(".").reduce((cur, key) => {
+    if (cur === null || cur === undefined) return undefined;
+    return cur[key];
+  }, obj);
+}
+
+/**
+ * Replace {{variable}} placeholders in a string.
+ *  - {{fieldId}}           => value from formData[fieldId]
+ *  - {{$response[0].path}} => dot-path into a previous response JSON
+ */
+function interpolateTemplate(template, formData, responses) {
+  if (!template) return template;
+  return template.replace(/\{\{([^}]+)\}\}/g, (match, content) => {
+    // Check for default value syntax: {{ variable || default }}
+    let key = content;
+    let defaultValue = "";
+    if (content.includes("||")) {
+      const parts = content.split("||");
+      key = parts[0].trim();
+      defaultValue = parts.slice(1).join("||").trim();
+      // Remove quotes from default value if present
+      if ((defaultValue.startsWith('"') && defaultValue.endsWith('"')) ||
+        (defaultValue.startsWith("'") && defaultValue.endsWith("'"))) {
+        defaultValue = defaultValue.slice(1, -1);
+      }
+    } else {
+      key = content.trim();
+    }
+
+    // Handle $response[N].path
+    const respMatch = key.match(/^\$response\[(\d+)\]\.?(.*)$/);
+    if (respMatch) {
+      const idx = parseInt(respMatch[1], 10);
+      const path = respMatch[2];
+      if (idx < responses.length) {
+        const val = path ? getNestedValue(responses[idx], path) : responses[idx];
+        const res = (val !== undefined && val !== null && val !== "") ? val : defaultValue;
+        return typeof res === "object" ? JSON.stringify(res) : String(res ?? "");
+      }
+      return defaultValue; // Index out of range, return default
+    }
+
+    // Handle form field values
+    if (formData[key] !== undefined && formData[key] !== null && formData[key] !== "") {
+      const val = formData[key];
+      return typeof val === "object" ? JSON.stringify(val) : String(val);
+    }
+
+    // Return default value if variable not found or empty
+    if (defaultValue !== "") return defaultValue;
+
+    return match; // leave unknown placeholders as-is if no default
+  });
+}
+
+/**
+ * Execute the callback chain for a campaign after form submission.
+ * Runs asynchronously — errors are logged but never thrown.
+ */
+async function executeCallbackChain(callbackUrls, formData) {
+  if (!callbackUrls || callbackUrls.length === 0) return;
+
+  const sorted = [...callbackUrls].sort((a, b) => (a.order || 0) - (b.order || 0));
+  const responses = [];
+
+  for (const cb of sorted) {
+    try {
+      const url = interpolateTemplate(cb.url, formData, responses);
+      const method = (cb.method || "POST").toUpperCase();
+
+      // Interpolate headers
+      const headers = {};
+      if (cb.headers && typeof cb.headers === "object") {
+        for (const [k, v] of Object.entries(cb.headers)) {
+          headers[k] = interpolateTemplate(v, formData, responses);
+        }
+      }
+
+      // Interpolate body
+      let body = undefined;
+      if (cb.body && method !== "GET") {
+        body = interpolateTemplate(cb.body, formData, responses);
+      }
+
+      // Set Content-Type if not explicitly set
+      if (body && !headers["Content-Type"] && !headers["content-type"]) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      console.log(`🔗 Callback [${cb.name || "Unnamed"}]: ${method} ${url}`);
+      console.log(`  📤 Headers:`, JSON.stringify(headers, null, 2));
+      if (body) console.log(`  📤 Body:`, body);
+
+      // Add default headers to prevent some 'fetch failed' issues
+      if (!headers["User-Agent"]) headers["User-Agent"] = "ScanQRGo/1.0";
+      if (!headers["Connection"]) headers["Connection"] = "keep-alive";
+
+      const fetchOptions = {
+        method,
+        headers,
+        // Increase timeout to 30s (requires AbortController but fetch defaults are loose in Node)
+      };
+      if (body) fetchOptions.body = body;
+
+
+
+      // Retry logic (3 attempts)
+      let resp;
+      let attempt = 0;
+      const maxRetries = 3;
+
+      while (attempt < maxRetries) {
+        try {
+          if (attempt > 0) console.log(`  🔄 Retry attempt ${attempt}/${maxRetries}...`);
+          resp = await fetch(url, fetchOptions);
+          break; // Success, exit loop
+        } catch (err) {
+          attempt++;
+          if (attempt >= maxRetries) throw err; // Final failure
+          await new Promise(r => setTimeout(r, 1000 * attempt)); // Linear backoff: 1s, 2s
+        }
+      }
+
+      let respData;
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        respData = await resp.json();
+      } else {
+        respData = { _text: await resp.text(), _status: resp.status };
+      }
+
+      responses.push(respData);
+      console.log(`  ✅ [${cb.name || "Unnamed"}] ${resp.status}`, JSON.stringify(respData).slice(0, 200));
+    } catch (err) {
+      console.error(`  ❌ Callback [${cb.name || "Unnamed"}] failed after retries:`, err.message);
+      responses.push({ _error: err.message });
+    }
+  }
+}
 // Initialize Gemini
 // Ensure GEMINI_API_KEY is set in your .env file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -113,7 +261,7 @@ router.get("/campaign/:id", async (req, res) => {
       _id: id,
       status: "active",
     }).populate([
-      { path: "products", select: "name amazonAsin flipkartFsn imageurl" },
+      { path: "products", select: "name amazonAsin flipkartFsn marketplaceSources imageurl" },
       {
         path: "promotion",
         select:
@@ -138,8 +286,11 @@ router.get("/campaign/:id", async (req, res) => {
         category: campaign.category,
         products: campaign.products,
         promotion: campaign.promotion,
+        inlinePromotion: campaign.inlinePromotion,
         reviewMinimumLength: campaign.reviewMinimumLength,
         customization: campaign.customization,
+        formFields: campaign.formFields || [],
+        callbackUrls: campaign.callbackUrls || [],
       },
     });
   } catch (error) {
@@ -307,25 +458,18 @@ router.post("/campaign/:id/submit", async (req, res) => {
       rating,
       clickedMarketplaceButton,
       marketplace,
+      customFields,
     } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid campaign ID" });
     }
 
-    // validate required fields
-    if (
-      !selectedProduct ||
-      !orderNumber ||
-      !satisfaction ||
-      !customerName ||
-      !email ||
-      !review ||
-      rating === undefined
-    ) {
+    // validate only essential fields - accept any other input
+    if (!selectedProduct) {
       return res
         .status(400)
-        .json({ message: "Please fill all required fields" });
+        .json({ message: "Please select a product" });
     }
 
     const campaign = await Campaign.findOne({
@@ -377,6 +521,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
         clickedMarketplaceButton: clickedMarketplaceButton || false,
         shouldRequestReview,
       },
+      customFields: customFields || {},
     });
     await funnelVisit.save();
 
@@ -420,7 +565,7 @@ router.post("/campaign/:id/submit", async (req, res) => {
         satisfaction === "Somewhat satisfied")
     ) {
       shouldShowReward = true;
-      reward = campaign.promotion;
+      reward = campaign.promotion || campaign.inlinePromotion;
       successMessage = "Thank you! Here is your reward:";
       campaign.analytics.totalRedemptions += 1;
       await campaign.save();
@@ -440,6 +585,26 @@ router.post("/campaign/:id/submit", async (req, res) => {
       shouldShowReward: shouldShowReward,
       reward: reward,
     });
+
+    // --- TRIGGER CALLBACK CHAIN (async, after response) ---
+    if (campaign.callbackUrls && campaign.callbackUrls.length > 0) {
+      const formData = {
+        selectedProduct,
+        orderNumber,
+        satisfaction,
+        usedMoreDays,
+        customerName,
+        email,
+        phoneNumber,
+        review,
+        rating,
+        marketplace,
+        ...(customFields || {}),
+      };
+      executeCallbackChain(campaign.callbackUrls, formData).catch((err) =>
+        console.error("Callback chain error:", err)
+      );
+    }
   } catch (error) {
     console.error("Submit review error:", error);
     res.status(500).json({ message: "Server error" });
@@ -459,6 +624,34 @@ router.get("/reviews", auth, async (req, res) => {
     res.json(funnelVisits);
   } catch (error) {
     console.error("Get all reviews error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET reviews for a specific campaign (requires auth)
+router.get("/campaign/:id/reviews", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Validate campaign ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid campaign ID" });
+    }
+
+    // Find funnel visits for this campaign and seller
+    const funnelVisits = await FunnelVisit.find({
+      campaign: id,
+      seller: userId
+    })
+      .populate("campaign", "name")
+      .populate("product", "name amazonAsin flipkartFsn imageurl")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json(funnelVisits);
+  } catch (error) {
+    console.error("Get campaign reviews error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -385,13 +385,14 @@ export default function Dashboard() {
             Overview of campaigns, products, and customer feedback.
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 200, bgcolor: "white" }}>
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <FormControl size="small" sx={{ minWidth: 200, bgcolor: "white", "& .MuiOutlinedInput-root": { borderRadius: "8px" } }}>
             <InputLabel>Filter by Campaign</InputLabel>
             <Select
               value={selectedCampaignId}
               onChange={(e) => setSelectedCampaignId(e.target.value)}
               label="Filter by Campaign"
+              sx={{ borderRadius: "8px" }}
             >
               <MenuItem value="">All Campaigns</MenuItem>
               {campaigns.map((c) => (
@@ -402,13 +403,14 @@ export default function Dashboard() {
             </Select>
           </FormControl>
           <Button
+
             variant="contained"
             startIcon={<DownloadIcon />}
             onClick={(e) => setAnchorEl(e.currentTarget)}
             sx={{
               textTransform: "none",
               fontWeight: 600,
-              borderRadius: 2,
+              borderRadius: "8px",
               px: 3,
             }}
           >
@@ -418,7 +420,7 @@ export default function Dashboard() {
             anchorEl={anchorEl}
             open={menuOpen}
             onClose={() => setAnchorEl(null)}
-            PaperProps={{ elevation: 3, sx: { mt: 1, borderRadius: 2 } }}
+            PaperProps={{ elevation: 3, sx: { mt: 1, borderRadius: "8px" } }}
           >
             <MenuItem
               onClick={() => {
@@ -495,9 +497,10 @@ export default function Dashboard() {
       {/* Main Data Table */}
       <Card
         sx={{
-          borderRadius: 3,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+          borderRadius: "8px",
+          boxShadow: "0",
           overflow: "hidden",
+          border: "1px solid #e2e8f0",
         }}
       >
         <Box
@@ -510,7 +513,7 @@ export default function Dashboard() {
           }}
         >
           <TextField
-            size="small"
+            size="large"
             placeholder="Search by name, email, product..."
             value={query}
             onChange={(e) => {
@@ -866,8 +869,9 @@ function StatCard({ title, value, loading, icon, color }) {
         display: "flex",
         alignItems: "center",
         p: 2,
-        borderRadius: 3,
-        boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+        borderRadius: "8px",
+        boxShadow: "0",
+        border: "1px solid #e0e0e0",
       }}
     >
       <Avatar

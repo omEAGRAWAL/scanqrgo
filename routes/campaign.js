@@ -25,6 +25,9 @@ router.post("/", auth, async (req, res) => {
       enableSmartFunnel,
       promotionSettings,
       customization,
+      formFields,
+      inlinePromotion,
+      callbackUrls,
     } = req.body;
 
     // Basic validation
@@ -35,9 +38,10 @@ router.post("/", auth, async (req, res) => {
     }
 
     // Validate category-specific requirements
-    if (category === "promotion" && !promotion) {
+    // Allow either promotion ID OR inlinePromotion
+    if (category === "promotion" && !promotion && !inlinePromotion) {
       return res.status(400).json({
-        message: "Promotion ID is required for promotion campaigns",
+        message: "Either promotion ID or inline promotion data is required",
       });
     }
 
@@ -73,6 +77,9 @@ router.post("/", auth, async (req, res) => {
       promotionSettings:
         category === "promotion" ? promotionSettings : undefined,
       customization: customization || {},
+      formFields: formFields || [],
+      inlinePromotion: inlinePromotion || undefined,
+      callbackUrls: callbackUrls || [],
     });
 
     await campaign.save();
@@ -180,6 +187,9 @@ router.put("/:id", auth, async (req, res) => {
       enableSmartFunnel,
       promotionSettings,
       customization,
+      formFields,
+      inlinePromotion,
+      callbackUrls,
     } = req.body;
 
     const campaign = await Campaign.findOne({
@@ -226,6 +236,9 @@ router.put("/:id", auth, async (req, res) => {
       };
     if (customization)
       campaign.customization = { ...campaign.customization, ...customization };
+    if (formFields !== undefined) campaign.formFields = formFields;
+    if (inlinePromotion !== undefined) campaign.inlinePromotion = inlinePromotion;
+    if (callbackUrls !== undefined) campaign.callbackUrls = callbackUrls;
 
     await campaign.save();
 

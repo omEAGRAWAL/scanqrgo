@@ -8,32 +8,46 @@ const router = express.Router();
 // POST /api/products - Create a new product
 router.post("/", auth, async (req, res) => {
   try {
-    const { name, amazonAsin, flipkartFsn, imageurl } = req.body;
+    const { name, amazonAsin, flipkartFsn, imageurl, marketplaceSources } = req.body;
 
     // Basic validation
     if (!name) {
       return res.status(400).json({ message: "Product name is required" });
     }
 
-    // Validate at least one marketplace is provided
-    if (!amazonAsin && !flipkartFsn) {
-      return res.status(400).json({ 
-        message: "At least one marketplace is required (Amazon ASIN or Flipkart FSN)" 
+    // Validate at least one marketplace is provided (legacy or new format)
+    const hasLegacy = amazonAsin || flipkartFsn;
+    const hasNew = marketplaceSources && marketplaceSources.length > 0;
+
+    if (!hasLegacy && !hasNew) {
+      return res.status(400).json({
+        message: "At least one marketplace source is required"
       });
     }
 
-    // Validate ASIN format (Amazon ASINs are typically 10 characters)
+    // Validate legacy ASIN format (Amazon ASINs are typically 10 characters)
     if (amazonAsin && (typeof amazonAsin !== 'string' || amazonAsin.length !== 10)) {
-      return res.status(400).json({ 
-        message: "Amazon ASIN must be a 10-character string" 
+      return res.status(400).json({
+        message: "Amazon ASIN must be a 10-character string"
       });
     }
 
-    // Validate FSN format (Flipkart FSNs are typically alphanumeric)
+    // Validate legacy FSN format (Flipkart FSNs are typically alphanumeric)
     if (flipkartFsn && (typeof flipkartFsn !== 'string' || flipkartFsn.length < 5)) {
-      return res.status(400).json({ 
-        message: "Flipkart FSN must be a valid string (minimum 5 characters)" 
+      return res.status(400).json({
+        message: "Flipkart FSN must be a valid string (minimum 5 characters)"
       });
+    }
+
+    // Validate new marketplace sources format
+    if (marketplaceSources && marketplaceSources.length > 0) {
+      for (const source of marketplaceSources) {
+        if (!source.marketplace || !source.productId) {
+          return res.status(400).json({
+            message: "Each marketplace source must have marketplace name and product ID"
+          });
+        }
+      }
     }
 
     // Create product with current user as seller
@@ -42,6 +56,7 @@ router.post("/", auth, async (req, res) => {
       seller: req.user.id,
       amazonAsin,
       flipkartFsn,
+      marketplaceSources,
       campaigns: [],
       imageurl,
     });
@@ -57,12 +72,12 @@ router.post("/", auth, async (req, res) => {
     });
   } catch (error) {
     console.error("Create product error:", error);
-    
+
     // Handle validation errors
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: error.message });
     }
-    
+
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -112,7 +127,7 @@ router.get("/:id", auth, async (req, res) => {
 // PUT /api/products/:id - Update a product
 router.put("/:id", auth, async (req, res) => {
   try {
-    const { name, amazonAsin, flipkartFsn, imageurl } = req.body;
+    const { name, amazonAsin, flipkartFsn, imageurl, marketplaceSources } = req.body;
 
     // Find product and ensure it belongs to the current user
     const product = await Product.findOne({
@@ -129,26 +144,41 @@ router.put("/:id", auth, async (req, res) => {
     if (amazonAsin !== undefined) product.amazonAsin = amazonAsin;
     if (flipkartFsn !== undefined) product.flipkartFsn = flipkartFsn;
     if (imageurl !== undefined) product.imageurl = imageurl;
+    if (marketplaceSources !== undefined) product.marketplaceSources = marketplaceSources;
 
-    // Validate at least one marketplace after update
-    if (!product.amazonAsin && !product.flipkartFsn) {
-      return res.status(400).json({ 
-        message: "At least one marketplace is required (Amazon ASIN or Flipkart FSN)" 
+    // Validate at least one marketplace after update (legacy or new)
+    const hasLegacy = product.amazonAsin || product.flipkartFsn;
+    const hasNew = product.marketplaceSources && product.marketplaceSources.length > 0;
+
+    if (!hasLegacy && !hasNew) {
+      return res.status(400).json({
+        message: "At least one marketplace source is required"
       });
     }
 
     // Validate ASIN format if provided
     if (product.amazonAsin && (typeof product.amazonAsin !== 'string' || product.amazonAsin.length !== 10)) {
-      return res.status(400).json({ 
-        message: "Amazon ASIN must be a 10-character string" 
+      return res.status(400).json({
+        message: "Amazon ASIN must be a 10-character string"
       });
     }
 
     // Validate FSN format if provided
     if (product.flipkartFsn && (typeof product.flipkartFsn !== 'string' || product.flipkartFsn.length < 5)) {
-      return res.status(400).json({ 
-        message: "Flipkart FSN must be a valid string (minimum 5 characters)" 
+      return res.status(400).json({
+        message: "Flipkart FSN must be a valid string (minimum 5 characters)"
       });
+    }
+
+    // Validate new marketplace sources format
+    if (product.marketplaceSources && product.marketplaceSources.length > 0) {
+      for (const source of product.marketplaceSources) {
+        if (!source.marketplace || !source.productId) {
+          return res.status(400).json({
+            message: "Each marketplace source must have marketplace name and product ID"
+          });
+        }
+      }
     }
 
     await product.save();
@@ -163,14 +193,14 @@ router.put("/:id", auth, async (req, res) => {
     });
   } catch (error) {
     console.error("Update product error:", error);
-    
+
     if (error.name === "CastError") {
       return res.status(400).json({ message: "Invalid product ID" });
     }
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: error.message });
     }
-    
+
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -10,6 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 import Button from "../components/base/Button";
+import reviuLogo from "../assets/reviu_svg.svg";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
@@ -106,6 +107,9 @@ export default function Register() {
       }}
     >
       <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <img src={reviuLogo} alt="Reviu" style={{ height: 40 }} />
+        </Box>
         <Typography
           variant="h5"
           fontWeight="bold"

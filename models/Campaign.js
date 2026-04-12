@@ -21,6 +21,20 @@ const CampaignSchema = new mongoose.Schema({
     // Remove: required: function () { return this.category === "review"; }
   },
 
+  // NEW: Inline promotion data (embedded directly in campaign)
+  inlinePromotion: {
+    offerTitle: { type: String },
+    type: {
+      type: String,
+      enum: ["discount code", "extended warranty", "custom"],
+    },
+    warrantyPeriod: { type: String }, // e.g., "3 months", "6 months", "1 year"
+    couponCode: { type: String },
+    offering: { type: String }, // For custom type
+    termsAndConditions: { type: String },
+    expiryDate: { type: Date },
+  },
+
   products: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
   ],
@@ -61,6 +75,53 @@ const CampaignSchema = new mongoose.Schema({
     {
       stepType: { type: String },
       config: mongoose.Schema.Types.Mixed,
+      order: { type: Number, default: 0 },
+    },
+  ],
+
+  // Dynamic form fields configuration (Google Forms-like)
+  formFields: [
+    {
+      id: { type: String, required: true },
+      type: {
+        type: String,
+        enum: [
+          "text",
+          "email",
+          "tel",
+          "textarea",
+          "number",
+          "rating",
+          "select",
+          "toggle",
+          "product_select",
+          "marketplace_select",
+        ],
+        required: true,
+      },
+      label: { type: String, required: true },
+      placeholder: { type: String, default: "" },
+      required: { type: Boolean, default: false },
+      options: [String], // for select/toggle fields
+      step: { type: Number, default: 0 },
+      order: { type: Number, default: 0 },
+      isSystem: { type: Boolean, default: false },
+      isRemovable: { type: Boolean, default: true },
+    },
+  ],
+
+  // Callback URLs - post-submission API call chain
+  callbackUrls: [
+    {
+      name: { type: String, default: "" },
+      url: { type: String, required: true },
+      method: {
+        type: String,
+        enum: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        default: "POST",
+      },
+      headers: { type: mongoose.Schema.Types.Mixed, default: {} },
+      body: { type: String, default: "" }, // JSON string with {{variable}} placeholders
       order: { type: Number, default: 0 },
     },
   ],
